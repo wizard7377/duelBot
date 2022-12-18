@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
+#Add directories 
 
+include_directories(secrets;include)
+file(GLOB_RECURSE HEADERS "include/*.hpp")
+file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
@@ -9,6 +13,8 @@ add_subdirectory(libs/DPP)
 # Create an executable
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    ${HEADERS}
+    ${SECRETS}
     # your other files...
 )
  
