@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
- 
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/../secrets/CMakeLists.txt)
+defineMacros()
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
