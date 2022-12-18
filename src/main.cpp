@@ -1,9 +1,13 @@
 #include <dpp/dpp.h>
-#include <nlohmann/json.hpp>
+#include <config.hpp>
+#include "gameLogic.hpp"
 
+#include <iostream>
 using namespace dpp;
 
 int main() {
+	game::chessLogic wizGame;
+	
 
 
 
