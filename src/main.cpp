@@ -6,7 +6,8 @@
 using namespace dpp;
 
 int main() {
-	game::chessLogic wizGame;
+	game::ticTacToeLogic wizGame;
+
 	
 
 
