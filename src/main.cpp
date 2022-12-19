@@ -1,8 +1,5 @@
 #include <dpp/dpp.h>
-
-#ifndef BOT_TOKEN
-	#define BOT_TOKEN "YourBotToken"
-#endif
+#include <nlohmann/json.hpp>
 
 using namespace dpp;
 
