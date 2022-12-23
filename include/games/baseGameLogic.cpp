@@ -9,7 +9,6 @@ namespace game {
 baseGameLogic::baseGameLogic() {
 }
 
-bool baseGameLogic::makeMove(int inputOne, int inputTwo) { return false; }
 std::string baseGameLogic::convertIntToString(int logicMove) {
 	return (this->moveNames[logicMove]);
 }

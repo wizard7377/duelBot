@@ -12,3 +12,4 @@ config.json
 secrets/**
 libs/**
 _deps
+**.sql

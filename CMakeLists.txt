@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
 #Add directories 
+find_package(mysqlcppconn REQUIRED)
 
-include_directories(secrets;include)
+include_directories(secrets;include;${MYSQLCPPCONN_INCLUDE_DIRS})
 file(GLOB_RECURSE GAME_HEADERS "include/games/*.hpp")
 file(GLOB_RECURSE GAME_SOURCES "include/games/*.cpp")
 file(GLOB_RECURSE SECRETS "secrets/*.hpp")
@@ -23,6 +24,7 @@ add_executable(${PROJECT_NAME}
 # Linking libraries
 target_link_libraries(${PROJECT_NAME}
     dpp
+    ${MYSQLCPPCONN_LIBRARIES}
 
  
     # Add any other libs you want to use here

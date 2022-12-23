@@ -15,7 +15,9 @@ class baseGameLogic {
 		std::string gameId;
 		int* boardItems;
 		int* allowedMoves;
-		virtual bool makeMove(int inputOne, int inputTwo = 0);
+		virtual bool getWinner() { return false; }
+		virtual bool makeMove(int inputOne, int inputTwo) { return false; }
+		virtual bool makeMove(int inputOne) { return false; }
 	protected:
 
 		std::string* moveNames;
@@ -44,7 +46,8 @@ class chessLogic : public baseGameLogic {
 class ticTacToeLogic : public baseGameLogic {
 	public:
 		ticTacToeLogic();
-		bool makeMove(int inputOne, int inputTwo = 0) override;
+		bool makeMove(int inputOne) override;
+		bool getWinner() override;
 		int boardItems[3][3] = {
 			{0,0,0},
 			{0,0,0},

@@ -55,7 +55,7 @@ namespace game {
 			this->allowedMoves[i] = true;
 		}
 	}
-	bool ticTacToeLogic::makeMove(int inputOne, int inputTwo) {
+	bool ticTacToeLogic::makeMove(int inputOne) {
 		auto getIntFromBool = [this]() {
 			if (this->userTurn) {
 				return 1;
@@ -72,6 +72,26 @@ namespace game {
 		return (this->checkForEnd());
 	}
 
+	bool ticTacToeLogic::getWinner() {
+		for (int i = 0; i < 3; i++) {
+
+		if (
+			((this->boardItems[i][0] == this->boardItems[i][1]) && (this->boardItems[i][1] == this->boardItems[i][2]) && (this->boardItems[i][2] == 1)) ||
+			((this->boardItems[0][i] == this->boardItems[1][i]) && (this->boardItems[1][i] == this->boardItems[2][i]) && (this->boardItems[2][i] == 1))
+		) { return true; }
+
+		}
+
+		if (
+			((this->boardItems[0][0] == this->boardItems[1][1]) && (this->boardItems[1][1] == this->boardItems[2][2]) && (this->boardItems[2][2] == 1)) ||
+			((this->boardItems[0][2] == this->boardItems[1][1]) && (this->boardItems[1][1] == this->boardItems[2][0]) && (this->boardItems[2][0] == 1))
+		) { return true; }
+
+
+		return false;
+
+
+}
 
 
 
