@@ -18,12 +18,12 @@ class baseGameLogic {
 		virtual bool getWinner() { return false; }
 		virtual bool makeMove(int inputOne, int inputTwo) { return false; }
 		virtual bool makeMove(int inputOne) { return false; }
+		std::string convertIntToString(int logicMove);
+		int convertStringToInt(std::string userMove);
 	protected:
 
 		std::string* moveNames;
 		bool userTurn = true;
-		std::string convertIntToString(int logicMove);
-		int convertStringToInt(std::string userMove);
 
 };
 

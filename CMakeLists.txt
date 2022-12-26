@@ -2,29 +2,38 @@ cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
 #Add directories 
-find_package(mysqlcppconn REQUIRED)
 
-include_directories(secrets;include;${MYSQLCPPCONN_INCLUDE_DIRS})
+
+include_directories(secrets;include)
 file(GLOB_RECURSE GAME_HEADERS "include/games/*.hpp")
 file(GLOB_RECURSE GAME_SOURCES "include/games/*.cpp")
+file(GLOB_RECURSE INTER_SOURCES "include/interactions/*.cpp")
+file(GLOB_RECURSE COMMAND_SOURCES "include/src/command/*.cpp")
+file(GLOB_RECURSE DATA_SOURCES "include/database/*.cpp")
 file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
 
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 # Create an executable
 add_executable(${PROJECT_NAME}
     src/main.cpp
     ${SECRETS}
+    ${DATA_SOURCES}
     ${GAME_SOURCES}
+    ${COMMAND_SOURCES}
+    ${INTER_SOURCES}
     # your other files...
 )
  
 # Linking libraries
 target_link_libraries(${PROJECT_NAME}
     dpp
-    ${MYSQLCPPCONN_LIBRARIES}
+    ${Boost_LIBRARIES}
+
 
  
     # Add any other libs you want to use here
@@ -34,6 +43,10 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
     libs/DPP/include
     include/games
+    include/database
+    include/interactions
+    src/commands
+
     # Remember to add the include directories of any other libraries too
 )
  
