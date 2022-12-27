@@ -7,4 +7,4 @@ Any advice is appreciated!
 
 View the insanity here: https://discord.gg/qCb8SJJEz3
 
-Also ChatGPT probs wrote half the code, go check it out: https://chat.openai.com/chat
+Also ChatGPT probs wrote half the code, go check it out here: https://chat.openai.com/chat
