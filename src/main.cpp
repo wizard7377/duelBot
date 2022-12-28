@@ -1,73 +1,108 @@
 #include <dpp/dpp.h>
 #include <map>
+#include <variant>
+#include <cctype>
 #include <config.hpp>
 #include "gameLogic.hpp"
 #include "commandHandle.hpp"
 #include <iostream>
 #include <functional>
+#include <typeindex>
+#include <typeinfo>
 using namespace dpp;
 
 std::map<std::string,std::function<void(cluster&,const slashcommand_t&)>> slashCmds;
 std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
+std::map<std::string,std::function<void(cluster&,const button_click_t&)>> buttonCmds;
+
+
+std::map<std::string,std::type_index> gameNameT = {
+    {"tictactoe",typeid(game::ticTacToeLogic)}
+};
+std::string getTimePar(int index,const form_submit_t& event) {
+std::string inString = std::get<std::string>(event.components[index].components[0].value);
+
+	for (char c : inString) {
+		if (!std::isdigit(c)) {
+			return "";
+		}
+	}
+	return inString;
+	
+}
+/*
+void tMT(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
+	bot.thread_create("testT",channelId,1440,CHANNEL_PUBLIC_THREAD,true,1,[userOne,userTwo,&bot](const confirmation_callback_t& event) {
+			thread threadObj = std::get<thread>(event.value);
+			snowflake threadId = threadObj.id;
+			bot.thread_member_add(userOne,threadId);
+			bot.message_create(nmsg);
+	});
+}
+*/
+	
 
 void handleChallengeSubmit(std::string userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event) {
-	std::string msg = "Hello, the user @" + userId + " has challenged you to a game of " + gameName + " in " + guildName + " do you accept?";
+	/*
+	int timeControls[3] = {
+		(std::stoi(std::get<std::string>(event.components[0].components[0].value))),
+		(std::stoi(std::get<std::string>(event.components[1].components[0].value))),
+		(std::stoi(std::get<std::string>(event.components[2].components[0].value)))
+	};
+	*/
+	std::string timeControls[3] = { getTimePar(0,event),getTimePar(1,event),getTimePar(2,event) };
+	message msg;
+
+	if ((timeControls[0]=="")&&(timeControls[1]=="")&&(timeControls[2]=="")) {
+		msg = "Hello, the user " + userId + " has challenged you to a game of " + gameName + " with no time controls in " + guildName + ", do you accept?";
+	
+	} else {
+		msg = "Hello, the user " + userId + " has challenged you to a game of " + gameName + " with time controls of " + 
+		timeControls[0]+"|"+timeControls[1]+"|"+timeControls[2] + " in " + guildName + ", do you accept?";
+	}
+	msg.add_component(component().add_component(
+			component().set_label("Yes").
+			set_type(cot_button).
+			set_style(cos_success).
+			set_id(userId+std::to_string(challengeId)+"y")
+		).add_component(
+			component().set_label("No").
+			set_type(cot_button).
+			set_style(cos_danger).
+			set_id(userId+std::to_string(challengeId)+"n")
+		)
+	);
+
 	bot.direct_message_create(challengeId,msg);
+	event.reply(message("Message sent").set_flags(m_ephemeral));
+	buttonCmds.emplace(userId+std::to_string(challengeId)+"n", 
+	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
+		event.reply("Your request has been denied");
+		eventPar.reply("You choose to not accept");
+		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
+		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
+	});
+	buttonCmds.emplace(userId+std::to_string(challengeId)+"y", 
+	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
+		event.edit_response("Your request has been accepted");
+		eventPar.reply("You choose to accept");
+		//tMT(botPar, challengeId, challengeId, event.command.channel_id);
+		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
+		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
+	});
+	
 }
 
 void createCommandHandle() {
-	slashCmds.emplace("info",([](cluster &bot,const slashcommand_t &event) {
-		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
-	}));
+	slashCmds.emplace("info", botCmds::infoCmd );
 
 
-	slashCmds.emplace("challenge",([](cluster &bot,const slashcommand_t &event) {
-		command_interaction cmdData = std::get<command_interaction>(event.command.data);
-		interaction_modal_response gameForm(("userForm"+event.command.usr.username),"Enter to create challenge against oponent");
-		gameForm.add_component(
-			component().
-			set_label("Start time").
-			set_id("startT").
-			set_type(cot_text).
-			set_placeholder("0:0:0").
-			set_min_length(0).
-			set_max_length(10).
-			set_text_style(text_short).
-			set_required(true)
-		);
-		gameForm.add_row();
-		gameForm.add_component(
-			component().
-			set_label("Increment time").
-			set_id("addT").
-			set_type(cot_text).
-			set_placeholder("0:0:0").
-			set_min_length(0).
-			set_max_length(10).
-			set_text_style(text_short).
-			set_required(false)
-		);
-		gameForm.add_row();
-		gameForm.add_component(
-			component().
-			set_label("delay time").
-			set_id("delayT").
-			set_type(cot_text).
-			set_placeholder("0:0:0").
-			set_min_length(0).
-			set_max_length(10).
-			set_text_style(text_short).
-			set_required(false)
-		);
-		event.dialog(gameForm);
-		formCmds.emplace(("userForm"+event.command.usr.username),([&](cluster& botPar, const form_submit_t& eventPar) {
-			handleChallengeSubmit(event.command.usr.username,std::get<snowflake>(event.get_parameter("user")),std::get<std::string>(event.get_parameter("game")),"lazy place",botPar,eventPar);
-		}));
+	slashCmds.emplace("challenge",botCmds::challengeCmd);
 
 
 		
 
-	}));	
+	
 }
 
 int main(int argc, char *argv[]) {
@@ -86,6 +121,19 @@ int main(int argc, char *argv[]) {
 		(slashCmds.at(event.command.get_command_name()))(bot,event);
 	});
 	
+	bot.on_form_submit([&bot](const form_submit_t &event) {
+		(formCmds.at(event.custom_id))(bot,event);
+	});
+	bot.on_button_click([&bot](const button_click_t &event) {
+		try {
+			(buttonCmds.at(event.custom_id))(bot,event);
+		} catch (const std::out_of_range& e) {
+			event.reply("Already done");
+		} catch (const std::exception& e) {
+			event.reply("error in process");
+		}
+	
+	});
 
 
 	bot.on_ready([&bot](const ready_t & event) {

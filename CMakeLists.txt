@@ -8,8 +8,9 @@ include_directories(secrets;include)
 file(GLOB_RECURSE GAME_HEADERS "include/games/*.hpp")
 file(GLOB_RECURSE GAME_SOURCES "include/games/*.cpp")
 file(GLOB_RECURSE INTER_SOURCES "include/interactions/*.cpp")
-file(GLOB_RECURSE COMMAND_SOURCES "include/src/command/*.cpp")
+file(GLOB_RECURSE COMMAND_SOURCES "include/src/commands/*.cpp")
 file(GLOB_RECURSE DATA_SOURCES "include/database/*.cpp")
+file(GLOB_RECURSE FRONT_SOURCES "include/front/*.cpp")
 file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
@@ -26,6 +27,7 @@ add_executable(${PROJECT_NAME}
     ${GAME_SOURCES}
     ${COMMAND_SOURCES}
     ${INTER_SOURCES}
+    ${FRONT_SOURCES}
     # your other files...
 )
  
@@ -44,6 +46,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     libs/DPP/include
     include/games
     include/database
+    include/front
     include/interactions
     src/commands
 
