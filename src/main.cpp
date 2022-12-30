@@ -5,6 +5,7 @@
 #include <config.hpp>
 #include "gameLogic.hpp"
 #include "commandHandle.hpp"
+#include "frontend.hpp"
 #include <iostream>
 #include <functional>
 #include <typeindex>
@@ -30,16 +31,19 @@ std::string inString = std::get<std::string>(event.components[index].components[
 	return inString;
 	
 }
-/*
-void tMT(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
-	bot.thread_create("testT",channelId,1440,CHANNEL_PUBLIC_THREAD,true,1,[userOne,userTwo,&bot](const confirmation_callback_t& event) {
+
+snowflake makeThread(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
+	bot.thread_create("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1,[userOne,userTwo,&bot](const confirmation_callback_t& event) {
 			thread threadObj = std::get<thread>(event.value);
 			snowflake threadId = threadObj.id;
 			bot.thread_member_add(userOne,threadId);
-			bot.message_create(nmsg);
+			bot.thread_member_add(userTwo,threadId);
+			message startMessage(threadId,"Challenge accepted!");
+			bot.message_create(startMessage);
+			return threadId;
 	});
 }
-*/
+
 	
 
 void handleChallengeSubmit(std::string userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event) {
@@ -83,13 +87,15 @@ void handleChallengeSubmit(std::string userId, snowflake challengeId, std::strin
 		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
 	});
 	buttonCmds.emplace(userId+std::to_string(challengeId)+"y", 
-	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
+	[event,challengeId,userId,&bot,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
 		event.edit_response("Your request has been accepted");
 		eventPar.reply("You choose to accept");
 		//tMT(botPar, challengeId, challengeId, event.command.channel_id);
+		gameFront::baseThread<game::baseGameLogic> newThr(bot,snowflake(userId),challengeId,(makeThread(botPar, snowflake(userId), challengeId, event.command.channel_id)));
 		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
 		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
 	});
+
 	
 }
 

@@ -22,12 +22,13 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Create an executable
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    ${FRONT_SOURCES}
     ${SECRETS}
     ${DATA_SOURCES}
     ${GAME_SOURCES}
     ${COMMAND_SOURCES}
     ${INTER_SOURCES}
-    ${FRONT_SOURCES}
+    
     # your other files...
 )
  
