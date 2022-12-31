@@ -2,6 +2,7 @@
 #pragma once 
 
 #include <string>
+#include <vector>
 
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string colNames[] = {"1","2","3","4","5","6","7","8"};
@@ -13,7 +14,7 @@ class baseGameLogic {
 	public:
 		baseGameLogic();
 		std::string gameId;
-		int* boardItems;
+		std::vector<std::vector<int>> boardItems;
 		int* allowedMoves;
 		virtual bool getWinner() { return false; }
 		virtual bool makeMove(int inputOne, int inputTwo) { return false; }
@@ -30,7 +31,7 @@ class baseGameLogic {
 class chessLogic : public baseGameLogic {
 	public:
 		chessLogic();
-		int boardItems[8][8] = {
+		std::vector<std::vector<int>> boardItems = {
 			{4,2,3,5,6,3,2,4},
 			{1,1,1,1,1,1,1,1},
 			{0,0,0,0,0,0,0,0},
@@ -48,7 +49,7 @@ class ticTacToeLogic : public baseGameLogic {
 		ticTacToeLogic();
 		bool makeMove(int inputOne) override;
 		bool getWinner() override;
-		int boardItems[3][3] = {
+		std::vector<std::vector<int>> boardItems = {
 			{0,0,0},
 			{0,0,0},
 			{0,0,0}

@@ -16,19 +16,21 @@ class gameTimeType {
 template <typename T>
 class baseGameInt {
 	public:
+		std::vector<std::vector<int>> getBoard();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-		baseGameInt(gameTimeType control[3], std::function<void(bool,int)> onEnd); 
+		baseGameInt(gameTimeType* control[3], std::function<void(bool,int)> onEnd); 
+
 		std::vector<std::vector<std::string>> getAllMoves();
 		int makeMove(std::string inputOne, std::string inputTwo = "");
 
-		gameTimeType timeLeft[2];
-		gameTimeType timeControl[3];
-		std::vector<std::vector<int>> getBoard();
+		gameTimeType * timeLeft[2];
+		gameTimeType* timeControl[3];
+		
 	
 	private:
 		bool timeMove();
 		boost::chrono::system_clock::time_point lastMove;
-		T gameLogic;
+		T * gameLogic;
 		bool userMove = true;
 		std::function<void(bool,int)> endCase;
 };

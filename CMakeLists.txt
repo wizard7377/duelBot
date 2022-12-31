@@ -5,37 +5,38 @@ project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
 
 include_directories(secrets;include)
+file(GLOB_RECURSE FRONT_SOURCES "include/front/*.cpp")
 file(GLOB_RECURSE GAME_HEADERS "include/games/*.hpp")
 file(GLOB_RECURSE GAME_SOURCES "include/games/*.cpp")
 file(GLOB_RECURSE INTER_SOURCES "include/interactions/*.cpp")
 file(GLOB_RECURSE COMMAND_SOURCES "include/src/commands/*.cpp")
 file(GLOB_RECURSE DATA_SOURCES "include/database/*.cpp")
-file(GLOB_RECURSE FRONT_SOURCES "include/front/*.cpp")
 file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
 
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+
 
 # Create an executable
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    ${FRONT_SOURCES}
     ${SECRETS}
     ${DATA_SOURCES}
     ${GAME_SOURCES}
     ${COMMAND_SOURCES}
     ${INTER_SOURCES}
+    ${FRONT_SOURCES}
     
     # your other files...
 )
+
+
  
 # Linking libraries
 target_link_libraries(${PROJECT_NAME}
     dpp
-    ${Boost_LIBRARIES}
+
 
 
  

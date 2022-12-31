@@ -5,17 +5,22 @@
 #include <config.hpp>
 #include "gameLogic.hpp"
 #include "commandHandle.hpp"
+#include "baseGameInt.hpp"
 #include "frontend.hpp"
 #include <iostream>
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
+#include <cmath>
 using namespace dpp;
+
+//std::cout << std::endl << __LINE__ << std::endl;
+
 
 std::map<std::string,std::function<void(cluster&,const slashcommand_t&)>> slashCmds;
 std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
 std::map<std::string,std::function<void(cluster&,const button_click_t&)>> buttonCmds;
-
+std::map<snowflake*,snowflake*> userThreads;
 
 std::map<std::string,std::type_index> gameNameT = {
     {"tictactoe",typeid(game::ticTacToeLogic)}
@@ -32,8 +37,11 @@ std::string inString = std::get<std::string>(event.components[index].components[
 	
 }
 
+
 snowflake makeThread(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
-	bot.thread_create("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1,[userOne,userTwo,&bot](const confirmation_callback_t& event) {
+	snowflake threadId;
+	//note find a better solution later 
+	bot.thread_create("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1,[userOne,userTwo,threadId,&bot](const confirmation_callback_t& event) {
 			thread threadObj = std::get<thread>(event.value);
 			snowflake threadId = threadObj.id;
 			bot.thread_member_add(userOne,threadId);
@@ -42,7 +50,44 @@ snowflake makeThread(cluster& bot, snowflake userOne, snowflake userTwo, snowfla
 			bot.message_create(startMessage);
 			return threadId;
 	});
+	return threadId;
 }
+
+bool threadOnChallenge(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
+	bot.thread_create("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1,[userOne,userTwo,&bot,&userThreads](const confirmation_callback_t& event) {
+			thread threadObj = std::get<thread>(event.value);
+			snowflake * threadId = new snowflake(threadObj.id);
+			snowflake tempArr[2] = {std::min(userOne,userTwo),std::max(userOne,userTwo)};
+			userThreads.emplace(tempArr,threadId);
+	});
+	return true;
+}
+
+snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yesOrNo = true) {
+	snowflake tempArr[2] = {std::min(userOne,userTwo),std::max(userOne,userTwo)};
+	snowflake threadId = *(userThreads.at(tempArr));
+	bot.channel_get(threadId,[yesOrNo,threadId,userOne,userTwo,&bot](const confirmation_callback_t& event) {
+		channel threadObj = std::get<channel>(event.value);
+		if (yesOrNo) {
+			bot.thread_member_add(userOne,threadId);
+			bot.thread_member_add(userTwo,threadId);		
+			message startMessage(threadId,"Challenge accepted!");
+			bot.message_create(startMessage);
+		} else {
+			bot.channel_delete(threadId);
+		}
+	});
+	userThreads.erase(tempArr);
+	std::cout << threadId << std::endl;
+	return threadId;
+}
+		
+			
+			
+			
+
+
+
 
 	
 
@@ -79,10 +124,14 @@ void handleChallengeSubmit(std::string userId, snowflake challengeId, std::strin
 
 	bot.direct_message_create(challengeId,msg);
 	event.reply(message("Message sent").set_flags(m_ephemeral));
+
+	threadOnChallenge(bot, snowflake(userId), challengeId, event.command.channel_id);
+
 	buttonCmds.emplace(userId+std::to_string(challengeId)+"n", 
 	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
 		event.reply("Your request has been denied");
 		eventPar.reply("You choose to not accept");
+		threadDecide(botPar, snowflake(userId), challengeId,false);
 		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
 		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
 	});
@@ -91,7 +140,9 @@ void handleChallengeSubmit(std::string userId, snowflake challengeId, std::strin
 		event.edit_response("Your request has been accepted");
 		eventPar.reply("You choose to accept");
 		//tMT(botPar, challengeId, challengeId, event.command.channel_id);
-		gameFront::baseThread<game::baseGameLogic> newThr(bot,snowflake(userId),challengeId,(makeThread(botPar, snowflake(userId), challengeId, event.command.channel_id)));
+		//gameFront::baseThread<game::baseGameLogic> newThr(&bot,snowflake(userId),challengeId,(makeThread(botPar, snowflake(userId), challengeId, event.command.channel_id)),"tictactoe");
+
+		gameFront::baseThread<game::baseGameLogic> newThr(&bot,snowflake(userId),challengeId,(threadDecide(botPar, snowflake(userId), challengeId)),"tictactoe");
 		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
 		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
 	});
@@ -134,8 +185,10 @@ int main(int argc, char *argv[]) {
 		try {
 			(buttonCmds.at(event.custom_id))(bot,event);
 		} catch (const std::out_of_range& e) {
+			std::cout << "Button already clicked: " << e.what() << std::endl;
 			event.reply("Already done");
 		} catch (const std::exception& e) {
+			std::cout << "Button error: " << e.what() << std::endl;
 			event.reply("error in process");
 		}
 	
