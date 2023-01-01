@@ -48,6 +48,9 @@ class ticTacToeLogic : public baseGameLogic {
 	public:
 		ticTacToeLogic();
 		bool makeMove(int inputOne) override;
+		bool makeMove(int inputOne,int inputTwo) override { return false ; };
+		
+
 		bool getWinner() override;
 		std::vector<std::vector<int>> boardItems = {
 			{0,0,0},

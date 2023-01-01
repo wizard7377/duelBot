@@ -1,6 +1,10 @@
 #include "baseGameInt.hpp"
 #include <string>
 #include <functional>
+
+template class gameInt::baseGameInt<game::baseGameLogic>;
+template class gameInt::baseGameInt<game::ticTacToeLogic>;
+
 namespace gameInt {
 
 gameTimeType::gameTimeType(int seconds, int minutes, int hours) {
@@ -24,6 +28,8 @@ baseGameInt<T>::baseGameInt(gameTimeType* control[3], std::function<void(bool,in
 
 }
 
+/*
+
 template <>
 baseGameInt<game::baseGameLogic>::baseGameInt(gameTimeType* control[3], std::function<void(bool,int)> onEnd) {
 	for (int i = 0; i < 3; i++) {
@@ -39,26 +45,31 @@ baseGameInt<game::baseGameLogic>::baseGameInt(gameTimeType* control[3], std::fun
 
 }
 
+*/
+
 template <typename T>
 bool baseGameInt<T>::timeMove() {return false;}
 
 
 template <typename T> 
 std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
-	return this->gameLogic.boardItems;
+	return this->gameLogic->boardItems;
 }
 
+/*
 template <> 
 std::vector<std::vector<int>> baseGameInt<game::baseGameLogic>::getBoard() {
 	return this->gameLogic->boardItems;
 }
+*/
 
 template <typename T> 
 int baseGameInt<T>::makeMove(std::string inputOne, std::string inputTwo) {
 	bool isCase = false;
-	if (inputTwo == "") { isCase = (this->gameLogic.makeMove(inputOne)); } 
-	else { isCase = (this->gameLogic.makeMove(inputOne,inputTwo)); }
-	if (this->timeMove) {
+
+	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(std::stoi(inputOne))); } 
+	else { isCase = (this->gameLogic->makeMove(std::stoi(inputOne),std::stoi(inputTwo))); }
+	if (this->timeMove()) {
 		this->endCase(this->userMove,2);
 	}
 

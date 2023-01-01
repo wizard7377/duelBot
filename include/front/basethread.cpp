@@ -9,6 +9,10 @@ using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
 
+template class gameFront::baseThread<game::ticTacToeLogic>;
+template class gameFront::baseThread<game::baseGameLogic>;
+
+
 std::map<std::string,std::string> gameEmojiName = {
     {"tictactoe","001"}
 };
@@ -63,25 +67,25 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 
 }
 
+/*
 template <>
 baseThread<game::baseGameLogic>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName) {
-		    this->bot = botPar;
-		    this->userIdOne = userIdA;
-		    this->userIdTwo = userIdB;
-		    this->gameThread = threadId;
-		    this->emojiCode = gameEmojiName["tictactoe"];
+	this->bot = botPar;
+	this->userIdOne = userIdA;
+	this->userIdTwo = userIdB;
+	this->gameThread = threadId;
+	this->emojiCode = gameEmojiName["tictactoe"];
 
-		    //gameInt::gameTimeType gameTime[3] = { gameInt::gameTimeType(0,0,0),gameInt::gameTimeType(0,0,0),gameInt::gameTimeType(0,0,0) };
+	    //gameInt::gameTimeType gameTime[3] = { gameInt::gameTimeType(0,0,0),gameInt::gameTimeType(0,0,0),gameInt::gameTimeType(0,0,0) };
+	gameInt::gameTimeType* con[] = {new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0)};
+	this->gameInteraction = new gameInt::baseGameInt<game::baseGameLogic>(con,(std::bind(&baseThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
 
-            gameInt::gameTimeType* con[] = {new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0)};
-		    this->gameInteraction = new gameInt::baseGameInt<game::baseGameLogic>(con,(std::bind(&baseThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
-
-		    message msg((this->gameThread),(this->drawBoard(true,this->gameInteraction->getBoard())));
-		    this->bot->message_create(msg);
-		
+	message msg((this->gameThread),(this->drawBoard(true,this->gameInteraction->getBoard())));
+	this->bot->message_create(msg);
+	
 
 }
-
+*/
 
 
 

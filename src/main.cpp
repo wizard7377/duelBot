@@ -148,7 +148,7 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 		snowflake res = (threadDecide(botPar, userId.id, challengeId));
 
 		std::cout << "response two" << std::endl;
-		gameFront::baseThread<game::baseGameLogic> newThr(&bot,userId.id,challengeId,res,"tictactoe");
+		gameFront::baseThread<game::ticTacToeLogic> newThr(&bot,userId.id,challengeId,res,"tictactoe");
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});
