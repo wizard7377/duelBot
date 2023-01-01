@@ -6,7 +6,7 @@
 using namespace dpp;
 
 extern std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
-extern void handleChallengeSubmit(std::string userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event);
+extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event);
 
 namespace botCmds {
 
@@ -76,7 +76,7 @@ std::function<void(cluster&,const slashcommand_t&)> challengeCmd = ([&formCmds](
 		//std::cout << std::endl << event.get_parameter("game").index() << std::endl;
 		//std::cout << std::endl << std::get<std::string>(event.get_parameter("player")) << std::endl;
 		formCmds.emplace(("userForm"+event.command.usr.username),([event](cluster& botPar, const form_submit_t& eventPar) {	
-			handleChallengeSubmit(event.command.usr.get_mention(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,botPar,eventPar);
+			handleChallengeSubmit(event.command.get_issuing_user(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,botPar,eventPar);
 		}));
 
 

@@ -16,11 +16,12 @@ using namespace dpp;
 
 //std::cout << std::endl << __LINE__ << std::endl;
 
+using snowPair = std::pair<snowflake,snowflake>;
 
 std::map<std::string,std::function<void(cluster&,const slashcommand_t&)>> slashCmds;
 std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
 std::map<std::string,std::function<void(cluster&,const button_click_t&)>> buttonCmds;
-std::map<snowflake*,snowflake*> userThreads;
+std::map<snowPair,snowflake*> userThreads;
 
 std::map<std::string,std::type_index> gameNameT = {
     {"tictactoe",typeid(game::ticTacToeLogic)}
@@ -58,19 +59,22 @@ bool threadOnChallenge(cluster& bot, snowflake userOne, snowflake userTwo, snowf
 			thread threadObj = std::get<thread>(event.value);
 			snowflake * threadId = new snowflake(threadObj.id);
 			snowflake tempArr[2] = {std::min(userOne,userTwo),std::max(userOne,userTwo)};
-			userThreads.emplace(tempArr,threadId);
+			userThreads.emplace(std::make_pair(tempArr[0],tempArr[1]),threadId);
 	});
 	return true;
 }
 
 snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yesOrNo = true) {
-	snowflake tempArr[2] = {std::min(userOne,userTwo),std::max(userOne,userTwo)};
+	snowPair tempArr = std::make_pair(std::min(userOne,userTwo),std::max(userOne,userTwo));
+
+
+			
 	snowflake threadId = *(userThreads.at(tempArr));
 	bot.channel_get(threadId,[yesOrNo,threadId,userOne,userTwo,&bot](const confirmation_callback_t& event) {
 		channel threadObj = std::get<channel>(event.value);
 		if (yesOrNo) {
-			bot.thread_member_add(userOne,threadId);
-			bot.thread_member_add(userTwo,threadId);		
+			bot.thread_member_add(threadId,userOne);
+			bot.thread_member_add(threadId,userTwo);		
 			message startMessage(threadId,"Challenge accepted!");
 			bot.message_create(startMessage);
 		} else {
@@ -78,7 +82,6 @@ snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yes
 		}
 	});
 	userThreads.erase(tempArr);
-	std::cout << threadId << std::endl;
 	return threadId;
 }
 		
@@ -91,7 +94,7 @@ snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yes
 
 	
 
-void handleChallengeSubmit(std::string userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event) {
+void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event) {
 	/*
 	int timeControls[3] = {
 		(std::stoi(std::get<std::string>(event.components[0].components[0].value))),
@@ -103,48 +106,51 @@ void handleChallengeSubmit(std::string userId, snowflake challengeId, std::strin
 	message msg;
 
 	if ((timeControls[0]=="")&&(timeControls[1]=="")&&(timeControls[2]=="")) {
-		msg = "Hello, the user " + userId + " has challenged you to a game of " + gameName + " with no time controls in " + guildName + ", do you accept?";
+		msg = "Hello, the user " + userId.get_mention() + " has challenged you to a game of " + gameName + " with no time controls in " + guildName + ", do you accept?";
 	
 	} else {
-		msg = "Hello, the user " + userId + " has challenged you to a game of " + gameName + " with time controls of " + 
+		msg = "Hello, the user " + userId.get_mention() + " has challenged you to a game of " + gameName + " with time controls of " + 
 		timeControls[0]+"|"+timeControls[1]+"|"+timeControls[2] + " in " + guildName + ", do you accept?";
 	}
 	msg.add_component(component().add_component(
 			component().set_label("Yes").
 			set_type(cot_button).
 			set_style(cos_success).
-			set_id(userId+std::to_string(challengeId)+"y")
+			set_id(std::to_string(userId.id)+std::to_string(challengeId)+"y")
 		).add_component(
 			component().set_label("No").
 			set_type(cot_button).
 			set_style(cos_danger).
-			set_id(userId+std::to_string(challengeId)+"n")
+			set_id(std::to_string(userId.id)+std::to_string(challengeId)+"n")
 		)
 	);
 
 	bot.direct_message_create(challengeId,msg);
 	event.reply(message("Message sent").set_flags(m_ephemeral));
 
-	threadOnChallenge(bot, snowflake(userId), challengeId, event.command.channel_id);
+	threadOnChallenge(bot, userId.id, challengeId, event.command.channel_id);
 
-	buttonCmds.emplace(userId+std::to_string(challengeId)+"n", 
+	buttonCmds.emplace(std::to_string(userId.id)+std::to_string(challengeId)+"n", 
 	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
+		std::cout << "response one" << std::endl;
 		event.reply("Your request has been denied");
 		eventPar.reply("You choose to not accept");
-		threadDecide(botPar, snowflake(userId), challengeId,false);
-		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
-		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
+		threadDecide(botPar, userId.id, challengeId,false);
+		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
+		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});
-	buttonCmds.emplace(userId+std::to_string(challengeId)+"y", 
+	buttonCmds.emplace(std::to_string(userId.id)+std::to_string(challengeId)+"y", 
 	[event,challengeId,userId,&bot,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
 		event.edit_response("Your request has been accepted");
 		eventPar.reply("You choose to accept");
 		//tMT(botPar, challengeId, challengeId, event.command.channel_id);
 		//gameFront::baseThread<game::baseGameLogic> newThr(&bot,snowflake(userId),challengeId,(makeThread(botPar, snowflake(userId), challengeId, event.command.channel_id)),"tictactoe");
+		snowflake res = (threadDecide(botPar, userId.id, challengeId));
 
-		gameFront::baseThread<game::baseGameLogic> newThr(&bot,snowflake(userId),challengeId,(threadDecide(botPar, snowflake(userId), challengeId)),"tictactoe");
-		buttonCmds.erase(userId+std::to_string(challengeId)+"n");
-		buttonCmds.erase(userId+std::to_string(challengeId)+"y");	
+		std::cout << "response two" << std::endl;
+		gameFront::baseThread<game::baseGameLogic> newThr(&bot,userId.id,challengeId,res,"tictactoe");
+		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
+		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});
 
 	
@@ -182,7 +188,9 @@ int main(int argc, char *argv[]) {
 		(formCmds.at(event.custom_id))(bot,event);
 	});
 	bot.on_button_click([&bot](const button_click_t &event) {
+
 		try {
+			
 			(buttonCmds.at(event.custom_id))(bot,event);
 		} catch (const std::out_of_range& e) {
 			std::cout << "Button already clicked: " << e.what() << std::endl;
