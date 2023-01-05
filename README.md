@@ -1,6 +1,10 @@
 # duelBot
 A discord bot for two-player games such as chess, tic-tac-toe, and others
 
+Made using the D++ C++ (B++ A++?) library:
+https://dpp.dev
+https://github.com/brainboxdotcc/DPP
+
 Note: This is my first large thing so it is going to be scuffed
 
 Any advice is appreciated! 
