@@ -14,27 +14,27 @@ namespace game {
 		for (int i = 0; i < 3; i++) {
 
 		if (
-			((this->boardItems[i][0] == this->boardItems[i][1]) && (this->boardItems[i][1] == this->boardItems[i][2]) && (!(this->boardItems[i][2] == 0))) ||
-			((this->boardItems[0][i] == this->boardItems[1][i]) && (this->boardItems[1][i] == this->boardItems[2][i]) && (!(this->boardItems[2][i] == 0)))
+			(((*(this->boardItems))[i][0] == (*(this->boardItems))[i][1]) && ((*(this->boardItems))[i][1] == (*(this->boardItems))[i][2]) && (!((*(this->boardItems))[i][2] == 0))) ||
+			(((*(this->boardItems))[0][i] == (*(this->boardItems))[1][i]) && ((*(this->boardItems))[1][i] == (*(this->boardItems))[2][i]) && (!((*(this->boardItems))[2][i] == 0)))
 		) { return true; }
 
 		}
 
 		if (
-			((this->boardItems[0][0] == this->boardItems[1][1]) && (this->boardItems[1][1] == this->boardItems[2][2]) && (!(this->boardItems[2][2] == 0))) ||
-			((this->boardItems[0][2] == this->boardItems[1][1]) && (this->boardItems[1][1] == this->boardItems[2][0]) && (!(this->boardItems[2][0] == 0)))
+			(((*(this->boardItems))[0][0] == (*(this->boardItems))[1][1]) && ((*(this->boardItems))[1][1] == (*(this->boardItems))[2][2]) && (!((*(this->boardItems))[2][2] == 0))) ||
+			(((*(this->boardItems))[0][2] == (*(this->boardItems))[1][1]) && ((*(this->boardItems))[1][1] == (*(this->boardItems))[2][0]) && (!((*(this->boardItems))[2][0] == 0)))
 		) { return true; }
 
 		if (
-			(this->boardItems[0][0] != 0) &&
-			(this->boardItems[0][1] != 0) &&
-			(this->boardItems[0][2] != 0) &&
-			(this->boardItems[1][0] != 0) &&
-			(this->boardItems[1][1] != 0) &&
-			(this->boardItems[1][2] != 0) &&
-			(this->boardItems[2][0] != 0) &&
-			(this->boardItems[2][1] != 0) &&
-			(this->boardItems[2][2] != 0)
+			((*(this->boardItems))[0][0] != 0) &&
+			((*(this->boardItems))[0][1] != 0) &&
+			((*(this->boardItems))[0][2] != 0) &&
+			((*(this->boardItems))[1][0] != 0) &&
+			((*(this->boardItems))[1][1] != 0) &&
+			((*(this->boardItems))[1][2] != 0) &&
+			((*(this->boardItems))[2][0] != 0) &&
+			((*(this->boardItems))[2][1] != 0) &&
+			((*(this->boardItems))[2][2] != 0)
 		) { return true; }
 
 		return false;
@@ -44,6 +44,8 @@ namespace game {
 
 	ticTacToeLogic::ticTacToeLogic() {
 		std::string nameArray[9];
+		this->boardItems = new std::vector<std::vector<int>>{{0,0,0},{0,0,0},{0,0,0}};
+		
 		for (int i = 0; i < 3; i++) {
 			for (int ii = 0; ii < 3; ii++) {
 				nameArray[ii+(3*i)] = tttRowNames[i]+"-"+tttColNames[ii];
@@ -51,9 +53,12 @@ namespace game {
 		}
 		
 		this->moveNames = nameArray;
+		this->allowedMoves = new bool[9];
 		for (int i = 0; i < 9; i++) {
 			this->allowedMoves[i] = true;
 		}
+
+		
 	}
 	bool ticTacToeLogic::makeMove(int inputOne) {
 		auto getIntFromBool = [this]() {
@@ -64,7 +69,7 @@ namespace game {
 			}
 		};
 
-		this->boardItems[(inputOne%3)][int(std::floor(inputOne/3))] = getIntFromBool();
+		(*(this->boardItems))[(inputOne%3)][int(std::floor(inputOne/3))] = getIntFromBool();
 		this->allowedMoves[inputOne] = false;
 
 		this->userTurn = (!(this->userTurn));
@@ -76,15 +81,15 @@ namespace game {
 		for (int i = 0; i < 3; i++) {
 
 		if (
-			((this->boardItems[i][0] == this->boardItems[i][1]) && (this->boardItems[i][1] == this->boardItems[i][2]) && (this->boardItems[i][2] == 1)) ||
-			((this->boardItems[0][i] == this->boardItems[1][i]) && (this->boardItems[1][i] == this->boardItems[2][i]) && (this->boardItems[2][i] == 1))
+			(((*(this->boardItems))[i][0] == (*(this->boardItems))[i][1]) && ((*(this->boardItems))[i][1] == (*(this->boardItems))[i][2]) && ((*(this->boardItems))[i][2] == 1)) ||
+			(((*(this->boardItems))[0][i] == (*(this->boardItems))[1][i]) && ((*(this->boardItems))[1][i] == (*(this->boardItems))[2][i]) && ((*(this->boardItems))[2][i] == 1))
 		) { return true; }
 
 		}
 
 		if (
-			((this->boardItems[0][0] == this->boardItems[1][1]) && (this->boardItems[1][1] == this->boardItems[2][2]) && (this->boardItems[2][2] == 1)) ||
-			((this->boardItems[0][2] == this->boardItems[1][1]) && (this->boardItems[1][1] == this->boardItems[2][0]) && (this->boardItems[2][0] == 1))
+			(((*(this->boardItems))[0][0] == (*(this->boardItems))[1][1]) && ((*(this->boardItems))[1][1] == (*(this->boardItems))[2][2]) && ((*(this->boardItems))[2][2] == 1)) ||
+			(((*(this->boardItems))[0][2] == (*(this->boardItems))[1][1]) && ((*(this->boardItems))[1][1] == (*(this->boardItems))[2][0]) && ((*(this->boardItems))[2][0] == 1))
 		) { return true; }
 
 

@@ -14,7 +14,7 @@
 #include <cmath>
 using namespace dpp;
 
-//std::cout << std::endl << __LINE__ << std::endl;
+
 
 using snowPair = std::pair<snowflake,snowflake>;
 
@@ -39,20 +39,7 @@ std::string inString = std::get<std::string>(event.components[index].components[
 }
 
 
-snowflake makeThread(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
-	snowflake threadId;
-	//note find a better solution later 
-	bot.thread_create("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1,[userOne,userTwo,threadId,&bot](const confirmation_callback_t& event) {
-			thread threadObj = std::get<thread>(event.value);
-			snowflake threadId = threadObj.id;
-			bot.thread_member_add(userOne,threadId);
-			bot.thread_member_add(userTwo,threadId);
-			message startMessage(threadId,"Challenge accepted!");
-			bot.message_create(startMessage);
-			return threadId;
-	});
-	return threadId;
-}
+
 
 bool threadOnChallenge(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
 	bot.thread_create("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1,[userOne,userTwo,&bot,&userThreads](const confirmation_callback_t& event) {
@@ -95,13 +82,7 @@ snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yes
 	
 
 void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event) {
-	/*
-	int timeControls[3] = {
-		(std::stoi(std::get<std::string>(event.components[0].components[0].value))),
-		(std::stoi(std::get<std::string>(event.components[1].components[0].value))),
-		(std::stoi(std::get<std::string>(event.components[2].components[0].value)))
-	};
-	*/
+	
 	std::string timeControls[3] = { getTimePar(0,event),getTimePar(1,event),getTimePar(2,event) };
 	message msg;
 
@@ -132,7 +113,7 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 
 	buttonCmds.emplace(std::to_string(userId.id)+std::to_string(challengeId)+"n", 
 	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
-		std::cout << "response one" << std::endl;
+		//std::cout << "response one" << std::endl;
 		event.reply("Your request has been denied");
 		eventPar.reply("You choose to not accept");
 		threadDecide(botPar, userId.id, challengeId,false);
@@ -147,7 +128,7 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 		//gameFront::baseThread<game::baseGameLogic> newThr(&bot,snowflake(userId),challengeId,(makeThread(botPar, snowflake(userId), challengeId, event.command.channel_id)),"tictactoe");
 		snowflake res = (threadDecide(botPar, userId.id, challengeId));
 
-		std::cout << "response two" << std::endl;
+		//std::cout << "response two" << std::endl;
 		gameFront::baseThread<game::ticTacToeLogic> newThr(&bot,userId.id,challengeId,res,"tictactoe");
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	

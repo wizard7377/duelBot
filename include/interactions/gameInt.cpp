@@ -1,6 +1,7 @@
 #include "baseGameInt.hpp"
 #include <string>
 #include <functional>
+#include <iostream>
 
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
@@ -20,24 +21,8 @@ baseGameInt<T>::baseGameInt(gameTimeType* control[3], std::function<void(bool,in
 		this->timeControl[i] = control[i];
 	}
 	this->gameLogic = new T();
-	//this->lastMove = boost::chrono::system_clock::now();
-	this->timeLeft[0]=control[0];
-	this->timeLeft[1]=control[0];
-
-	this->endCase = onEnd;
-
-}
-
-/*
-
-template <>
-baseGameInt<game::baseGameLogic>::baseGameInt(gameTimeType* control[3], std::function<void(bool,int)> onEnd) {
-	for (int i = 0; i < 3; i++) {
-		this->timeControl[i] = control[i];
-	}
-	this->gameLogic = new game::baseGameLogic();
-	//this->lastMove = boost::chrono::system_clock::now();
 	
+	//this->lastMove = boost::chrono::system_clock::now();
 	this->timeLeft[0]=control[0];
 	this->timeLeft[1]=control[0];
 
@@ -45,7 +30,6 @@ baseGameInt<game::baseGameLogic>::baseGameInt(gameTimeType* control[3], std::fun
 
 }
 
-*/
 
 template <typename T>
 bool baseGameInt<T>::timeMove() {return false;}
@@ -53,15 +37,22 @@ bool baseGameInt<T>::timeMove() {return false;}
 
 template <typename T> 
 std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
-	return this->gameLogic->boardItems;
+	std::cout << "test" << std::endl;
+	
+	
+	
+	for (auto a : *(this->gameLogic->boardItems)) {
+		
+		for (int b : a) {
+			std::cout << std::to_string(b) << std::endl;
+		}
+	}
+	
+	return *(this->gameLogic->boardItems);
 }
 
-/*
-template <> 
-std::vector<std::vector<int>> baseGameInt<game::baseGameLogic>::getBoard() {
-	return this->gameLogic->boardItems;
-}
-*/
+
+
 
 template <typename T> 
 int baseGameInt<T>::makeMove(std::string inputOne, std::string inputTwo) {

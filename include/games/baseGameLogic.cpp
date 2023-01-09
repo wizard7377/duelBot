@@ -19,7 +19,7 @@ int baseGameLogic::convertStringToInt(std::string userMove) {
 		//if (x == userMove) { return i; };
 		//Not working as of last check (check again)
 		
-		std::cout << x << std::endl;
+		//std::cout << x << std::endl;
 		i++;
 
 	}

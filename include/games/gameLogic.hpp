@@ -14,8 +14,8 @@ class baseGameLogic {
 	public:
 		baseGameLogic();
 		std::string gameId;
-		std::vector<std::vector<int>> boardItems;
-		int* allowedMoves;
+		std::vector<std::vector<int>> * boardItems;
+		bool* allowedMoves;
 		virtual bool getWinner() { return false; }
 		virtual bool makeMove(int inputOne, int inputTwo) { return false; }
 		virtual bool makeMove(int inputOne) { return false; }
@@ -31,7 +31,9 @@ class baseGameLogic {
 class chessLogic : public baseGameLogic {
 	public:
 		chessLogic();
-		std::vector<std::vector<int>> boardItems = {
+		//std::vector<std::vector<int>> * boardItems;
+		/* 
+		= {
 			{4,2,3,5,6,3,2,4},
 			{1,1,1,1,1,1,1,1},
 			{0,0,0,0,0,0,0,0},
@@ -41,6 +43,7 @@ class chessLogic : public baseGameLogic {
 			{7,7,7,7,7,7,7,7},
 			{10,8,9,11,12,9,8,10}
 		};
+		*/
 
 };
 
@@ -52,11 +55,14 @@ class ticTacToeLogic : public baseGameLogic {
 		
 
 		bool getWinner() override;
-		std::vector<std::vector<int>> boardItems = {
-			{0,0,0},
-			{0,0,0},
-			{0,0,0}
+		//std::vector<std::vector<int>> * boardItems;
+		/*
+		 = {
+    		{0, 0, 0},
+    		{0, 0, 0},
+    		{0, 0, 0}
 		};
+		*/
 	private:
 		bool checkForEnd();
 		
