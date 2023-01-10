@@ -17,6 +17,10 @@ std::map<std::string,std::string> gameEmojiName = {
     {"tictactoe","001"}
 };
 
+std::map<std::string,std::vector<std::string>> gamesToEmojis = {
+	{"001",{"1057746629899341875","1057746631287640204","1057746632281694290"}}
+};
+
 std::string addChar(std::string inString) {
 	while (inString.length() < 3) {
 		inString = "0"+inString;
@@ -24,25 +28,25 @@ std::string addChar(std::string inString) {
 	return inString;
 }
 
-std::map<std::string,std::string> charToEmote = {
-	{"a",":regional_indicator_a:"},
-	{"b",":regional_indicator_b:"},
-	{"c",":regional_indicator_c:"},
-	{"d",":regional_indicator_d:"},
-	{"e",":regional_indicator_e:"},
-	{"f",":regional_indicator_f:"},
-	{"g",":regional_indicator_g:"},
-	{"h",":regional_indicator_h:"},
-	{"i",":regional_indicator_i:"},
-	{"1",":one:"},
-	{"2",":two:"},
-	{"3",":three:"},
-	{"4",":four:"},
-	{"5",":five:"},
-	{"6",":six:"},
-	{"7",":seven:"},
-	{"8",":eight:"},
-	{"9",":nine:"}
+std::map<char,std::string> charToEmote = {
+	{'a',":regional_indicator_a:"},
+	{'b',":regional_indicator_b:"},
+	{'c',":regional_indicator_c:"},
+	{'d',":regional_indicator_d:"},
+	{'e',":regional_indicator_e:"},
+	{'f',":regional_indicator_f:"},
+	{'g',":regional_indicator_g:"},
+	{'h',":regional_indicator_h:"},
+	{'i',":regional_indicator_i:"},
+	{'1',":one:"},
+	{'2',":two:"},
+	{'3',":three:"},
+	{'4',":four:"},
+	{'5',":five:"},
+	{'6',":six:"},
+	{'7',":seven:"},
+	{'8',":eight:"},
+	{'9',":nine:"}
 };
 
 namespace gameFront {
@@ -79,18 +83,20 @@ std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>
 	
 	char i = 'a';
 	retString = retString + ":white_large_square:";
-	if (boardState.size() != 0) { if (boardState[0].size() != 0) {
-	    for (auto c : boardState[0]) {
-		    retString = retString + charToEmote[std::to_string(i)];
-		    i++;
-	    }
-	}}
-	i = 1;
+	
+	for (auto c : boardState) {
+	    retString = retString + charToEmote[i];
+		//std::cout << std::to_string((int)(i)) << std::endl;
+		i++;
+	}
+	retString = retString + '\n';
+	
+	i = '1';
 
 	for (std::vector<int> a : boardState) {
-		retString = retString + charToEmote[std::to_string(i)];
+		retString = retString + charToEmote[i];
 		for (int b : a) {
-			retString = retString + ":"+(this->emojiCode)+"000"+addChar(std::to_string(b))+":";
+			retString = retString + "<:" + (this->emojiCode)+"000"+addChar(std::to_string(b))+":"+gamesToEmojis[this->emojiCode][b] + ">";
 		
 		}
 		i++;
