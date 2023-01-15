@@ -16,4 +16,5 @@ _deps
 duelBot
 include/**/*.json
 resources/**
+output/**
 
