@@ -11,6 +11,7 @@
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
+#include "drawgame.hpp"
 #include <cmath>
 using namespace dpp;
 
@@ -169,7 +170,26 @@ void createCommandHandle() {
 	
 }
 
+enum checks {
+	EMPTY,
+	WHITEPAWN,
+	WHITEKING,
+	BLACKPAWN,
+	BLACKKING,
+};
+
 int main(int argc, char *argv[]) {
+	std::vector<std::vector<int>> testVec = {
+			{EMPTY,WHITEPAWN,EMPTY,WHITEPAWN,EMPTY,WHITEPAWN,EMPTY,WHITEPAWN},
+			{WHITEPAWN,EMPTY,WHITEPAWN,EMPTY,WHITEPAWN,EMPTY,WHITEPAWN,EMPTY},
+			{EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+			{EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+			{EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+			{EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY},
+			{EMPTY,BLACKPAWN,EMPTY,BLACKPAWN,EMPTY,BLACKPAWN,EMPTY,BLACKPAWN},
+			{BLACKPAWN,EMPTY,BLACKPAWN,EMPTY,BLACKPAWN,EMPTY,BLACKPAWN,EMPTY}
+		};
+	dg::basicDrawGame newDraw(testVec,"checkers");
 
 	createCommandHandle();
 	

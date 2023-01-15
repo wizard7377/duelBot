@@ -54,7 +54,7 @@ target_link_libraries(${PROJECT_NAME}
 )
  
 # Specify includes
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PUBLIC
     libs/DPP/include
     include/games
     include/database
