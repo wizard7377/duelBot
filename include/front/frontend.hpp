@@ -50,15 +50,18 @@ std::map<std::string,std::string> charToEmote = {
 namespace gameFront {
 
 
+class wrapThread {};
+
+
 
 	
 template <typename T>
-class baseThread {
+class baseThread : public wrapThread {
 	public:
 	    
 	    baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName);
 	    static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-	    std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
+		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
 	    std::function<void(message msg)> moveCall;
 	    void endCall(bool userWin, int winType) {
 			std::cout << "game has ended :(" << std::endl;
@@ -69,6 +72,7 @@ class baseThread {
 	    snowflake userIdOne;
 	    snowflake userIdTwo;
 	    snowflake gameThread;
+		channel gameThreadObj;
 	    std::string emojiCode;
 	    gameInt::baseGameInt<T> * gameInteraction;
 

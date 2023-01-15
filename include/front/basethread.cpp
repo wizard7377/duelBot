@@ -1,25 +1,46 @@
 #include "frontend.hpp"
 #include <functional>
 #include <map>
+#include <iterator>
 #include <string>
 #include "baseGameInt.hpp"
 #include "gameLogic.hpp"
 #include <dpp/dpp.h>
+#include <algorithm>
 using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
 
 template class gameFront::baseThread<game::ticTacToeLogic>;
+template class gameFront::baseThread<game::checkersLogic>;
 template class gameFront::baseThread<game::baseGameLogic>;
 
 
 std::map<std::string,std::string> gameEmojiName = {
-    {"tictactoe","001"}
+    {"tictactoe","000"},
+	{"checkers","001"}
 };
 
-std::map<std::string,std::vector<std::string>> gamesToEmojis = {
-	{"001",{"1057746629899341875","1057746631287640204","1057746632281694290"}}
+
+
+
+std::map<std::string,std::map<std::string,std::vector<std::string>>> gamesToEmojis = 
+{
+	{"000",{{"000",{"1057746629899341875","1057746631287640204","1057746632281694290"}}}},
+
+	{"001",
+	{
+		{"000",
+			{"1062886057563127839","1062886058473296022","1062886059677065267","1062886060566249472","1062886061551919104"}
+		},
+
+		{"001",
+			{"1062886062378205295"}
+		}
+	
+	}}
 };
+
 
 std::string addChar(std::string inString) {
 	while (inString.length() < 3) {
@@ -57,7 +78,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->userIdOne = userIdA;
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;
-	this->emojiCode = gameEmojiName["tictactoe"];
+	this->emojiCode = gameEmojiName[gameName];
 
 
 
@@ -67,8 +88,14 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 
 	
 
+
 	message msg((this->gameThread),(this->drawBoard(true,this->gameInteraction->getBoard())));
+	
+		
 	this->bot->message_create(msg);
+	
+	
+	
 
 
 }
@@ -79,10 +106,11 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 template <typename T>
 std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>> boardState) {
 		
-	std::string retString = "";
+	
 	
 	char i = 'a';
-	retString = retString + ":white_large_square:";
+	std::string retString = ":white_large_square:";
+
 	
 	for (auto c : boardState) {
 	    retString = retString + charToEmote[i];
@@ -91,18 +119,21 @@ std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>
 	}
 	retString = retString + '\n';
 	
+
+	
 	i = '1';
 
-	for (std::vector<int> a : boardState) {
-		retString = retString + charToEmote[i];
+	for (auto a : boardState) {
+		retString = retString+ charToEmote[i];
 		for (int b : a) {
-			retString = retString + "<:" + (this->emojiCode)+"000"+addChar(std::to_string(b))+":"+gamesToEmojis[this->emojiCode][b] + ">";
+			retString= retString+ "<:" + (this->emojiCode)+"000"+addChar(std::to_string(b))+":"+gamesToEmojis[this->emojiCode]["000"][b] + ">";
 		
 		}
 		i++;
-		retString = retString + "\n";
+		retString = retString + '\n';
 	}
-	std::cout << retString << std::endl;
+	
+	std::cout << retString;
 	return retString;
 
 		

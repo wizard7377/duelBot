@@ -22,10 +22,9 @@ std::map<std::string,std::function<void(cluster&,const slashcommand_t&)>> slashC
 std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
 std::map<std::string,std::function<void(cluster&,const button_click_t&)>> buttonCmds;
 std::map<snowPair,snowflake*> userThreads;
+std::map<snowflake,gameFront::wrapThread*> gameObjs;
 
-std::map<std::string,std::type_index> gameNameT = {
-    {"tictactoe",typeid(game::ticTacToeLogic)}
-};
+
 std::string getTimePar(int index,const form_submit_t& event) {
 std::string inString = std::get<std::string>(event.components[index].components[0].value);
 
@@ -71,6 +70,26 @@ snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yes
 	userThreads.erase(tempArr);
 	return threadId;
 }
+
+std::map<std::string,std::function<gameFront::wrapThread*(cluster &bot,user userId,snowflake challengeId,snowflake res)>> typeCmds = {
+	{
+	"tictactoe",
+	([](cluster &bot,user userId,snowflake challengeId,snowflake res) {
+		
+		return new gameFront::baseThread<game::ticTacToeLogic>(&bot,userId.id,challengeId,res,"tictactoe");
+		
+	})
+	},
+	{
+	"checkers",
+	([](cluster &bot,user userId,snowflake challengeId,snowflake res) {
+		
+		return new gameFront::baseThread<game::checkersLogic>(&bot,userId.id,challengeId,res,"checkers");
+		
+	})
+	}
+
+};
 		
 			
 			
@@ -121,7 +140,7 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});
 	buttonCmds.emplace(std::to_string(userId.id)+std::to_string(challengeId)+"y", 
-	[event,challengeId,userId,&bot,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
+	[gameName,event,challengeId,userId,&bot,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
 		event.edit_response("Your request has been accepted");
 		eventPar.reply("You choose to accept");
 		//tMT(botPar, challengeId, challengeId, event.command.channel_id);
@@ -129,7 +148,8 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 		snowflake res = (threadDecide(botPar, userId.id, challengeId));
 
 		//std::cout << "response two" << std::endl;
-		gameFront::baseThread<game::ticTacToeLogic> newThr(&bot,userId.id,challengeId,res,"tictactoe");
+		
+		((typeCmds[gameName])(bot,userId,challengeId,res));
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
 		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});

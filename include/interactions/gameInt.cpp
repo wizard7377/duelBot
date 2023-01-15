@@ -5,6 +5,7 @@
 
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
+template class gameInt::baseGameInt<game::checkersLogic>;
 
 namespace gameInt {
 

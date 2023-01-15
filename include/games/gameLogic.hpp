@@ -66,15 +66,27 @@ class ticTacToeLogic : public baseGameLogic {
 	private:
 		bool checkForEnd();
 		
+};
 
-
-
+class checkersLogic : public baseGameLogic {
+	public:
+		checkersLogic();
+		bool makeMove(int inputOne) override { return false; };
+		bool makeMove(int inputOne,int inputTwo) override;
 		
 
-
-
-
-
+		bool getWinner() override;
+		//std::vector<std::vector<int>> boardItems;
+		/*
+		 = {
+    		{0, 0, 0},
+    		{0, 0, 0},
+    		{0, 0, 0}
+		};
+		*/
+	private:
+		bool checkForEnd();
+		
 };
 
 }

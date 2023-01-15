@@ -20,7 +20,8 @@ dpp::slashcommand challengeDef() {
 	return dpp::slashcommand().set_name("challenge").set_description("challenge user to a game")
 	.add_option(
 		dpp::command_option(dpp::co_string, "game", "game you wish to play", true).
-			add_choice(dpp::command_option_choice("tictactoe", std::string("tictactoe")))
+			add_choice(dpp::command_option_choice("tictactoe", std::string("tictactoe"))).
+			add_choice(dpp::command_option_choice("checkers", std::string("checkers")))
 	)
     .add_option(
 		dpp::command_option(dpp::co_user, "player", "player you will be facting in your epic duel",true)
