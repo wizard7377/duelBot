@@ -15,4 +15,5 @@ _deps
 **.sql
 duelBot
 include/**/*.json
+resources/**
 
