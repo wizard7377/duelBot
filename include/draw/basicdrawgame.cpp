@@ -11,7 +11,7 @@
 #define IMG_SIZE 960
 #endif
 
-
+static unsigned long long int currentImgBasic = 1;
 
 using namespace cv;
 namespace fs = std::filesystem;
@@ -50,10 +50,16 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 		}
 	}
 	
-	imshow("display window",*currentImg);
-	waitKey(0);
-	
 	return currentImg;
+}
+
+std::string basicDrawGame::getBoard(std::vector<std::vector<int>> newBoard) {
+	Mat * retMat = this->changeBoard(newBoard);
+	std::string retPath = getFullPath({"output","basic",((std::to_string(currentImgBasic))+".png")});
+	currentImgBasic++;
+	imwrite(retPath,*retMat);
+	delete retMat;
+	return retPath;
 }
 
 
@@ -61,7 +67,7 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 
 
 
-basicDrawGame::basicDrawGame(std::vector<std::vector<int>> userItems,std::string boardName,std::string conFile) {
+basicDrawGame::basicDrawGame(std::string boardName,std::string conFile) {
 	
 	std::ifstream jFile(getFullPath({"config",conFile}));
 
@@ -84,7 +90,7 @@ basicDrawGame::basicDrawGame(std::vector<std::vector<int>> userItems,std::string
 	this->initBoardItems((gameconfig["imgpaths"]).get<std::vector<std::vector<std::string>>>());
 	//std::cout << std::to_string(this->imgs.size()) << std::endl;
 	//this->boardItems = std::vector<std::vector<int>>(userItems.size(),std::vector<int>(userItems[0].size(),0));
-	this->changeBoard(userItems);
+	//this->changeBoard(userItems);
 	//this->boardItems = userItems;
 
 	

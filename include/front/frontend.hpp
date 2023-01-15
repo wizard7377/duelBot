@@ -9,6 +9,7 @@
 #include <map>
 #include <iostream>
 #include <functional>
+#include "drawgame.hpp"
 
 using namespace dpp;
 
@@ -74,6 +75,7 @@ class baseThread : public wrapThread {
 	    snowflake gameThread;
 		channel gameThreadObj;
 	    std::string emojiCode;
+		dg::baseDrawGame * gameDraw;
 	    gameInt::baseGameInt<T> * gameInteraction;
 
 

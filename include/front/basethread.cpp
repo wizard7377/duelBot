@@ -7,6 +7,7 @@
 #include "gameLogic.hpp"
 #include <dpp/dpp.h>
 #include <algorithm>
+#include "drawgame.hpp"
 using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
@@ -79,6 +80,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;
 	this->emojiCode = gameEmojiName[gameName];
+	this->gameDraw = new dg::basicDrawGame(gameName);
 
 
 
@@ -87,12 +89,21 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	//std::cout << this->gameThread << std::endl;
 
 	
+	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
 
-
-	message msg((this->gameThread),(this->drawBoard(true,this->gameInteraction->getBoard())));
 	
-		
+	//do more config stuff later
+	//+ stuff with sync
+	embed mainEmb = embed().
+		set_color(colors::blue_aquamarine).
+		set_title("Move: of the game between: " + bot->user_get_sync(userIdA).get_mention() + " and " + bot->user_get_sync(userIdA).get_mention()).
+		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
+		set_image("attachment://game.png");
+
+	message msg((this->gameThread),mainEmb);
+	msg.add_file("game.png",utility::read_file(imgPath));	
 	this->bot->message_create(msg);
+	std::filesystem::remove(imgPath);
 	
 	
 	

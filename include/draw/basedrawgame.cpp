@@ -11,6 +11,8 @@ using namespace cv;
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
+
+
 std::string getFullPath(std::string filePath) {
 	return (fs::current_path() /= filePath);
 }

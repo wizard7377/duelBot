@@ -12,6 +12,7 @@ using json = nlohmann::json;
 namespace dg {
 class baseDrawGame {
 	public:
+		virtual std::string getBoard(std::vector<std::vector<int>> newBoard) {return "";}
 
 		
 		//baseDrawGame(std::vector<std::vector<int>> userItems,std::string boardName,std::string conFile = "baseconfig.json");
@@ -24,8 +25,9 @@ class baseDrawGame {
 
 class basicDrawGame : public baseDrawGame {
 	public:
-		basicDrawGame(std::vector<std::vector<int>> userItems,std::string boardName,std::string conFile = "basegameconfig.json");
+		basicDrawGame(std::string boardName,std::string conFile = "basegameconfig.json");
 		Mat * changeBoard(std::vector<std::vector<int>> newBoard);
+		std::string getBoard(std::vector<std::vector<int>> newBoard);
 };
 
 class advDrawGame : public baseDrawGame {
