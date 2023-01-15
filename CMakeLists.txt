@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
 #Add directories 
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(json)
+find_package( OpenCV REQUIRED )
 
-
-include_directories(secrets;include)
+include_directories(secrets;include;${OpenCV_INCLUDE_DIRS})
 file(GLOB_RECURSE FRONT_SOURCES "include/front/*.cpp")
 file(GLOB_RECURSE GAME_HEADERS "include/games/*.hpp")
 file(GLOB_RECURSE GAME_SOURCES "include/games/*.cpp")
@@ -17,9 +20,8 @@ add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
 #set(CMAKE_CXX_FLAGS "-O0")
 
-#include(FetchContent)
-#FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
-#FetchContent_MakeAvailable(json)
+
+
 
 # Create an executable
 add_executable(${PROJECT_NAME}
@@ -39,6 +41,8 @@ add_executable(${PROJECT_NAME}
 # Linking libraries
 target_link_libraries(${PROJECT_NAME}
     dpp
+    ${OpenCV_LIBS}
+    nlohmann_json::nlohmann_json
 
 
 
