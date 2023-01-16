@@ -96,7 +96,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	//+ stuff with sync
 	embed mainEmb = embed().
 		set_color(colors::blue_aquamarine).
-		set_title("Move: of the game between: " + bot->user_get_sync(userIdA).get_mention() + " and " + bot->user_get_sync(userIdA).get_mention()).
+		set_title("Move: of the game between: " + bot->user_get_sync(userIdA).username + " and " + bot->user_get_sync(userIdA).username).
 		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
 		set_image("attachment://game.png");
 
