@@ -11,6 +11,7 @@
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
+#include "drawgame.hpp"
 #include <cmath>
 using namespace dpp;
 
@@ -169,7 +170,10 @@ void createCommandHandle() {
 	
 }
 
+
+
 int main(int argc, char *argv[]) {
+	
 
 	createCommandHandle();
 	

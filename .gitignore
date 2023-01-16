@@ -14,4 +14,7 @@ libs/**
 _deps
 **.sql
 duelBot
+include/**/*.json
+resources/**
+output/**
 
