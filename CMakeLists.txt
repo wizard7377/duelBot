@@ -50,6 +50,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     include/draw
     include/utils
     include/interactions
+    include/eventhandle
     src/commands
     
 

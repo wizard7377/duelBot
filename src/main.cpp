@@ -11,8 +11,10 @@
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
+#include "eventhandle.hpp"
 #include "drawgame.hpp"
 #include <cmath>
+#include <chrono>  
 using namespace dpp;
 
 
@@ -23,12 +25,9 @@ using snowPair = std::pair<snowflake,snowflake>;
  * All the command handlers
  */
 
+evt::eventhandle * handler;
 
 
-std::map<std::string,std::function<void(cluster&,const slashcommand_t&)>> slashCmds;
-std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
-std::map<std::string,std::function<void(cluster&,const button_click_t&)>> buttonCmds;
-std::map<std::string,std::function<void(cluster&,const select_click_t&)>> selectCmds;
 
 
 
@@ -62,6 +61,7 @@ bool threadOnChallenge(cluster& bot, snowflake userOne, snowflake userTwo, snowf
 }
 
 snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yesOrNo = true) {
+	
 	snowPair tempArr = std::make_pair(std::min(userOne,userTwo),std::max(userOne,userTwo));
 
 
@@ -82,20 +82,20 @@ snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yes
 	return threadId;
 }
 
-std::map<std::string,std::function<gameFront::wrapThread*(cluster &bot,user userId,snowflake challengeId,snowflake res)>> typeCmds = {
+std::map<std::string,std::function<gameFront::wrapThread*(cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler)>> typeCmds = {
 	{
 	"tictactoe",
-	([](cluster &bot,user userId,snowflake challengeId,snowflake res) {
+	([](cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler) {
 		
-		return new gameFront::baseThread<game::ticTacToeLogic>(&bot,userId.id,challengeId,res,"tictactoe");
+		return new gameFront::baseThread<game::ticTacToeLogic>(&bot,userId.id,challengeId,res,"tictactoe",handler);
 		
 	})
 	},
 	{
 	"checkers",
-	([](cluster &bot,user userId,snowflake challengeId,snowflake res) {
+	([](cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler) {
 		
-		return new gameFront::baseThread<game::checkersLogic>(&bot,userId.id,challengeId,res,"checkers");
+		return new gameFront::baseThread<game::checkersLogic>(&bot,userId.id,challengeId,res,"checkers",handler);
 		
 	})
 	}
@@ -141,38 +141,39 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 
 	threadOnChallenge(bot, userId.id, challengeId, event.command.channel_id);
 
-	buttonCmds.emplace(std::to_string(userId.id)+std::to_string(challengeId)+"n", 
-	[event,challengeId,userId,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
-		//std::cout << "response one" << std::endl;
+	handler->addButtonCmd(std::to_string(userId.id)+std::to_string(challengeId)+"n", 
+	[event,challengeId,userId,&bot](const button_click_t& eventPar) {
+		std::cout << "response one" << std::endl;
 		event.reply("Your request has been denied");
 		eventPar.reply("You choose to not accept");
-		threadDecide(botPar, userId.id, challengeId,false);
-		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
-		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
+		threadDecide(bot, userId.id, challengeId,false);
+		//buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
+		//buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});
-	buttonCmds.emplace(std::to_string(userId.id)+std::to_string(challengeId)+"y", 
-	[gameName,event,challengeId,userId,&bot,&buttonCmds](cluster& botPar,const button_click_t& eventPar) {
+	handler->addButtonCmd(std::to_string(userId.id)+std::to_string(challengeId)+"y", 
+	[gameName,event,challengeId,userId,&bot](const button_click_t& eventPar) {
+		std::cout << "response two" << std::endl;
 		event.edit_response("Your request has been accepted");
 		eventPar.reply("You choose to accept");
 		//tMT(botPar, challengeId, challengeId, event.command.channel_id);
 		//gameFront::baseThread<game::baseGameLogic> newThr(&bot,snowflake(userId),challengeId,(makeThread(botPar, snowflake(userId), challengeId, event.command.channel_id)),"tictactoe");
-		snowflake res = (threadDecide(botPar, userId.id, challengeId));
+		snowflake res = (threadDecide(bot, userId.id, challengeId));
 
-		//std::cout << "response two" << std::endl;
 		
-		((typeCmds[gameName])(bot,userId,challengeId,res));
-		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
-		buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
+		
+		((typeCmds[gameName])(bot,userId,challengeId,res,handler));
+		//buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"n");
+		//buttonCmds.erase(std::to_string(userId.id)+std::to_string(challengeId)+"y");	
 	});
 
 	
 }
 
 void createCommandHandle() {
-	slashCmds.emplace("info", botCmds::infoCmd );
+	handler->addSlashCmd("info", botCmds::infoCmd );
 
 
-	slashCmds.emplace("challenge",botCmds::challengeCmd);
+	handler->addSlashCmd("challenge",botCmds::challengeCmd);
 
 
 		
@@ -183,11 +184,19 @@ void createCommandHandle() {
 
 
 int main(int argc, char *argv[]) {
-	
+
+	cluster bot(BOT_TOKEN);
+
+	try {
+		handler = new evt::eventhandle(&bot);
+	} catch (const std::exception& e) {
+		std::cout << e.what() << std::endl;
+		exit(0);
+	}
 
 	createCommandHandle();
 	
-	cluster bot(BOT_TOKEN);
+	
 	bot.on_log(utility::cout_logger());
 
 	if (argc != 0) {
@@ -195,31 +204,12 @@ int main(int argc, char *argv[]) {
 			
 		}
 	}
-	bot.on_slashcommand.attach([&bot](const slashcommand_t &event) {
-		(slashCmds.at(event.command.get_command_name()))(bot,event);
-	});
+	
+	
 
 	
-	bot.on_form_submit.attach([&bot](const form_submit_t &event) {
-		(formCmds.at(event.custom_id))(bot,event);
-	});
-	bot.on_button_click.attach([&bot](const button_click_t &event) {
-
-		try {
-			
-			(buttonCmds.at(event.custom_id))(bot,event);
-		} catch (const std::exception& e) {
-			std::cout << "Button error: " << e.what() << std::endl;
-		}
 	
-	});
-	bot.on_select_click.attach([&bot](const select_click_t & event) {
-		try { 
-			(selectCmds.at(event.custom_id))(bot,event); 
-		} catch (const std::exception& e) {
-			std::cout << "Select error: " << e.what() << std::endl;
-		}
-	});
+	
 
 	bot.on_ready([&bot](const ready_t & event) {
         if (run_once<struct register_bot_commands>()) {
@@ -229,8 +219,10 @@ int main(int argc, char *argv[]) {
 	}
     });
 	
-
+	
+	
 	bot.start(st_wait);
+		
 
 	
 

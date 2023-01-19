@@ -2,13 +2,18 @@
 #include <dpp/dpp.h>
 #include <string>
 #include <map>
+#include "eventhandle.hpp"
 
 using namespace dpp;
 
-extern std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
+
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event);
+extern evt::eventhandle * handler;
+
+
 
 namespace botCmds {
+
 
 dpp::slashcommand infoDef() {
 	return dpp::slashcommand()
@@ -30,11 +35,11 @@ dpp::slashcommand challengeDef() {
 
 }
 
-std::function<void(cluster&,const slashcommand_t&)> infoCmd = ([](cluster &bot,const slashcommand_t &event) {
+std::function<void(const slashcommand_t&,cluster&)> infoCmd = ([](const slashcommand_t &event,cluster& bot) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
 });;
 
-std::function<void(cluster&,const slashcommand_t&)> challengeCmd = ([&formCmds](cluster &bot,const slashcommand_t &event) {
+std::function<void(const slashcommand_t&,cluster&)> challengeCmd = ([handler](const slashcommand_t &event,cluster& bot) {
 		//command_interaction cmdData = std::get<command_interaction>(event.command.data);
 		interaction_modal_response gameForm(("userForm"+event.command.usr.username),"Enter to create challenge against oponent, enter none to get no time control");
 		gameForm.add_component(
@@ -76,8 +81,8 @@ std::function<void(cluster&,const slashcommand_t&)> challengeCmd = ([&formCmds](
 		//std::cout << std::endl << event.get_parameter("player").index() << std::endl;
 		//std::cout << std::endl << event.get_parameter("game").index() << std::endl;
 		//std::cout << std::endl << std::get<std::string>(event.get_parameter("player")) << std::endl;
-		formCmds.emplace(("userForm"+event.command.usr.username),([event](cluster& botPar, const form_submit_t& eventPar) {	
-			handleChallengeSubmit(event.command.get_issuing_user(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,botPar,eventPar);
+		handler->addFormCmd(("userForm"+event.command.usr.username),([event,&bot](const form_submit_t& eventPar) {	
+			handleChallengeSubmit(event.command.get_issuing_user(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,bot,eventPar);
 		}));
 
 

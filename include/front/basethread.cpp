@@ -11,6 +11,7 @@
 #include "bigselect.hpp"
 #include <cstdlib>
 #include <thread>
+#include "eventhandle.hpp"
 using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
@@ -87,33 +88,21 @@ baseThread<T>::~baseThread() {
 */
 
 template <typename T>
-baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName) {
-	
+baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName,evt::eventhandle * handlerPar) {
+	//std::cout << "Wizard goffy (We\'re doing this again... seriously?) 1" << std::endl;
 	this->bot = botPar;
 	this->userIdOne = userIdA;
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;
 	this->emojiCode = gameEmojiName[gameName];
 	this->gameDraw = new dg::basicDrawGame(gameName);
+	this->handler = handlerPar;
 	
-	std::thread eventThread([this]() {
-		
+	
+	
+	
 
-	this->buttonEventId = this->bot->on_button_click.attach([this](const button_click_t& event){
-		try {
-			(this->gameButtonCmds.at(event.custom_id))(event);
-		} catch (...) {}
-	});
 	
-	std::cout << "what am i doing" << std::endl;
-	
-	this->selectEventId = this->bot->on_select_click.attach([this](const select_click_t& event){
-		try {
-			(this->gameSelectCmds.at(event.custom_id))(event);
-		} catch (...) {}
-	});
-	});
-
 
 	gameInt::gameTimeType* con[] = {new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0)};
 	this->gameInteraction = new gameInt::baseGameInt<T>(con,(std::bind(&baseThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
@@ -202,56 +191,53 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 
 	
 	std::cout << std::to_string(msg->id) << std::endl;
+
 	this->bot->message_create(*msg,[&msg](const confirmation_callback_t & event) {
 		*msg = std::get<message>(event.value);
 		std::cout << msg->id << std::endl;
 	});
+
+
+	
 	std::cout << std::to_string(msg->id) << std::endl;
-	this->gameSelectCmds.emplace(msg->components[0].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {
+	
+
+	this->handler->addSelectCmd(msg->components[0].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {
 		
 		delete endSel;
-		endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			msg->components[2].components[0] = endSel->pageStay();
+		endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			
+		msg->components[2].components[0] = endSel->pageStay();
 		event.reply();
 		this->bot->message_edit(*msg);
 		
 	});
-	this->bot->on_button_click.attach([startSel,endSel,msg,this](const button_click_t & event) mutable {
-		if (event.command.msg.id == msg->id) { }
-	});
-	this->gameButtonCmds.emplace(itemIds[0],[startSel,msg,this](const button_click_t& event) {
+	
+		
+	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();
 		this->bot->message_edit(*msg);
 	});
-	this->gameButtonCmds.emplace(itemIds[2],[startSel,msg,this](const button_click_t& event) {
+	std::cout << "Wait a minute..." << std::endl;	
+	this->handler->addButtonCmd(itemIds[2],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageDown();
 		this->bot->message_edit(*msg);
 	});
-	this->gameButtonCmds.emplace(itemIds[3],[endSel,msg,this](const button_click_t& event) {
+	this->handler->addButtonCmd(itemIds[3],[endSel,msg,this](const button_click_t& event) {
 		msg->components[2].components[0] = endSel->pageUp();
 		this->bot->message_edit(*msg);
 	});
-	this->gameButtonCmds.emplace(itemIds[5],[endSel,msg,this](const button_click_t& event) {
+	this->handler->addButtonCmd(itemIds[5],[endSel,msg,this](const button_click_t& event) {
 		msg->components[2].components[0] = endSel->pageDown();
 		this->bot->message_edit(*msg);
 	});
+		
 
-
-			
-	std::filesystem::remove(imgPath);
-	eventThread.join();
-	std::cout << "Thread joined" << std::endl;
+	std::cout << "finished" << std::endl;
+	
+	
+	
 }
 				
-
-
-
-
-
-	
-	
-	
-	
-
 
 
 
