@@ -17,7 +17,11 @@ namespace evt {
 			bool addSlashCmd(std::string compid,std::function<void(const slashcommand_t&,cluster&)> newCmd);
 			bool addFormCmd(std::string compid,std::function<void(const form_submit_t&)> newCmd);
 			bool addButtonCmd(std::string compid,std::function<void(const button_click_t&)> newCmd);
-
+			
+			bool deleteSelectCmd(std::string compid);
+			bool deleteSlashCmd(std::string compid);
+			bool deleteFormCmd(std::string compid);
+			bool deleteButtonCmd(std::string compid);
 		private:
 			std::unordered_map<std::string,std::function<void(const select_click_t&)>> selectCmds;
 			std::unordered_map<std::string,std::function<void(const button_click_t&)>> buttonCmds;

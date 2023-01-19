@@ -31,6 +31,7 @@ evt::eventhandle * handler;
 
 
 
+
 std::map<snowPair,snowflake*> userThreads;
 std::map<snowflake,gameFront::wrapThread*> gameObjs;
 
