@@ -21,9 +21,10 @@ class baseGameLogic {
 		virtual bool makeMove(int inputOne) { return false; }
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
+		std::vector<std::vector<std::string>> moveNames;
 	protected:
 
-		std::string* moveNames;
+		
 		bool userTurn = true;
 
 };

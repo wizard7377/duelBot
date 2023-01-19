@@ -4,7 +4,7 @@
 namespace game {
 	
 chessLogic::chessLogic() {
-	this->moveNames = getAllBoardNames();
+	//this->moveNames = getAllBoardNames();
 	this->convertStringToInt("nothing");
 	this->gameId = "0001";
 }

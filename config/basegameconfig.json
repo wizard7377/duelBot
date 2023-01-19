@@ -3,7 +3,8 @@
     },
     "checkers": {
         "imgpaths": [
-            ["resources/checkers/empty.png","resources/checkers/red_pawn.png","resources/checkers/red_king.png","resources/checkers/black_pawn.png","resources/checkers/black_king.png"]
+            ["resources/checkers/empty_red.png","resources/checkers/red_pawn.png","resources/checkers/red_king.png","resources/checkers/black_pawn.png","resources/checkers/black_king.png"],
+            ["resources/checkers/empty_black.png"]
         ]
 
     }

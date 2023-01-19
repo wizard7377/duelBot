@@ -19,9 +19,19 @@ using namespace dpp;
 
 using snowPair = std::pair<snowflake,snowflake>;
 
+/*
+ * All the command handlers
+ */
+
+
+
 std::map<std::string,std::function<void(cluster&,const slashcommand_t&)>> slashCmds;
 std::map<std::string,std::function<void(cluster&,const form_submit_t&)>> formCmds;
 std::map<std::string,std::function<void(cluster&,const button_click_t&)>> buttonCmds;
+std::map<std::string,std::function<void(cluster&,const select_click_t&)>> selectCmds;
+
+
+
 std::map<snowPair,snowflake*> userThreads;
 std::map<snowflake,gameFront::wrapThread*> gameObjs;
 
@@ -185,28 +195,31 @@ int main(int argc, char *argv[]) {
 			
 		}
 	}
-	bot.on_slashcommand([&bot](const slashcommand_t &event) {
+	bot.on_slashcommand.attach([&bot](const slashcommand_t &event) {
 		(slashCmds.at(event.command.get_command_name()))(bot,event);
 	});
+
 	
-	bot.on_form_submit([&bot](const form_submit_t &event) {
+	bot.on_form_submit.attach([&bot](const form_submit_t &event) {
 		(formCmds.at(event.custom_id))(bot,event);
 	});
-	bot.on_button_click([&bot](const button_click_t &event) {
+	bot.on_button_click.attach([&bot](const button_click_t &event) {
 
 		try {
 			
 			(buttonCmds.at(event.custom_id))(bot,event);
-		} catch (const std::out_of_range& e) {
-			std::cout << "Button already clicked: " << e.what() << std::endl;
-			event.reply("Already done");
 		} catch (const std::exception& e) {
 			std::cout << "Button error: " << e.what() << std::endl;
-			event.reply("error in process");
 		}
 	
 	});
-
+	bot.on_select_click.attach([&bot](const select_click_t & event) {
+		try { 
+			(selectCmds.at(event.custom_id))(bot,event); 
+		} catch (const std::exception& e) {
+			std::cout << "Select error: " << e.what() << std::endl;
+		}
+	});
 
 	bot.on_ready([&bot](const ready_t & event) {
         if (run_once<struct register_bot_commands>()) {

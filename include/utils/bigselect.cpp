@@ -1,0 +1,75 @@
+#include "bigselect.hpp"
+#include <dpp/dpp.h>
+#include <vector>
+#include <string>
+#include <cmath>
+
+using namespace dpp;
+
+static unsigned long long int currentSelect = 1;
+std::string genName() {
+    currentSelect++;
+    return std::to_string(currentSelect);
+}
+namespace utl {
+
+bigSelect::bigSelect(std::vector<std::string> startVals) {
+	component * curCom;
+	for (int i = 0; i < startVals.size(); i++) {
+
+		if ((i % 25) == 0) {
+			if (i != 0) {
+				this->selectMenus.push_back(curCom);
+				this->numPage++;
+			}
+			curCom = new component();
+			curCom->set_type(cot_selectmenu);
+			curCom->set_placeholder("???");
+			curCom->set_id(genName());
+		}
+		curCom->add_select_option(select_option("move from: ", startVals[i],startVals[i]));
+
+
+
+	}
+	this->selectMenus.push_back(curCom);
+	
+    this->changePage();
+
+}
+
+component bigSelect::pageStay() {
+    this->changePage();
+	return (*(this->selectMenus[this->curPage]));
+}
+component bigSelect::pageDown() {
+    this->curPage++;
+    this->changePage();
+	return (*(this->selectMenus[this->curPage]));
+}
+component bigSelect::pageUp() {
+    this->curPage--;
+    this->changePage();
+	return (*(this->selectMenus[this->curPage]));
+}
+
+void bigSelect::changePage() {
+    
+    if (this->numPage == 0) {
+        this->canPage[0] = false;
+        this->canPage[1] = false;
+    } else if (this->curPage == 0) {
+        this->canPage[0] = false;
+        this->canPage[1] = true;
+    } else if (this->curPage == this->numPage) {
+        this->canPage[0] = true;
+        this->canPage[1] = false;
+    } else {
+        this->canPage[0] = true;
+        this->canPage[1] = true;
+    }
+}
+
+
+}
+

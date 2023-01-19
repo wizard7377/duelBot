@@ -8,15 +8,8 @@ FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
 
 include_directories(secrets;include;${OpenCV_INCLUDE_DIRS})
-file(GLOB_RECURSE FRONT_SOURCES "include/front/*.cpp")
-file(GLOB_RECURSE GAME_HEADERS "include/games/*.hpp")
-file(GLOB_RECURSE GAME_SOURCES "include/games/*.cpp")
-file(GLOB_RECURSE DRAW_HEADERS "include/draw/*.hpp")
-file(GLOB_RECURSE DRAW_SOURCES "include/draw/*.cpp")
-file(GLOB_RECURSE INTER_SOURCES "include/interactions/*.cpp")
-file(GLOB_RECURSE COMMAND_SOURCES "include/src/commands/*.cpp")
-file(GLOB_RECURSE DATA_SOURCES "include/database/*.cpp")
 file(GLOB_RECURSE SECRETS "secrets/*.hpp")
+file(GLOB_RECURSE INC_SOURCES "include/*.cpp") 
 # Add DPP as dependency
 add_subdirectory(libs/DPP)
 # You can also add any other libs you want to use
@@ -29,15 +22,10 @@ add_subdirectory(libs/DPP)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     ${SECRETS}
-    ${DATA_SOURCES}
-    ${GAME_SOURCES}
-    ${DRAW_SOURCES}
-    ${COMMAND_SOURCES}
-    ${INTER_SOURCES}
-    ${FRONT_SOURCES}
-    
-    # your other files...
+    ${INC_SOURCES}
 )
+
+
 
 
  
@@ -60,8 +48,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     include/database
     include/front
     include/draw
+    include/utils
     include/interactions
     src/commands
+    
 
     # Remember to add the include directories of any other libraries too
 )

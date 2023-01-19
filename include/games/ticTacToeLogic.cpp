@@ -43,12 +43,12 @@ namespace game {
 
 
 	ticTacToeLogic::ticTacToeLogic() {
-		std::string nameArray[9];
+		std::vector<std::vector<std::string>> nameArray;
 		this->boardItems = new std::vector<std::vector<int>>{{0,0,0},{0,0,0},{0,0,0}};
 		
 		for (int i = 0; i < 3; i++) {
 			for (int ii = 0; ii < 3; ii++) {
-				nameArray[ii+(3*i)] = tttRowNames[i]+"-"+tttColNames[ii];
+				nameArray.push_back({tttRowNames[i]+"-"+tttColNames[ii]});
 			}
 		}
 		

@@ -19,7 +19,8 @@ class baseGameInt {
 		std::vector<std::vector<int>> getBoard();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
 		baseGameInt(gameTimeType* control[3], std::function<void(bool,int)> onEnd); 
-
+		std::string intToMove(int userMove);
+		int moveToInt(std::string userMove);
 		std::vector<std::vector<std::string>> getAllMoves();
 		int makeMove(std::string inputOne, std::string inputTwo = "");
 

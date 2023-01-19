@@ -35,7 +35,10 @@ baseGameInt<T>::baseGameInt(gameTimeType* control[3], std::function<void(bool,in
 template <typename T>
 bool baseGameInt<T>::timeMove() {return false;}
 
-
+template <typename T>
+std::vector<std::vector<std::string>> baseGameInt<T>::getAllMoves() {
+	return this->gameLogic->moveNames;
+}
 template <typename T> 
 std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 	//std::cout << "test" << std::endl;
@@ -72,6 +75,15 @@ int baseGameInt<T>::makeMove(std::string inputOne, std::string inputTwo) {
 		this->userMove = !(this->userMove);
 	}
 	return 1;
+}
+
+template <typename T> 
+std::string baseGameInt<T>::intToMove(int userMove) {
+	return (this->gameLogic->convertIntToString(userMove));
+}
+template <typename T> 
+int baseGameInt<T>::moveToInt(std::string userMove) {
+	return (this->gameLogic->convertStringToInt(userMove));
 }
 
 

@@ -8,6 +8,9 @@
 #include <dpp/dpp.h>
 #include <algorithm>
 #include "drawgame.hpp"
+#include "bigselect.hpp"
+#include <cstdlib>
+#include <thread>
 using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
@@ -15,6 +18,8 @@ using namespace dpp;
 template class gameFront::baseThread<game::ticTacToeLogic>;
 template class gameFront::baseThread<game::checkersLogic>;
 template class gameFront::baseThread<game::baseGameLogic>;
+
+
 
 
 std::map<std::string,std::string> gameEmojiName = {
@@ -73,15 +78,41 @@ std::map<char,std::string> charToEmote = {
 
 namespace gameFront {
 
+/*
+template <typename T>
+baseThread<T>::~baseThread() {
+	this->bot->on_button_click.detach(this->buttonEventId);
+	this->bot->on_select_click.detach(this->selectEventId);
+}
+*/
+
 template <typename T>
 baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName) {
+	
 	this->bot = botPar;
 	this->userIdOne = userIdA;
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;
 	this->emojiCode = gameEmojiName[gameName];
 	this->gameDraw = new dg::basicDrawGame(gameName);
+	
+	std::thread eventThread([this]() {
+		
 
+	this->buttonEventId = this->bot->on_button_click.attach([this](const button_click_t& event){
+		try {
+			(this->gameButtonCmds.at(event.custom_id))(event);
+		} catch (...) {}
+	});
+	
+	std::cout << "what am i doing" << std::endl;
+	
+	this->selectEventId = this->bot->on_select_click.attach([this](const select_click_t& event){
+		try {
+			(this->gameSelectCmds.at(event.custom_id))(event);
+		} catch (...) {}
+	});
+	});
 
 
 	gameInt::gameTimeType* con[] = {new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0)};
@@ -94,22 +125,134 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	
 	//do more config stuff later
 	//+ stuff with sync
+	//+make into its own function
+	//+make better comments
 	embed mainEmb = embed().
 		set_color(colors::blue_aquamarine).
-		set_title("Move: of the game between: " + bot->user_get_sync(userIdA).get_mention() + " and " + bot->user_get_sync(userIdA).get_mention()).
+		set_title("Move: of the game between: " + bot->user_get_sync(userIdA).username + " and " + bot->user_get_sync(userIdA).username).
 		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
 		set_image("attachment://game.png");
 
-	message msg((this->gameThread),mainEmb);
-	msg.add_file("game.png",utility::read_file(imgPath));	
-	this->bot->message_create(msg);
+	message * msg = new message((this->gameThread),mainEmb);
+	msg->add_file("game.png",utility::read_file(imgPath));
+
+	std::vector<std::string> inMoves;
+	for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
+		inMoves.push_back(this->gameInteraction->intToMove(i));
+	}
+	std::cout <<  __LINE__ << std::endl;
+	std::string ranPre = std::to_string(rand());
+	std::string itemIds[] = {ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand())};
+	utl::bigSelect * startSel = new utl::bigSelect(inMoves);
+	utl::bigSelect * endSel = new utl::bigSelect(this->gameInteraction->getAllMoves()[0]);
+	msg->add_component(
+		component().add_component(
+			startSel->pageStay()
+		)
+	);
+	msg->add_component(
+	component().add_component(
+		component().set_label("<-").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[0]).   
+		set_disabled(!startSel->canPage[0])
+	).add_component(
+		component().set_label("?/?").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[1]).   
+		set_disabled(true)
+	)
+	.add_component(
+		component().set_label("->").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[2]).   
+		set_disabled(!startSel->canPage[1])
+	)
+	);
+	msg->add_component(
+		component().add_component(
+			endSel->pageStay()
+		)
+	);
+	msg->add_component(
+	component().add_component(
+		component().set_label("<-").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[3]).   
+		set_disabled(!endSel->canPage[0])
+	).add_component(
+		component().set_label("?/?").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[4]).   
+		set_disabled(true)
+	)
+	.add_component(
+		component().set_label("->").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[5]).   
+		set_disabled(!endSel->canPage[1])
+	)
+	);
+
+	
+	std::cout << std::to_string(msg->id) << std::endl;
+	this->bot->message_create(*msg,[&msg](const confirmation_callback_t & event) {
+		*msg = std::get<message>(event.value);
+		std::cout << msg->id << std::endl;
+	});
+	std::cout << std::to_string(msg->id) << std::endl;
+	this->gameSelectCmds.emplace(msg->components[0].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {
+		
+		delete endSel;
+		endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			msg->components[2].components[0] = endSel->pageStay();
+		event.reply();
+		this->bot->message_edit(*msg);
+		
+	});
+	this->bot->on_button_click.attach([startSel,endSel,msg,this](const button_click_t & event) mutable {
+		if (event.command.msg.id == msg->id) { }
+	});
+	this->gameButtonCmds.emplace(itemIds[0],[startSel,msg,this](const button_click_t& event) {
+		msg->components[0].components[0] = startSel->pageUp();
+		this->bot->message_edit(*msg);
+	});
+	this->gameButtonCmds.emplace(itemIds[2],[startSel,msg,this](const button_click_t& event) {
+		msg->components[0].components[0] = startSel->pageDown();
+		this->bot->message_edit(*msg);
+	});
+	this->gameButtonCmds.emplace(itemIds[3],[endSel,msg,this](const button_click_t& event) {
+		msg->components[2].components[0] = endSel->pageUp();
+		this->bot->message_edit(*msg);
+	});
+	this->gameButtonCmds.emplace(itemIds[5],[endSel,msg,this](const button_click_t& event) {
+		msg->components[2].components[0] = endSel->pageDown();
+		this->bot->message_edit(*msg);
+	});
+
+
+			
 	std::filesystem::remove(imgPath);
-	
-	
-	
-
-
+	eventThread.join();
+	std::cout << "Thread joined" << std::endl;
 }
+				
+
+
+
+
+
+	
+	
+	
+	
+
+
 
 
 
@@ -149,6 +292,7 @@ std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>
 
 		
 }
+
 
 
 }

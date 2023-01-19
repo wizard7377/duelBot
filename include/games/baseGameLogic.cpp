@@ -1,7 +1,13 @@
 #include <string>
 #include <iostream>
+#include <vector>
+#include <cmath>
 #include "gameLogic.hpp"
 
+template <typename T>
+T getValAt(int index, std::vector<std::vector<T>> * inVec) {
+	return (*inVec)[(int)(std::floor(index/(*inVec).size()))][index % (*inVec)[0].size()];
+}
 namespace game {
 
 
@@ -10,18 +16,12 @@ baseGameLogic::baseGameLogic() {
 }
 
 std::string baseGameLogic::convertIntToString(int logicMove) {
-	return (this->moveNames[logicMove]);
+	return (getValAt<std::string>(logicMove,(&this->moveNames)));
 }
 int baseGameLogic::convertStringToInt(std::string userMove) {
-
 	int i = 0;
-	for (auto x : *(this->moveNames)) {
-		//if (x == userMove) { return i; };
-		//Not working as of last check (check again)
-		
-		//std::cout << x << std::endl;
-		i++;
-
+	for (i = 0; i < this->moveNames.size(); i++) {
+		if (this->convertIntToString(i) == userMove) { return i; };
 	}
 	return i;
 }

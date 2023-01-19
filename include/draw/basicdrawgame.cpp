@@ -30,6 +30,14 @@ namespace dg {
 	std::cout << appPath;
 */
 
+int boolToInt(bool input) {
+	if (input) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 	Mat * currentImg = new Mat(IMG_SIZE,IMG_SIZE,CV_8UC3,Scalar(69,42,32));
 	
@@ -37,17 +45,22 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 	int sizeY = newBoard[0].size();
 	int spaceSizeX = IMG_SIZE/sizeX;
 	int spaceSizeY = IMG_SIZE/sizeY;
+	bool spaceColor = true;
 	for (int i = 0; i < sizeX; i++) {
 		for (int ii = 0; ii< sizeY; ii++) {
-			Rect space(spaceSizeX*i,spaceSizeY*ii,spaceSizeX,spaceSizeY);
+			Rect space(spaceSizeY*ii,spaceSizeX*i,spaceSizeY,spaceSizeX);
 			Mat tarSpace = (*currentImg)(space);
 			
 			
 			
-			(this->imgs[0][newBoard[ii][i]]).copyTo(tarSpace);
+			(this->imgs[boolToInt(spaceColor)][newBoard[i][ii]]).copyTo(tarSpace);
+			spaceColor = !(spaceColor);
+
+			
 			
 			
 		}
+		spaceColor = !(spaceColor);
 	}
 	
 	return currentImg;
