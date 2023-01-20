@@ -1,10 +1,14 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cmath>
 #include "gameLogic.hpp"
 
 
-
+template <typename T>
+T * getValAt(int index, std::vector<std::vector<T>> * inVec) {
+	return &((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
+}
 enum checks {
 	EMPTY = 0,
 	WHITEPAWN = 1,
@@ -12,6 +16,7 @@ enum checks {
 	BLACKPAWN = 3,
 	BLACKKING = 4,
 };
+
 const std::string checkRowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string checkColNames[] = {"1","2","3","4","5","6","7","8"};
 
@@ -51,8 +56,12 @@ namespace game {
 	
 	}
 	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
+		if (inputOne >= 0) {
+			*getValAt<int>(inputTwo,this->boardItems) = *getValAt<int>(inputOne,this->boardItems);
+			*getValAt<int>(inputOne,this->boardItems) = 0;
+		}
 		this->changeMoves(playerTurn);
-		return true;
+		return false;
 	}
 	bool checkersLogic::getWinner() { return true; }
 
@@ -69,6 +78,13 @@ int rUp(int inputOne,int cel = 8) {
 	}
 }
 
+int checkersLogic::pAt(int x, int y) {
+	if ((x >= 0) and (x < 8) and (y >= 0) and (y < 8)) {
+		return (this->boardItems->at(y).at(x));
+	} else {
+		return -1;
+	}
+}
 
 void checkersLogic::changeMoves(bool playerTurn) {
 	bool isCapture = false;
@@ -88,59 +104,44 @@ void checkersLogic::changeMoves(bool playerTurn) {
 	}
 	for (int i = 0; i < 8; i++) {
 		for (int ii = 0; ii < 8; ii++) {
-			std::cout << std::to_string(this->boardItems->at(i)[ii]) << " Compared to: " << std::to_string(pNames[0]) << " Which is: " << ((this->boardItems->at(i)[ii]) == pNames[0]) << " at: " << checkRowNames[i] << checkColNames[ii] << std::endl;
-			if ((this->boardItems->at(i)[ii]) == pNames[0]) {
+			//kings
+			if 
+			((this->pAt(i,ii) == pNames[0]) and
+			(((this->pAt(i+1,ii+spaces[0]) == eNames[0]) and (this->pAt(i+2,ii+spaces[1]) == 0)) or 
+			((this->pAt(i-1,ii+spaces[0]) == eNames[0]) and (this->pAt(i-2,ii+spaces[1]) == 0)))) 
+			{
+				isCapture = true;
+				break;	
+			}
+		}
+	}
+	std::cout << "isCapture is: " << isCapture << std::endl;
+	if (isCapture) {
+	} else {
+		for (int i = 0; i < 8; i++) {
+			for (int ii = 0; ii < 8; ii++) {
 				
-				if (((this->boardItems->at(rUp(i+1))[rUp(ii+spaces[1])]) == 0) || ((this->boardItems->at(rUp(i-1))[rUp(ii+spaces[1])]) == 0)) { 
-					if (((this->boardItems->at(rUp(i+1))[rUp(ii+spaces[0])]) == 0)) {
-						this->moveNames[8*i+ii].push_back(checkRowNames[rUp(i+1)]+checkColNames[rUp(ii+spaces[0])]);
+				if (this->pAt(i,ii) == pNames[0]) {
+					std::cout << "val is " << (i-1) << " ";
+					if (this->pAt(i-1,ii+spaces[0]) == 0) {
+						
+						this->moveNames[i*8+ii].push_back(checkRowNames[i-1]+checkColNames[ii+spaces[0]]);
 					}
-					if ((this->boardItems->at(rUp(i-1))[rUp(ii+spaces[0])]) == 0) {
-						this->moveNames[8*i+ii].push_back(checkRowNames[rUp(i-1)]+checkColNames[rUp(ii+spaces[0])]);
-					}
-				}
-				if (((this->boardItems->at(rUp(i+1))[rUp(ii+spaces[0])]) == eNames[0]) || ((this->boardItems->at(rUp(i-1))[rUp(ii+spaces[0])]) == eNames[0])) { 
-						this->moveNames.clear();
-						isCapture = true;
-						break;
-				}
-				else if ((this->boardItems->at(rUp(i+1))[rUp(ii+spaces[0])] == 0) || (this->boardItems->at(rUp(i-1))[rUp(ii+spaces[0])] == 0)) { 
-					std::cout << "check point one";
-					if (this->boardItems->at(rUp(i-1))[rUp(ii+spaces[0])] == 0) {
-						this->moveNames[8*i+ii].push_back(checkRowNames[rUp(i+1)]+checkColNames[rUp(ii+spaces[0])]);
-					}
-					if (this->boardItems->at(rUp(i-1))[rUp(ii+spaces[0])] == 0) {
-						this->moveNames[8*i+ii].push_back(checkRowNames[rUp(i-1)]+checkColNames[rUp(ii+spaces[0])]);
+					if (this->pAt(i+1,ii+spaces[0]) == 0) {
+						this->moveNames[i*8+ii].push_back(checkRowNames[i+1]+checkColNames[ii+spaces[0]]);
 					}
 				}
 			}
 		}
 	}
-	int i = 0;
-	int ii = 0;
-	/*
-	for (auto a : *(this->boardItems)) {
-		for (auto b : a) {
+
+				
+
+
 			
-			std::cout << " ( " << b << " : " << checkRowNames[i] << checkColNames[ii] << " ) " ;
-			i++;
-		}
-		i = 0;
-		std::cout << std::endl;
-		ii++;
-	}
-	*/
-	/*
-	std::cout << "Wizard goffy (We\'re doing this again... seriously.) 1" << std::endl;
+		
 	
-	for (auto a : this->moveNames) {
-		for (auto b : a) {
-			std::cout << b << std::endl;
-		}
-		std::cout << std::endl;
-	}
-	std::cout << "Wizard goffy (We\'re doing this again... seriously.) 2" << std::endl;
-	*/
+	
 
 
 

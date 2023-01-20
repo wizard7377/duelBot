@@ -146,7 +146,7 @@ message * baseThread<T>::msgMake() {
 	std::vector<std::string> inMoves;
 	
 	for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
-		std::cout << this->gameInteraction->getAllMoves()[i].size() << std::endl;
+		std::cout << this->gameInteraction->getAllMoves()[i].size();
 		if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->intToMove(i)); }
 	}
 	std::cout <<  __LINE__ << std::endl;

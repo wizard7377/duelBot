@@ -94,6 +94,7 @@ class checkersLogic : public baseGameLogic {
 	private:
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
+		int pAt(int x, int y);
 		
 };
 
