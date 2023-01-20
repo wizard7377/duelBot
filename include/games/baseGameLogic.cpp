@@ -6,7 +6,7 @@
 
 template <typename T>
 T getValAt(int index, std::vector<std::vector<T>> * inVec) {
-	return (*inVec)[(int)(std::floor(index/(*inVec).size()))][index % (*inVec)[0].size()];
+	return (*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())];
 }
 namespace game {
 
@@ -16,7 +16,7 @@ baseGameLogic::baseGameLogic() {
 }
 
 std::string baseGameLogic::convertIntToString(int logicMove) {
-	return (getValAt<std::string>(logicMove,(&this->moveNames)));
+	return (getValAt<std::string>(logicMove,(&this->moveNamesCon)));
 }
 int baseGameLogic::convertStringToInt(std::string userMove) {
 	int i = 0;

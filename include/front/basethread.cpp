@@ -10,6 +10,7 @@
 #include "drawgame.hpp"
 #include "bigselect.hpp"
 #include <cstdlib>
+#include <random>
 #include <thread>
 #include "eventhandle.hpp"
 using namespace dpp;
@@ -19,6 +20,15 @@ using namespace dpp;
 template class gameFront::baseThread<game::ticTacToeLogic>;
 template class gameFront::baseThread<game::checkersLogic>;
 template class gameFront::baseThread<game::baseGameLogic>;
+
+std::string reqId() {
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+  	std::mt19937_64 generator (seed);
+	return (std::to_string(generator()));
+
+}
+
 
 
 
@@ -88,7 +98,7 @@ baseThread<T>::~baseThread() {
 */
 
 template <typename T>
-baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName,evt::eventhandle * handlerPar) {
+baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName,evt::eventhandle * handlerPar,int rpsTurns) {
 	//std::cout << "Wizard goffy (We\'re doing this again... seriously?) 1" << std::endl;
 	this->bot = botPar;
 	this->userIdOne = userIdA;
@@ -97,6 +107,9 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->emojiCode = gameEmojiName[gameName];
 	this->gameDraw = new dg::basicDrawGame(gameName);
 	this->handler = handlerPar;
+
+	if (rpsTurns == 0) { this->pOneFirst = ((std::rand() % 2) == 0); }
+	this->curPlayer = pOneFirst;
 	
 	
 	
@@ -108,30 +121,37 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->gameInteraction = new gameInt::baseGameInt<T>(con,(std::bind(&baseThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
 	//std::cout << this->gameThread << std::endl;
 
+	this->msgMake();
+
 	
-	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
 
 	
 	//do more config stuff later
 	//+ stuff with sync
 	//+make into its own function
 	//+make better comments
-	embed mainEmb = embed().
-		set_color(colors::blue_aquamarine).
-		set_title("Move: of the game between: " + bot->user_get_sync(userIdA).username + " and " + bot->user_get_sync(userIdA).username).
-		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
-		set_image("attachment://game.png");
+	
+		
 
-	message * msg = new message((this->gameThread),mainEmb);
-	msg->add_file("game.png",utility::read_file(imgPath));
+	std::cout << "finished" << std::endl;
+	
+	
+	
+}
+
+template <typename T>
+message * baseThread<T>::msgMake() {
+	message * msg = makeGameEmbed();
 
 	std::vector<std::string> inMoves;
+	
 	for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
-		inMoves.push_back(this->gameInteraction->intToMove(i));
+		std::cout << this->gameInteraction->getAllMoves()[i].size() << std::endl;
+		if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->intToMove(i)); }
 	}
 	std::cout <<  __LINE__ << std::endl;
 	std::string ranPre = std::to_string(rand());
-	std::string itemIds[] = {ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand()),ranPre+std::to_string(rand())};
+	std::string itemIds[] = {reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId()};
 	utl::bigSelect * startSel = new utl::bigSelect(inMoves);
 	utl::bigSelect * endSel = new utl::bigSelect(this->gameInteraction->getAllMoves()[0]);
 	msg->add_component(
@@ -188,8 +208,28 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 		set_disabled(!endSel->canPage[1])
 	)
 	);
+	msg->add_component(
+	component().add_component(
+		component().set_label("Request draw").
+		set_type(cot_button).
+		set_style(cos_secondary).
+		set_id(itemIds[6])   
+	).add_component(
+		component().set_label("resign").
+		set_type(cot_button).
+		set_style(cos_danger).
+		set_id(itemIds[7])
+	)
+	.add_component(
+		component().set_label("make move").
+		set_type(cot_button).
+		set_style(cos_success).
+		set_id(itemIds[8])   
+	)
+	);
 
 	
+	if (this->imgThread->joinable()) { this->imgThread->join(); }
 	std::cout << std::to_string(msg->id) << std::endl;
 
 	this->bot->message_create(*msg,[&msg](const confirmation_callback_t & event) {
@@ -202,17 +242,41 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	std::cout << std::to_string(msg->id) << std::endl;
 	
 
+	
 	this->handler->addSelectCmd(msg->components[0].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {
-		
+	
+		this->handler->deleteSelectCmd(msg->components[2].components[0].custom_id);
 		delete endSel;
 		endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			
+		msg->components[0].components[0].set_placeholder(event.values[0]);
 		msg->components[2].components[0] = endSel->pageStay();
 		event.reply();
+		this->curMove[0] = event.values[0];
+		this->curMove[1] = "";
+		this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
+			msg->components[2].components[0].set_placeholder(event.values[0]);
+			event.reply();
+			this->curMove[1] = event.values[0];	
+		});
 		this->bot->message_edit(*msg);
+	});
 		
+	this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
+		msg->components[2].components[0].set_placeholder(event.values[0]);
+		event.reply();
+		this->curMove[1] = event.values[0];	
 	});
 	
 		
+	this->handler->addButtonCmd(itemIds[8], [this](const auto& event) {
+		if ((this->curMove[0] == "")||(this->curMove[1] == "")) {
+			event.reply(message(":x: You haven't selected a move yet!").set_flags(m_ephemeral));
+		} else {
+			this->gameInteraction->makeMove(this->curPlayer,curMove[0],curMove[1]);
+			this->msgMake();
+		}
+			
+	});
 	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();
 		this->bot->message_edit(*msg);
@@ -230,14 +294,30 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 		msg->components[2].components[0] = endSel->pageDown();
 		this->bot->message_edit(*msg);
 	});
-		
+	return msg;
 
-	std::cout << "finished" << std::endl;
-	
-	
-	
 }
-				
+
+template <typename T>
+message * baseThread<T>::makeGameEmbed() {
+	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
+	embed mainEmb = embed().
+		set_color(colors::blue_aquamarine).
+		set_title("Move: of the game between: " + bot->user_get_sync(this->userIdOne).username + " and " + bot->user_get_sync(userIdTwo).username).
+		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
+		set_image("attachment://game.png");
+
+	message * msg = new message((this->gameThread),mainEmb);
+	this->imgThread = new std::thread( [this,msg,imgPath] { msg->add_file("game.png",utility::read_file(imgPath)); } );
+	return msg;
+
+}
+
+	
+
+
+
+
 
 
 

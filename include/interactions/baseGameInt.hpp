@@ -22,7 +22,7 @@ class baseGameInt {
 		std::string intToMove(int userMove);
 		int moveToInt(std::string userMove);
 		std::vector<std::vector<std::string>> getAllMoves();
-		int makeMove(std::string inputOne, std::string inputTwo = "");
+		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
 
 		gameTimeType * timeLeft[2];
 		gameTimeType* timeControl[3];

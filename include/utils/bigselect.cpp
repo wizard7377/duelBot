@@ -15,26 +15,36 @@ namespace utl {
 
 bigSelect::bigSelect(std::vector<std::string> startVals) {
 	component * curCom;
-	for (int i = 0; i < startVals.size(); i++) {
+    	if (startVals.size() > 0) { 
+		for (int i = 0; i < startVals.size(); i++) {
 
-		if ((i % 25) == 0) {
-			if (i != 0) {
-				this->selectMenus.push_back(curCom);
-				this->numPage++;
+			if ((i % 25) == 0) {
+				if (i != 0) {
+					this->selectMenus.push_back(curCom);
+					this->numPage++;
+				}
+				curCom = new component();
+				curCom->set_type(cot_selectmenu);
+				curCom->set_placeholder("???");
+				curCom->set_id(genName());
 			}
-			curCom = new component();
-			curCom->set_type(cot_selectmenu);
-			curCom->set_placeholder("???");
-			curCom->set_id(genName());
+			curCom->add_select_option(select_option("move from: ", startVals[i],startVals[i]));
+
+
+
 		}
-		curCom->add_select_option(select_option("move from: ", startVals[i],startVals[i]));
-
-
-
+	} else {		
+		curCom = new component();
+		curCom->set_type(cot_selectmenu);
+		curCom->set_placeholder("???");
+		curCom->set_id(genName());
+		curCom->add_select_option(select_option("No options", "N/A","N/A"));
 	}
+			
+
 	this->selectMenus.push_back(curCom);
 	
-    this->changePage();
+    	this->changePage();
 
 }
 

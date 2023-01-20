@@ -27,7 +27,7 @@ template <typename T>
 class baseThread : public wrapThread {
 	public:
 	    
-	    baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName,evt::eventhandle * handlerPar);
+	    baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName,evt::eventhandle * handlerPar,int rpsTurns = 0);
 	    //~baseThread();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
 		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
@@ -48,7 +48,13 @@ class baseThread : public wrapThread {
 	    gameInt::baseGameInt<T> * gameInteraction;
 		event_handle buttonEventId;
 		event_handle selectEventId;
+		message * makeGameEmbed();
+		message * msgMake();
+		std::thread * imgThread;
+		std::string curMove[2] = {"",""};
 		std::mutex mtx;
+		bool pOneFirst;
+		bool curPlayer;
 		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;
 		std::map<std::string,std::function<void(const select_click_t&)>> gameSelectCmds;
 

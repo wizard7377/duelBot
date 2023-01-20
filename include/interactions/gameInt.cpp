@@ -60,11 +60,11 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 
 
 template <typename T> 
-int baseGameInt<T>::makeMove(std::string inputOne, std::string inputTwo) {
+int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string inputTwo) {
 	bool isCase = false;
 
-	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(std::stoi(inputOne))); } 
-	else { isCase = (this->gameLogic->makeMove(std::stoi(inputOne),std::stoi(inputTwo))); }
+	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),playerTurn)); } 
+	else { isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo),playerTurn)); }
 	if (this->timeMove()) {
 		this->endCase(this->userMove,2);
 	}

@@ -13,7 +13,7 @@ namespace evt {
 eventhandle::eventhandle(cluster * bot) {
 	bot->on_select_click([this](const auto& event) {
 		try {
-			std::thread([this,event] { this->selectCmds.at(event.custom_id)(event); } ).detach();
+			std::thread([this,event] { try { this->selectCmds.at(event.custom_id)(event); } catch (...) {} } ).detach();
 		} catch (...) {
 			std::cout << "An error has occured" << std::endl;
 		}

@@ -17,14 +17,18 @@ class baseGameLogic {
 		std::vector<std::vector<int>> * boardItems;
 		bool* allowedMoves;
 		virtual bool getWinner() { return false; }
-		virtual bool makeMove(int inputOne, int inputTwo) { return false; }
-		virtual bool makeMove(int inputOne) { return false; }
+		virtual bool makeMoveOld(int inputOne, int inputTwo) { return false; }
+		virtual bool makeMoveOld(int inputOne) { return false; }
+		virtual bool makeMove(int inputOne,int inputTwo, bool playerTurn) { return false; }
+		virtual bool makeMove(int inputOne,bool playerTurn) { return false; }
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
 		std::vector<std::vector<std::string>> moveNames;
+		std::vector<std::vector<std::string>> moveNamesCon;
+		std::vector<std::vector<std::string>> extraMoveNames;
 	protected:
 
-		
+		virtual void changeMoves(bool playerTurn) {};
 		bool userTurn = true;
 
 };
@@ -45,14 +49,15 @@ class chessLogic : public baseGameLogic {
 			{10,8,9,11,12,9,8,10}
 		};
 		*/
-
+	private:
+		void changeMoves(bool playerTurn) override {};
 };
 
 class ticTacToeLogic : public baseGameLogic {
 	public:
 		ticTacToeLogic();
-		bool makeMove(int inputOne) override;
-		bool makeMove(int inputOne,int inputTwo) override { return false ; };
+		bool makeMove(int inputOne,bool playerTurn) override;
+		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
 		
 
 		bool getWinner() override;
@@ -65,6 +70,7 @@ class ticTacToeLogic : public baseGameLogic {
 		};
 		*/
 	private:
+		void changeMoves(bool playerTurn) override {};
 		bool checkForEnd();
 		
 };
@@ -72,8 +78,8 @@ class ticTacToeLogic : public baseGameLogic {
 class checkersLogic : public baseGameLogic {
 	public:
 		checkersLogic();
-		bool makeMove(int inputOne) override { return false; };
-		bool makeMove(int inputOne,int inputTwo) override;
+		bool makeMove(int inputOne,bool playerTurn) override { return false; };
+		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override;
 		
 
 		bool getWinner() override;
@@ -86,6 +92,7 @@ class checkersLogic : public baseGameLogic {
 		};
 		*/
 	private:
+		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
 		
 };

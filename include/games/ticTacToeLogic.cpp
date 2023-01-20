@@ -60,7 +60,7 @@ namespace game {
 
 		
 	}
-	bool ticTacToeLogic::makeMove(int inputOne) {
+	bool ticTacToeLogic::makeMove(int inputOne,bool playerTurn) {
 		auto getIntFromBool = [this]() {
 			if (this->userTurn) {
 				return 1;
@@ -97,6 +97,8 @@ namespace game {
 
 
 }
+
+
 
 
 
