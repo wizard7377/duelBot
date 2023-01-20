@@ -6,8 +6,8 @@
 
 
 template <typename T>
-T * getValAt(int index, std::vector<std::vector<T>> * inVec) {
-	return &((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
+T & getValAt(int index, std::vector<std::vector<T>> * inVec) {
+	return ((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
 }
 enum checks {
 	EMPTY = 0,
@@ -56,9 +56,11 @@ namespace game {
 	
 	}
 	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
+		std::cout << getValAt<int>(inputTwo,this->boardItems) << " to " <<  getValAt<int>(inputOne,this->boardItems) << std::endl;
 		if (inputOne >= 0) {
-			*getValAt<int>(inputTwo,this->boardItems) = *getValAt<int>(inputOne,this->boardItems);
-			*getValAt<int>(inputOne,this->boardItems) = 0;
+			getValAt<int>(inputTwo,this->boardItems) = getValAt<int>(inputOne,this->boardItems);
+			
+			getValAt<int>(inputOne,this->boardItems) = 0;
 		}
 		this->changeMoves(playerTurn);
 		return false;
