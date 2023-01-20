@@ -7,6 +7,7 @@
 
 template <typename T>
 T & getValAt(int index, std::vector<std::vector<T>> * inVec) {
+	
 	return ((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
 }
 enum checks {
@@ -56,11 +57,19 @@ namespace game {
 	
 	}
 	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
-		std::cout << getValAt<int>(inputTwo,this->boardItems) << " to " <<  getValAt<int>(inputOne,this->boardItems) << std::endl;
+		//std::cout << getValAt<int>(inputTwo,this->boardItems) << " to " <<  getValAt<int>(inputOne,this->boardItems) << std::endl;
 		if (inputOne >= 0) {
+			
+			//std::cout << std::endl << "Imp val one: " << getValAt<int>(inputOne,this->boardItems) << std::endl << getValAt<int>(inputTwo,this->boardItems) << std::endl;
 			getValAt<int>(inputTwo,this->boardItems) = getValAt<int>(inputOne,this->boardItems);
 			
 			getValAt<int>(inputOne,this->boardItems) = 0;
+		}
+		for (auto a : *(this->boardItems)) {
+			for (auto b : a) {
+				//std::cout << b;
+			}
+			//std::cout << std::endl;
 		}
 		this->changeMoves(playerTurn);
 		return false;
@@ -124,7 +133,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			for (int ii = 0; ii < 8; ii++) {
 				
 				if (this->pAt(i,ii) == pNames[0]) {
-					std::cout << "val is " << (i-1) << " ";
+					//std::cout << "val is " << (i-1) << " ";
 					if (this->pAt(i-1,ii+spaces[0]) == 0) {
 						
 						this->moveNames[i*8+ii].push_back(checkRowNames[i-1]+checkColNames[ii+spaces[0]]);

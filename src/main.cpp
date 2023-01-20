@@ -144,7 +144,7 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 
 	handler->addButtonCmd(std::to_string(userId.id)+std::to_string(challengeId)+"n", 
 	[event,challengeId,userId,&bot](const button_click_t& eventPar) {
-		std::cout << "response one" << std::endl;
+		//std::cout << "response one" << std::endl;
 		event.reply("Your request has been denied");
 		eventPar.reply("You choose to not accept");
 		threadDecide(bot, userId.id, challengeId,false);
@@ -153,7 +153,7 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 	});
 	handler->addButtonCmd(std::to_string(userId.id)+std::to_string(challengeId)+"y", 
 	[gameName,event,challengeId,userId,&bot](const button_click_t& eventPar) {
-		std::cout << "response two" << std::endl;
+		//std::cout << "response two" << std::endl;
 		event.edit_response("Your request has been accepted");
 		eventPar.reply("You choose to accept");
 		//tMT(botPar, challengeId, challengeId, event.command.channel_id);

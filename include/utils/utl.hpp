@@ -8,6 +8,13 @@ using namespace dpp;
 
 namespace utl {
 
+
+class point {
+	public:
+		point(int inX,int inY) { this->x = inX; this->y = inY; }
+		int x, y;
+};
+
 class bigSelect {
 
 	public:

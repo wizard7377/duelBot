@@ -8,7 +8,7 @@
 #include <dpp/dpp.h>
 #include <algorithm>
 #include "drawgame.hpp"
-#include "bigselect.hpp"
+#include "utl.hpp"
 #include <cstdlib>
 #include <random>
 #include <thread>
@@ -133,7 +133,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	
 		
 
-	std::cout << "finished" << std::endl;
+	//std::cout << "finished" << std::endl;
 	
 	
 	
@@ -146,10 +146,10 @@ message * baseThread<T>::msgMake() {
 	std::vector<std::string> inMoves;
 	
 	for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
-		std::cout << this->gameInteraction->getAllMoves()[i].size();
+		//std::cout << this->gameInteraction->getAllMoves()[i].size();
 		if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->intToMove(i)); }
 	}
-	std::cout <<  __LINE__ << std::endl;
+	//std::cout <<  __LINE__ << std::endl;
 	std::string ranPre = std::to_string(rand());
 	std::string itemIds[] = {reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId()};
 	utl::bigSelect * startSel = new utl::bigSelect(inMoves);
@@ -230,16 +230,16 @@ message * baseThread<T>::msgMake() {
 
 	
 	if (this->imgThread->joinable()) { this->imgThread->join(); }
-	std::cout << std::to_string(msg->id) << std::endl;
+	//std::cout << std::to_string(msg->id) << std::endl;
 
 	this->bot->message_create(*msg,[&msg](const confirmation_callback_t & event) {
 		*msg = std::get<message>(event.value);
-		std::cout << msg->id << std::endl;
+		//std::cout << msg->id << std::endl;
 	});
 
 
 	
-	std::cout << std::to_string(msg->id) << std::endl;
+	//std::cout << std::to_string(msg->id) << std::endl;
 	
 
 	
@@ -272,6 +272,7 @@ message * baseThread<T>::msgMake() {
 		if ((this->curMove[0] == "")||(this->curMove[1] == "")) {
 			event.reply(message(":x: You haven't selected a move yet!").set_flags(m_ephemeral));
 		} else {
+			event.reply();
 			this->gameInteraction->makeMove(this->curPlayer,curMove[0],curMove[1]);
 			this->msgMake();
 		}
@@ -281,7 +282,7 @@ message * baseThread<T>::msgMake() {
 		msg->components[0].components[0] = startSel->pageUp();
 		this->bot->message_edit(*msg);
 	});
-	std::cout << "Wait a minute..." << std::endl;	
+	//std::cout << "Wait a minute..." << std::endl;	
 	this->handler->addButtonCmd(itemIds[2],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageDown();
 		this->bot->message_edit(*msg);
@@ -353,7 +354,7 @@ std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>
 		retString = retString + '\n';
 	}
 	
-	std::cout << retString;
+	//std::cout << retString;
 	return retString;
 
 		
