@@ -44,11 +44,11 @@ target_link_libraries(${PROJECT_NAME}
 # Specify includes
 target_include_directories(${PROJECT_NAME} PUBLIC
     libs/DPP/include
+    include/utils
     include/games
     include/database
     include/front
     include/draw
-    include/utils
     include/interactions
     include/eventhandle
     src/commands

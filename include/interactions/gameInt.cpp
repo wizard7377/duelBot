@@ -44,14 +44,15 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 	//std::cout << "test" << std::endl;
 	
 	
-	/*
+	
 	for (auto a : *(this->gameLogic->boardItems)) {
 		
 		for (int b : a) {
-			std::cout << std::to_string(b) << std::endl;
+			std::cout << std::to_string(b);
 		}
+		std::cout << std::endl;
 	}
-	*/
+	
 	
 	return *(this->gameLogic->boardItems);
 }

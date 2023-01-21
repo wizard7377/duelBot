@@ -3,12 +3,15 @@
 #include <string>
 #include <cmath>
 #include "gameLogic.hpp"
+#include "utl.hpp"
 
 
 template <typename T>
 T & getValAt(int index, std::vector<std::vector<T>> * inVec) {
-	
-	return ((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
+	//std::cout << "Looking for point: (" << (int)(std::floor(index/(*inVec).size())) << ", " << (int)(index % (*inVec)[0].size()) << "), with n of " << index << std::endl;
+	//return ((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
+	std::cout << "Looking for point: (" << (int)(index % (*inVec)[0].size()) << ", " << (int)(std::floor(index/(*inVec).size())) << "), with n of " << index << std::endl;
+	return ((*inVec)[(int)(index % (*inVec)[0].size())][(int)(std::floor(index/(*inVec).size()))]);
 }
 enum checks {
 	EMPTY = 0,
@@ -59,10 +62,11 @@ namespace game {
 	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
 		//std::cout << getValAt<int>(inputTwo,this->boardItems) << " to " <<  getValAt<int>(inputOne,this->boardItems) << std::endl;
 		if (inputOne >= 0) {
-			
+			utl::point pOne = utl::point(inputOne,8);
+			utl::point pTwo = utl::point(inputTwo,8);
+			std::cout << "inputs are: " << inputOne << ", " << inputTwo << std::endl;
 			//std::cout << std::endl << "Imp val one: " << getValAt<int>(inputOne,this->boardItems) << std::endl << getValAt<int>(inputTwo,this->boardItems) << std::endl;
 			getValAt<int>(inputTwo,this->boardItems) = getValAt<int>(inputOne,this->boardItems);
-			
 			getValAt<int>(inputOne,this->boardItems) = 0;
 		}
 		for (auto a : *(this->boardItems)) {

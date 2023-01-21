@@ -11,8 +11,10 @@ namespace utl {
 
 class point {
 	public:
-		point(int inX,int inY) { this->x = inX; this->y = inY; }
-		int x, y;
+		point(int inX,int inY,int inSize);
+		point(int inIndex,int inSize, bool xIsOne = false);
+		int getVal(bool xIsOne = false);
+		int x, y, size;
 };
 
 class bigSelect {

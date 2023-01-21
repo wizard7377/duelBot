@@ -110,6 +110,11 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 
 	if (rpsTurns == 0) { this->pOneFirst = ((std::rand() % 2) == 0); }
 	this->curPlayer = pOneFirst;
+	if (this->pOneFirst) {
+		std::cout << "White goes first\n";
+	} else {
+		std::cout << "Black goes first\n";
+	}
 	
 	
 	
