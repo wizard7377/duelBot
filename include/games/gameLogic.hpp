@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include "utl.hpp"
 
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string colNames[] = {"1","2","3","4","5","6","7","8"};
@@ -13,6 +15,7 @@ namespace game {
 class baseGameLogic {
 	public:
 		baseGameLogic();
+		bool isCapture = false;
 		std::string gameId;
 		std::vector<std::vector<int>> * boardItems;
 		bool* allowedMoves;
@@ -26,6 +29,10 @@ class baseGameLogic {
 		std::vector<std::vector<std::string>> moveNames;
 		std::vector<std::vector<std::string>> moveNamesCon;
 		std::vector<std::vector<std::string>> extraMoveNames;
+		std::map<std::string,std::vector<utl::point>> capMoves;
+		std::vector<std::vector<utl::point>> capMovesVec;
+		std::vector<std::string> capMovesNames;
+		
 	protected:
 
 		virtual void changeMoves(bool playerTurn) {};
@@ -95,6 +102,7 @@ class checkersLogic : public baseGameLogic {
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
 		int pAt(int x, int y);
+		
 		
 };
 

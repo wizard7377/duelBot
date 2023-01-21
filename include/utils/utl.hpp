@@ -11,8 +11,9 @@ namespace utl {
 
 class point {
 	public:
-		point(int inX,int inY,int inSize);
-		point(int inIndex,int inSize, bool xIsOne = false);
+		point(int inX,int inY,int inSize = 64);
+		point(int inIndex,int inSize, bool xIsOne);
+		std::string tString();
 		int getVal(bool xIsOne = false);
 		int x, y, size;
 };

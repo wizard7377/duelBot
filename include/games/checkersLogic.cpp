@@ -1,6 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <functional>
 #include <cmath>
 #include "gameLogic.hpp"
 #include "utl.hpp"
@@ -8,9 +9,6 @@
 
 template <typename T>
 T & getValAt(int index, std::vector<std::vector<T>> * inVec) {
-	//std::cout << "Looking for point: (" << (int)(std::floor(index/(*inVec).size())) << ", " << (int)(index % (*inVec)[0].size()) << "), with n of " << index << std::endl;
-	//return ((*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())]);
-	std::cout << "Looking for point: (" << (int)(index % (*inVec)[0].size()) << ", " << (int)(std::floor(index/(*inVec).size())) << "), with n of " << index << std::endl;
 	return ((*inVec)[(int)(index % (*inVec)[0].size())][(int)(std::floor(index/(*inVec).size()))]);
 }
 enum checks {
@@ -26,6 +24,8 @@ const std::string checkColNames[] = {"1","2","3","4","5","6","7","8"};
 
 namespace game {
 	checkersLogic::checkersLogic() {
+		// NOTE THIS IS A TEST CASE, REVERT BACK
+		/*
 		this->boardItems = new std::vector<std::vector<int>>{
 			{0,1,0,1,0,1,0,1},
 			{1,0,1,0,1,0,1,0},
@@ -36,6 +36,20 @@ namespace game {
 			{0,3,0,3,0,3,0,3},
 			{3,0,3,0,3,0,3,0}
 		};
+		*/
+		
+		
+		this->boardItems = new std::vector<std::vector<int>>{
+			{0,0,0,0,0,0,0,0},
+			{0,0,1,0,0,0,1,0},
+			{0,0,0,0,0,0,0,0},
+			{0,0,1,0,1,0,1,0},
+			{0,3,0,3,0,3,0,0},
+			{0,0,0,0,0,0,0,0},
+			{0,3,0,3,0,0,0,0},
+			{0,0,0,0,0,0,0,0}
+		};
+		
 
 		
 		this->moveNames = std::vector<std::vector<std::string>>();
@@ -61,9 +75,18 @@ namespace game {
 	}
 	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
 		//std::cout << getValAt<int>(inputTwo,this->boardItems) << " to " <<  getValAt<int>(inputOne,this->boardItems) << std::endl;
-		if (inputOne >= 0) {
-			utl::point pOne = utl::point(inputOne,8);
-			utl::point pTwo = utl::point(inputTwo,8);
+		if (this->isCapture) { 
+			std::vector<utl::point> * curVals = &(this->capMovesVec.at(inputTwo));
+			this->boardItems->at(curVals->back().x)[curVals->back().y] = this->boardItems->at(curVals->front().x)[curVals->front().y];
+			for (int i = 0; i < curVals->size() - 1; i++) {
+				this->boardItems->at(curVals->at(i).x)[curVals->at(i).y] = 0;
+				this->boardItems->at((int)((curVals->at(i).x+curVals->at(i+1).x)/2))[(int)((curVals->at(i).y+curVals->at(i+1).y)/2)] = 0;
+			}
+
+
+		} else {
+			utl::point pOne = utl::point(inputOne,8,false);
+			utl::point pTwo = utl::point(inputTwo,8,false);
 			std::cout << "inputs are: " << inputOne << ", " << inputTwo << std::endl;
 			//std::cout << std::endl << "Imp val one: " << getValAt<int>(inputOne,this->boardItems) << std::endl << getValAt<int>(inputTwo,this->boardItems) << std::endl;
 			getValAt<int>(inputTwo,this->boardItems) = getValAt<int>(inputOne,this->boardItems);
@@ -102,7 +125,7 @@ int checkersLogic::pAt(int x, int y) {
 }
 
 void checkersLogic::changeMoves(bool playerTurn) {
-	bool isCapture = false;
+	this->isCapture = false;
 	
 	int *pNames;
 	int *eNames;
@@ -117,6 +140,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 		eNames = new int[2] {1,2};
 		spaces = new int[2] {-1,-2};
 	}
+	std::cout << spaces[0] << spaces[1] << std::endl;
 	for (int i = 0; i < 8; i++) {
 		for (int ii = 0; ii < 8; ii++) {
 			//kings
@@ -125,13 +149,64 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			(((this->pAt(i+1,ii+spaces[0]) == eNames[0]) and (this->pAt(i+2,ii+spaces[1]) == 0)) or 
 			((this->pAt(i-1,ii+spaces[0]) == eNames[0]) and (this->pAt(i-2,ii+spaces[1]) == 0)))) 
 			{
-				isCapture = true;
+				this->isCapture = true;
 				break;	
 			}
 		}
 	}
-	std::cout << "isCapture is: " << isCapture << std::endl;
-	if (isCapture) {
+	std::cout << "isCapture is: " << this->isCapture << std::endl;
+	if (this->isCapture) {
+		std::vector<utl::point> relP;
+		for (int i = 0; i < 8; i++) {
+			for (int ii = 0; ii < 8; ii++) {
+				//kings
+				//std::cout << spaces[0] << spaces[1] << pNames[0] << pNames[1] << eNames[0] << eNames[1] << std::endl;
+				if 
+				((this->pAt(i,ii) == pNames[0]) and
+				(((this->pAt(i+1,ii+spaces[0]) == eNames[0]) and (this->pAt(i+2,ii+spaces[1]) == 0)) or 
+				((this->pAt(i-1,ii+spaces[0]) == eNames[0]) and (this->pAt(i-2,ii+spaces[1]) == 0)))) 
+				{
+					relP.push_back(utl::point(i,ii));
+				}
+			}
+		}
+		for (auto b : relP) {
+			std::cout << b.tString() << ",";
+		}
+		std::cout << std::endl;
+		for (auto a : relP) {
+			//std::string stringNow = checkRowNames[a.x] + checkColNames[a.y];
+			std::string stringNow = "";
+			std::vector<utl::point> curPoints;
+			std::function<void(utl::point,std::string,std::vector<utl::point>)> spFunc = ([=,&a,&relP,&spFunc,this](utl::point inP,std::string curString,std::vector<utl::point> inPs) {
+				std::cout << curString << " with one " << inP.tString() << std::endl;
+				std::cout << curString << " with two " << inP.tString() << std::endl;
+
+				inPs.push_back(inP);
+				if ((a.x != inP.x) and (a.y != inP.y)) {
+					curString = curString + "->" +  checkRowNames[inP.x] + checkColNames[inP.y];
+					this->moveNames[a.x*8+a.y].push_back(curString);
+					this->capMovesNames.push_back(curString);
+					this->capMovesVec.push_back(inPs);
+					this->capMoves.emplace(curString,inPs); 
+				}
+				if ((this->pAt(inP.x+1,inP.y+spaces[0]) == eNames[0]) and (this->pAt(inP.x+2,inP.y+spaces[1]) == 0)) {
+					spFunc(utl::point(inP.x+2,inP.y+spaces[1]),curString,inPs);
+				}
+				if ((this->pAt(inP.x-1,inP.y+spaces[0]) == eNames[0]) and (this->pAt(inP.x-2,inP.y+spaces[1]) == 0)) {
+					spFunc(utl::point(inP.x-2,inP.y+spaces[1]),curString,inPs);
+				}
+			});
+			std::cout << a.tString() << std::endl;
+			spFunc(a,stringNow,curPoints);
+			
+			
+		}
+		
+
+
+				
+
 	} else {
 		for (int i = 0; i < 8; i++) {
 			for (int ii = 0; ii < 8; ii++) {

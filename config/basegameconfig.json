@@ -1,7 +1,11 @@
 {
     "tictactoe": {
+        "cycle": 1,
+        "size":[3,3]
     },
     "checkers": {
+        "cycle": 2,
+        "size":[8,8],
         "imgpaths": [
             ["resources/checkers/empty_red.png","resources/checkers/red_pawn.png","resources/checkers/red_king.png","resources/checkers/black_pawn.png","resources/checkers/black_king.png"],
             ["resources/checkers/empty_black.png"]

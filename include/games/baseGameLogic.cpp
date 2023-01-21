@@ -18,6 +18,7 @@ baseGameLogic::baseGameLogic() {
 std::string baseGameLogic::convertIntToString(int logicMove) {
 	return (getValAt<std::string>(logicMove,(&this->moveNamesCon)));
 }
+
 int baseGameLogic::convertStringToInt(std::string userMove) {
 	int i = 0;
 	for (i = 0; i < this->moveNames.size(); i++) {

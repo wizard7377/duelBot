@@ -26,4 +26,7 @@ int point::getVal(bool xIsOne) {
          return ((this->size * this->x) + this->y);
     }
 }
+std::string point::tString() {
+    return ("("+std::to_string(this->x)+", " + std::to_string(this->y) + ")");
+}
 }

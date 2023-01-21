@@ -107,13 +107,15 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->emojiCode = gameEmojiName[gameName];
 	this->gameDraw = new dg::basicDrawGame(gameName);
 	this->handler = handlerPar;
-
-	if (rpsTurns == 0) { this->pOneFirst = ((std::rand() % 2) == 0); }
-	this->curPlayer = pOneFirst;
-	if (this->pOneFirst) {
-		std::cout << "White goes first\n";
-	} else {
+	std::cout << rpsTurns << std::endl;
+	if (rpsTurns == 0) { this->pOneFirst = (std::rand() > (RAND_MAX / 2)); }
+	this->curPlayer = this->pOneFirst;
+	//mas lazy
+	this->curPlayer = false;
+	if (this->curPlayer) {
 		std::cout << "Black goes first\n";
+	} else {
+		std::cout << "White goes first\n";
 	}
 	
 	

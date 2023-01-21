@@ -20,7 +20,7 @@ class baseGameInt {
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
 		baseGameInt(gameTimeType* control[3], std::function<void(bool,int)> onEnd); 
 		std::string intToMove(int userMove);
-		int moveToInt(std::string userMove);
+		int moveToInt(std::string userMove,bool typeReq = false);
 		std::vector<std::vector<std::string>> getAllMoves();
 		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
 

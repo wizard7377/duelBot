@@ -2,6 +2,8 @@
 #include <string>
 #include <functional>
 #include <iostream>
+#include <iterator>
+#include <algorithm> 
 
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
@@ -54,6 +56,7 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 	}
 	
 	
+	
 	return *(this->gameLogic->boardItems);
 }
 
@@ -65,7 +68,15 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 	bool isCase = false;
 
 	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),playerTurn)); } 
-	else { isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo),playerTurn)); }
+	else {
+		if (this->gameLogic->isCapture) {
+			isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo,true),playerTurn)); 
+		} else {
+			isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo),playerTurn)); 
+		}
+	}
+	
+		
 	if (this->timeMove()) {
 		this->endCase(this->userMove,2);
 	}
@@ -83,8 +94,12 @@ std::string baseGameInt<T>::intToMove(int userMove) {
 	return (this->gameLogic->convertIntToString(userMove));
 }
 template <typename T> 
-int baseGameInt<T>::moveToInt(std::string userMove) {
-	return (this->gameLogic->convertStringToInt(userMove));
+int baseGameInt<T>::moveToInt(std::string userMove, bool typeReq) {
+	if (typeReq) {
+		return (std::distance(this->gameLogic->capMovesNames.begin(),std::find(this->gameLogic->capMovesNames.begin(),this->gameLogic->capMovesNames.end(),userMove)));
+	} else {
+		return (this->gameLogic->convertStringToInt(userMove));
+	}	
 }
 
 
