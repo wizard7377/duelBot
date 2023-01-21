@@ -94,6 +94,10 @@ std::string baseGameInt<T>::intToMove(int userMove) {
 	return (this->gameLogic->convertIntToString(userMove));
 }
 template <typename T> 
+bool baseGameInt<T>::isDuoMove() {
+	return (this->gameLogic->isDuoMove());
+}
+template <typename T> 
 int baseGameInt<T>::moveToInt(std::string userMove, bool typeReq) {
 	if (typeReq) {
 		return (std::distance(this->gameLogic->capMovesNames.begin(),std::find(this->gameLogic->capMovesNames.begin(),this->gameLogic->capMovesNames.end(),userMove)));

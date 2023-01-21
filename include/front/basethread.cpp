@@ -188,11 +188,13 @@ message * baseThread<T>::msgMake() {
 		set_disabled(!startSel->canPage[1])
 	)
 	);
-	msg->add_component(
-		component().add_component(
-			endSel->pageStay()
-		)
-	);
+	if (this->gameInteraction->isDuoMove()) {
+		msg->add_component(
+			component().add_component(
+				endSel->pageStay()
+			)
+		);
+	}
 	msg->add_component(
 	component().add_component(
 		component().set_label("<-").
@@ -252,31 +254,34 @@ message * baseThread<T>::msgMake() {
 	
 	this->handler->addSelectCmd(msg->components[0].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {
 	
-		this->handler->deleteSelectCmd(msg->components[2].components[0].custom_id);
-		delete endSel;
-		endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			
+		if (this->gameInteraction->isDuoMove()) {
+			this->handler->deleteSelectCmd(msg->components[2].components[0].custom_id);
+			delete endSel;
+			endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			
+			msg->components[2].components[0] = endSel->pageStay();
+			this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
+				msg->components[2].components[0].set_placeholder(event.values[0]);
+				event.reply();
+				this->curMove[1] = event.values[0];	
+			});
+		}
 		msg->components[0].components[0].set_placeholder(event.values[0]);
-		msg->components[2].components[0] = endSel->pageStay();
 		event.reply();
 		this->curMove[0] = event.values[0];
 		this->curMove[1] = "";
+		this->bot->message_edit(*msg);
+	});
+	if (this->gameInteraction->isDuoMove()) {	
 		this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
 			msg->components[2].components[0].set_placeholder(event.values[0]);
 			event.reply();
 			this->curMove[1] = event.values[0];	
 		});
-		this->bot->message_edit(*msg);
-	});
-		
-	this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
-		msg->components[2].components[0].set_placeholder(event.values[0]);
-		event.reply();
-		this->curMove[1] = event.values[0];	
-	});
+	}
 	
 		
 	this->handler->addButtonCmd(itemIds[8], [this](const auto& event) {
-		if ((this->curMove[0] == "")||(this->curMove[1] == "")) {
+		if ((this->curMove[0] == "") or ((this->curMove[1] == "") and (this->gameInteraction->isDuoMove()))) {
 			event.reply(message(":x: You haven't selected a move yet!").set_flags(m_ephemeral));
 		} else {
 			event.reply();
@@ -294,14 +299,16 @@ message * baseThread<T>::msgMake() {
 		msg->components[0].components[0] = startSel->pageDown();
 		this->bot->message_edit(*msg);
 	});
-	this->handler->addButtonCmd(itemIds[3],[endSel,msg,this](const button_click_t& event) {
-		msg->components[2].components[0] = endSel->pageUp();
-		this->bot->message_edit(*msg);
-	});
-	this->handler->addButtonCmd(itemIds[5],[endSel,msg,this](const button_click_t& event) {
-		msg->components[2].components[0] = endSel->pageDown();
-		this->bot->message_edit(*msg);
-	});
+	if (this->gameInteraction->isDuoMove()) {
+		this->handler->addButtonCmd(itemIds[3],[endSel,msg,this](const button_click_t& event) {
+			msg->components[2].components[0] = endSel->pageUp();
+			this->bot->message_edit(*msg);
+		});
+		this->handler->addButtonCmd(itemIds[5],[endSel,msg,this](const button_click_t& event) {
+			msg->components[2].components[0] = endSel->pageDown();
+			this->bot->message_edit(*msg);
+		});
+	}
 	return msg;
 
 }

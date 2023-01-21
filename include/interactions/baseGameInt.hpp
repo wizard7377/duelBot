@@ -23,6 +23,7 @@ class baseGameInt {
 		int moveToInt(std::string userMove,bool typeReq = false);
 		std::vector<std::vector<std::string>> getAllMoves();
 		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
+		bool isDuoMove();
 
 		gameTimeType * timeLeft[2];
 		gameTimeType* timeControl[3];

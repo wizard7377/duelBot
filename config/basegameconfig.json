@@ -1,7 +1,11 @@
 {
     "tictactoe": {
         "cycle": 1,
-        "size":[3,3]
+        "size":[3,3],
+        "imgpaths": [
+            ["resources/tictactoe/empty.png","resources/tictactoe/red.png","resources/tictactoe/blue.png"],
+            ["resources/tictactoe/empty.png","resources/tictactoe/red.png","resources/tictactoe/blue.png"]
+        ]
     },
     "checkers": {
         "cycle": 2,

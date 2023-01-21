@@ -16,6 +16,7 @@ class baseGameLogic {
 	public:
 		baseGameLogic();
 		bool isCapture = false;
+		virtual bool isDuoMove() { return true; };
 		std::string gameId;
 		std::vector<std::vector<int>> * boardItems;
 		bool* allowedMoves;
@@ -35,7 +36,7 @@ class baseGameLogic {
 		
 	protected:
 
-		virtual void changeMoves(bool playerTurn) {};
+		virtual void changeMoves(bool playerTurn = false) {};
 		bool userTurn = true;
 
 };
@@ -63,6 +64,7 @@ class chessLogic : public baseGameLogic {
 class ticTacToeLogic : public baseGameLogic {
 	public:
 		ticTacToeLogic();
+		bool isDuoMove() override { return false; }
 		bool makeMove(int inputOne,bool playerTurn) override;
 		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
 		
@@ -77,7 +79,7 @@ class ticTacToeLogic : public baseGameLogic {
 		};
 		*/
 	private:
-		void changeMoves(bool playerTurn) override {};
+		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
 		
 };

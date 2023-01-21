@@ -47,8 +47,10 @@ namespace game {
 		this->boardItems = new std::vector<std::vector<int>>{{0,0,0},{0,0,0},{0,0,0}};
 		
 		for (int i = 0; i < 3; i++) {
+			this->moveNamesCon.push_back({});
 			for (int ii = 0; ii < 3; ii++) {
 				nameArray.push_back({tttRowNames[i]+"-"+tttColNames[ii]});
+				this->moveNamesCon[i].push_back(tttRowNames[i]+"-"+tttColNames[ii]);
 			}
 		}
 		
@@ -60,6 +62,16 @@ namespace game {
 
 		
 	}
+	void ticTacToeLogic::changeMoves(bool playerTurn) {
+		for (int i = 0; i < 3; i++) {
+			for (int ii = 0; ii < 3; ii++) {
+				if (this->boardItems->at(i)[ii] == 0) {
+					this->moveNames[0].push_back(this->moveNamesCon[i][ii]);
+				}
+			}
+		}
+	}
+
 	bool ticTacToeLogic::makeMove(int inputOne,bool playerTurn) {
 		auto getIntFromBool = [this]() {
 			if (this->userTurn) {
@@ -73,6 +85,7 @@ namespace game {
 		this->allowedMoves[inputOne] = false;
 
 		this->userTurn = (!(this->userTurn));
+		this->changeMoves(this->userTurn);
 
 		return (this->checkForEnd());
 	}
