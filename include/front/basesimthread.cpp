@@ -17,9 +17,10 @@ using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
 
-template class gameFront::baseThread<game::ticTacToeLogic>;
-template class gameFront::baseThread<game::checkersLogic>;
-template class gameFront::baseThread<game::baseGameLogic>;
+template class gameFront::baseSimThread<game::ticTacToeLogic>;
+template class gameFront::baseSimThread<game::checkersLogic>;
+template class gameFront::baseSimThread<game::baseGameLogic>;
+
 
 
 
@@ -28,34 +29,26 @@ namespace gameFront {
 
 /*
 template <typename T>
-baseThread<T>::~baseThread() {
+baseSimThread<T>::~baseSimThread() {
 	this->bot->on_button_click.detach(this->buttonEventId);
 	this->bot->on_select_click.detach(this->selectEventId);
 }
 */
 
-
-
 template <typename T>
-baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, std::string gameName,evt::eventhandle * handlerPar,int rpsTurns) {
+baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt) {
 	//std::cout << "Wizard goffy (We\'re doing this again... seriously?) 1" << std::endl;
 	this->bot = botPar;
 	this->userIdOne = userIdA;
 	this->userIdTwo = userIdB;
-	this->gameThread = threadId;
-	this->emojiCode = gameEmojiName[gameName];
-	this->gameDraw = new dg::basicDrawGame(gameName);
+	this->gameThread = threadId;	
+	this->emojiCode = gameCon.at(std::type_index(typeid(T))).gameId;
+	this->gameDraw = new dg::basicDrawGame(gameCon.at(std::type_index(typeid(T))).gameName);
 	this->handler = handlerPar;
-	std::cout << rpsTurns << std::endl;
-	if (rpsTurns == 0) { this->pOneFirst = (std::rand() > (RAND_MAX / 2)); }
-	this->curPlayer = this->pOneFirst;
+	this->gameInteraction = shareInt;
 	//mas lazy
-	this->curPlayer = false;
-	if (this->curPlayer) {
-		std::cout << "Black goes first\n";
-	} else {
-		std::cout << "White goes first\n";
-	}
+	this->isPlayerOne = (userIdA >= userIdB);
+	
 	
 	
 	
@@ -64,7 +57,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	
 
 	gameInt::gameTimeType* con[] = {new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0)};
-	this->gameInteraction = new gameInt::baseGameInt<T>(con,(std::bind(&baseThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
+	//this->gameInteraction = new gameInt::baseGameInt<T>(con,(std::bind(&baseSimThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
 	//std::cout << this->gameThread << std::endl;
 
 	this->msgMake();
@@ -86,7 +79,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 }
 
 template <typename T>
-message * baseThread<T>::msgMake() {
+message * baseSimThread<T>::msgMake() {
 	message * msg = makeGameEmbed();
 
 	std::vector<std::string> inMoves;
@@ -226,6 +219,7 @@ message * baseThread<T>::msgMake() {
 			event.reply();
 			this->gameInteraction->makeMove(this->curPlayer,curMove[0],curMove[1]);
 			this->msgMake();
+			this->giveMove();
 		}
 			
 	});
@@ -253,7 +247,7 @@ message * baseThread<T>::msgMake() {
 }
 
 template <typename T>
-message * baseThread<T>::makeGameEmbed() {
+message * baseSimThread<T>::makeGameEmbed() {
 	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
 	embed mainEmb = embed().
 		set_color(colors::blue_aquamarine).
@@ -267,6 +261,12 @@ message * baseThread<T>::makeGameEmbed() {
 
 }
 
+template <typename T>
+void baseSimThread<T>::getMove() {
+	this->msgMake();
+	//this->giveMove();
+}
+
 	
 
 
@@ -278,7 +278,7 @@ message * baseThread<T>::makeGameEmbed() {
 
 
 template <typename T>
-std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>> boardState) {
+std::string baseSimThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>> boardState) {
 		
 	
 	

@@ -12,9 +12,9 @@ class gameTimeType {
 		gameTimeType(int seconds, int minutes = 0, int hours = 0);
 		int hours, minutes, seconds;
 };
-
+class wrapState {};
 template <typename T>
-class baseGameInt {
+class baseGameInt : public wrapState {
 	public:
 		std::vector<std::vector<int>> getBoard();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
@@ -24,6 +24,7 @@ class baseGameInt {
 		std::vector<std::vector<std::string>> getAllMoves();
 		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
 		bool isDuoMove();
+		bool curPlayer = true;
 
 		gameTimeType * timeLeft[2];
 		gameTimeType* timeControl[3];

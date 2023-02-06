@@ -12,6 +12,17 @@
 #include <functional>
 #include "drawgame.hpp"
 #include "eventhandle.hpp"
+#include "frontendcon.hpp"
+
+/*
+
+extern std::map<std::string,std::string> gameEmojiName;
+
+extern std::map<std::string,std::map<std::string,std::vector<std::string>>> gamesToEmojis;
+
+extern std::map<char,std::string> charToEmote;
+
+*/
 
 using namespace dpp;
 
@@ -19,9 +30,29 @@ namespace gameFront {
 
 
 class wrapThread {};
+class wrapThreadHandle {};
+class inType {
+	public: 
+		std::function<void()> giveMove;
+		virtual void getMove() = 0;  
+};
+
+template <typename T>
+class baseGameHandle : public wrapThreadHandle {
+	public:
+		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Can only have logic of game types");
+		baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*)> inHandles[2]);
+		std::function<void()> onStart;
+		gameInt::baseGameInt<T> * shState;
+
+	private:
+		inType * gameHandles[2];
 
 
 
+
+
+};
 	
 template <typename T>
 class baseThread : public wrapThread {
@@ -38,6 +69,46 @@ class baseThread : public wrapThread {
 
 	private:
 	    cluster* bot;
+	    snowflake userIdOne;
+	    snowflake userIdTwo;
+	    snowflake gameThread;
+		evt::eventhandle * handler;
+		channel gameThreadObj;
+	    std::string emojiCode;
+		dg::baseDrawGame * gameDraw;
+	    gameInt::baseGameInt<T> * gameInteraction;
+		event_handle buttonEventId;
+		event_handle selectEventId;
+		message * makeGameEmbed();
+		message * msgMake();
+		std::thread * imgThread;
+		std::string curMove[2] = {"",""};
+		std::mutex mtx;
+		bool pOneFirst;
+		bool curPlayer;
+		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;
+		std::map<std::string,std::function<void(const select_click_t&)>> gameSelectCmds;
+
+
+};
+
+template <typename T>
+class baseSimThread : public wrapThread, public inType {
+	public:
+	    
+	    baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt);
+	    //~baseThread();
+		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
+		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
+	    std::function<void(message msg)> moveCall;
+	    void endCall(bool userWin, int winType) {
+			std::cout << "game has ended :(" << std::endl;
+		}
+		void getMove() override;
+
+	private:
+	    cluster* bot;
+		bool isPlayerOne;
 	    snowflake userIdOne;
 	    snowflake userIdTwo;
 	    snowflake gameThread;

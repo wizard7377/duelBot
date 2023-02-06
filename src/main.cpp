@@ -83,6 +83,8 @@ snowflake threadDecide(cluster& bot,snowflake userOne,snowflake userTwo,bool yes
 	return threadId;
 }
 
+/*
+
 std::map<std::string,std::function<gameFront::wrapThread*(cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler)>> typeCmds = {
 	{
 	"tictactoe",
@@ -97,6 +99,34 @@ std::map<std::string,std::function<gameFront::wrapThread*(cluster &bot,user user
 	([](cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler) {
 		
 		return new gameFront::baseThread<game::checkersLogic>(&bot,userId.id,challengeId,res,"checkers",handler);
+		
+	})
+	}
+
+};
+
+*/
+
+std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler)>> typeCmds = {
+	{
+	"tictactoe",
+	([](cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler) {
+	 	std::function<gameFront::inType*(gameInt::baseGameInt<game::ticTacToeLogic>*)> inFuncs = ([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState) {
+			return new gameFront::baseSimThread<game::ticTacToeLogic>(&bot,userId.id,challengeId,res,handler,inState);
+		});
+		std::function<gameFront::inType*(gameInt::baseGameInt<game::ticTacToeLogic>*)> funcs[2] = {inFuncs,inFuncs};
+		return new gameFront::baseGameHandle<game::ticTacToeLogic>(funcs);
+		
+	})
+	},
+	{
+	"checkers",
+	([](cluster &bot,user userId,snowflake challengeId,snowflake res,evt::eventhandle * handler) {
+	 	std::function<gameFront::inType*(gameInt::baseGameInt<game::checkersLogic>*)> inFuncs = ([&] (gameInt::baseGameInt<game::checkersLogic>* inState) {
+			return new gameFront::baseSimThread<game::checkersLogic>(&bot,userId.id,challengeId,res,handler,inState);
+		});
+		std::function<gameFront::inType*(gameInt::baseGameInt<game::checkersLogic>*)> funcs[2] = {inFuncs,inFuncs};
+		return new gameFront::baseGameHandle<game::checkersLogic>(funcs);
 		
 	})
 	}
