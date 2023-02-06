@@ -173,7 +173,7 @@ message * baseSimThread<T>::msgMake() {
 	if (this->imgThread->joinable()) { this->imgThread->join(); }
 	//std::cout << std::to_string(msg->id) << std::endl;
 
-	this->bot->message_create(*msg,[&msg](const confirmation_callback_t & event) {
+	this->bot->message_create(*msg,[msg](const confirmation_callback_t & event) {
 		*msg = std::get<message>(event.value);
 		//std::cout << msg->id << std::endl;
 	});
@@ -218,7 +218,7 @@ message * baseSimThread<T>::msgMake() {
 		} else {
 			event.reply();
 			this->gameInteraction->makeMove(this->curPlayer,curMove[0],curMove[1]);
-			this->msgMake();
+			//this->msgMake();
 			this->giveMove();
 		}
 			

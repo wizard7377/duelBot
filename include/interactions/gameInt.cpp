@@ -46,7 +46,7 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 	//std::cout << "test" << std::endl;
 	
 	
-	
+	/*
 	for (auto a : *(this->gameLogic->boardItems)) {
 		
 		for (int b : a) {
@@ -54,6 +54,7 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 		}
 		std::cout << std::endl;
 	}
+	*/
 	
 	
 	

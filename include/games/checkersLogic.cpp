@@ -87,7 +87,7 @@ namespace game {
 		} else {
 			utl::point pOne = utl::point(inputOne,8,false);
 			utl::point pTwo = utl::point(inputTwo,8,false);
-			std::cout << "inputs are: " << inputOne << ", " << inputTwo << std::endl;
+			//std::cout << "inputs are: " << inputOne << ", " << inputTwo << std::endl;
 			//std::cout << std::endl << "Imp val one: " << getValAt<int>(inputOne,this->boardItems) << std::endl << getValAt<int>(inputTwo,this->boardItems) << std::endl;
 			getValAt<int>(inputTwo,this->boardItems) = getValAt<int>(inputOne,this->boardItems);
 			getValAt<int>(inputOne,this->boardItems) = 0;
@@ -140,7 +140,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 		eNames = new int[2] {1,2};
 		spaces = new int[2] {-1,-2};
 	}
-	std::cout << spaces[0] << spaces[1] << std::endl;
+	//std::cout << spaces[0] << spaces[1] << std::endl;
 	for (int i = 0; i < 8; i++) {
 		for (int ii = 0; ii < 8; ii++) {
 			//kings
@@ -154,7 +154,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			}
 		}
 	}
-	std::cout << "isCapture is: " << this->isCapture << std::endl;
+	//std::cout << "isCapture is: " << this->isCapture << std::endl;
 	if (this->isCapture) {
 		std::vector<utl::point> relP;
 		for (int i = 0; i < 8; i++) {
@@ -171,7 +171,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			}
 		}
 		for (auto b : relP) {
-			std::cout << b.tString() << ",";
+			//std::cout << b.tString() << ",";
 		}
 		std::cout << std::endl;
 		for (auto a : relP) {
@@ -179,8 +179,8 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			std::string stringNow = "";
 			std::vector<utl::point> curPoints;
 			std::function<void(utl::point,std::string,std::vector<utl::point>)> spFunc = ([=,&a,&relP,&spFunc,this](utl::point inP,std::string curString,std::vector<utl::point> inPs) {
-				std::cout << curString << " with one " << inP.tString() << std::endl;
-				std::cout << curString << " with two " << inP.tString() << std::endl;
+				//std::cout << curString << " with one " << inP.tString() << std::endl;
+				//std::cout << curString << " with two " << inP.tString() << std::endl;
 
 				inPs.push_back(inP);
 				if ((a.x != inP.x) and (a.y != inP.y)) {
@@ -197,7 +197,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 					spFunc(utl::point(inP.x-2,inP.y+spaces[1]),curString,inPs);
 				}
 			});
-			std::cout << a.tString() << std::endl;
+			//std::cout << a.tString() << std::endl;
 			spFunc(a,stringNow,curPoints);
 			
 			
