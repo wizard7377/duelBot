@@ -127,7 +127,7 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 		std::function<gameFront::inType*(gameInt::baseGameInt<game::ticTacToeLogic>*)> funcs[2] = {
 			([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState) { return new gameFront::baseSimThread<game::ticTacToeLogic>(&bot,userId.id,challengeId,res.first,handler,inState); })
 			,
-			([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState) { return new gameFront::baseSimThread<game::ticTacToeLogic>(&bot,userId.id,challengeId,res.second,handler,inState); })
+			([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState) { return new gameFront::baseSimThread<game::ticTacToeLogic>(&bot,challengeId,userId.id,res.second,handler,inState); })
 		};
 		return new gameFront::baseGameHandle<game::ticTacToeLogic>(funcs);
 		
@@ -139,7 +139,7 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 		std::function<gameFront::inType*(gameInt::baseGameInt<game::checkersLogic>*)> funcs[2] = {
 			([&] (gameInt::baseGameInt<game::checkersLogic>* inState) { return new gameFront::baseSimThread<game::checkersLogic>(&bot,userId.id,challengeId,res.first,handler,inState); })
 			,
-			([&] (gameInt::baseGameInt<game::checkersLogic>* inState) { return new gameFront::baseSimThread<game::checkersLogic>(&bot,userId.id,challengeId,res.second,handler,inState); })
+			([&] (gameInt::baseGameInt<game::checkersLogic>* inState) { return new gameFront::baseSimThread<game::checkersLogic>(&bot,challengeId,userId.id,res.second,handler,inState); })
 		};
 		return new gameFront::baseGameHandle<game::checkersLogic>(funcs);
 		

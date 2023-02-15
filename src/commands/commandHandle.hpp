@@ -33,9 +33,9 @@ dpp::slashcommand challengeDef() {
     .add_option(
 		dpp::command_option(dpp::co_user, "player", "player you will be facting in your epic duel",true)
 	);
-
-
 }
+
+
 
 std::function<void(const slashcommand_t&,cluster&)> infoCmd = ([](const slashcommand_t &event,cluster& bot) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
@@ -91,5 +91,7 @@ std::function<void(const slashcommand_t&,cluster&)> challengeCmd = ([handler](co
 		
 
 });
+
+
 
 }

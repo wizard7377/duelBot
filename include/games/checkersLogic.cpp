@@ -24,8 +24,8 @@ const std::string checkColNames[] = {"1","2","3","4","5","6","7","8"};
 
 namespace game {
 	checkersLogic::checkersLogic() {
-		// NOTE THIS IS A TEST CASE, REVERT BACK
-		/*
+
+		
 		this->boardItems = new std::vector<std::vector<int>>{
 			{0,1,0,1,0,1,0,1},
 			{1,0,1,0,1,0,1,0},
@@ -36,9 +36,9 @@ namespace game {
 			{0,3,0,3,0,3,0,3},
 			{3,0,3,0,3,0,3,0}
 		};
-		*/
 		
 		
+		/*
 		this->boardItems = new std::vector<std::vector<int>>{
 			{0,0,0,0,0,0,0,0},
 			{0,0,1,0,0,0,1,0},
@@ -49,6 +49,7 @@ namespace game {
 			{0,3,0,3,0,0,0,0},
 			{0,0,0,0,0,0,0,0}
 		};
+		*/
 		
 
 		

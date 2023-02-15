@@ -60,7 +60,11 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 	//this->gameInteraction = new gameInt::baseGameInt<T>(con,(std::bind(&baseSimThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
 	//std::cout << this->gameThread << std::endl;
 
-	this->msgMake();
+	if (this->isPlayerOne) {
+		this->msgMake();
+	} else {
+		this->bot->message_create(message(this->gameThread,"You don't go first"));
+	}
 
 	
 
@@ -212,12 +216,22 @@ message * baseSimThread<T>::msgMake() {
 	}
 	
 		
-	this->handler->addButtonCmd(itemIds[8], [this](const auto& event) {
+	this->handler->addButtonCmd(itemIds[8], [itemIds,this](const auto& event) {
 		if ((this->curMove[0] == "") or ((this->curMove[1] == "") and (this->gameInteraction->isDuoMove()))) {
 			event.reply(message(":x: You haven't selected a move yet!").set_flags(m_ephemeral));
 		} else {
-			event.reply();
+			event.thinking();
 			this->gameInteraction->makeMove(this->curPlayer,curMove[0],curMove[1]);
+			//event.reply(this->makeGameEmbed());
+			message * nMsg = this->makeGameEmbed();
+			nMsg->set_content("Move made!");
+			event.edit_original_response(*nMsg);
+			this->handler->deleteButtonCmd(itemIds[8]);	
+			message eMsg = event.command.msg;
+			eMsg.components = std::vector<component>();
+			eMsg.filecontent = event.command.msg.filecontent;
+			eMsg.filename = event.command.msg.filename;
+			this->bot->message_edit(eMsg);
 			//this->msgMake();
 			this->giveMove();
 		}
