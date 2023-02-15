@@ -1,0 +1,3 @@
+tictactoe = 0
+checkers = 1
+chess = 2

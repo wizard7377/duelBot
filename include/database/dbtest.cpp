@@ -43,7 +43,7 @@ uint64_t dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 				std::cout << mysql_num_rows(result) << std::endl;
 				std::cout << mysql_num_fields(result) << std::endl;
 				//idk why the -48 is needed 
-				return (((uint64_t) (*(resRow[0]))) - 48);
+				return std::stoull(resRow[0]);
 			} else {
 				curQ = ("INSERT INTO userGuildIds (userId,guildId) VALUES (" + std::to_string(userId) + "," + std::to_string(guildId) + ");");
 				mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
@@ -69,7 +69,8 @@ uint64_t dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 				MYSQL_ROW resRow = mysql_fetch_row(result);
 				std::cout << mysql_num_rows(result) << std::endl;
 				std::cout << mysql_num_fields(result) << std::endl;
-				return (((uint64_t) (*(resRow[0]))) - 48);
+				
+				return std::stoull(resRow[0]);
 			} else {
 				curQ = ("INSERT INTO userGuildIds (userId) VALUES (" + std::to_string(userId) + ");");
 				mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
