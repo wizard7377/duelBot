@@ -11,6 +11,8 @@ using namespace dpp;
 namespace evt {
 	
 eventhandle::eventhandle(cluster * bot) {
+	this->testCon = new mData::dataHandle();
+	
 	bot->on_select_click([this](const auto& event) {
 		try {
 			std::thread([this,event] { try { this->selectCmds.at(event.custom_id)(event); } catch (...) {} } ).detach();
@@ -34,6 +36,9 @@ eventhandle::eventhandle(cluster * bot) {
 	});
 	bot->on_slashcommand([this,bot](const auto& event) {
 		try {
+			uint64_t retId = this->testCon->getUser((uint64_t)(event.command.get_issuing_user().id));
+			uint64_t retIdT = this->testCon->getUser(((uint64_t)(event.command.get_issuing_user().id)),((uint64_t)(event.command.get_guild().id)));
+			std::cout << std::endl << "Cur user is: " << std::to_string(retId) << " and: " << retIdT << std::endl << std::endl;
 			std::thread([this,event,bot] { this->slashCmds.at(event.command.get_command_name())(event,(*bot)); }).detach();
 		} catch (...) {
 			std::cout << "An error has occured" << std::endl;

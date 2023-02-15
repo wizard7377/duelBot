@@ -5,6 +5,7 @@
 #include <thread>
 #include <functional>
 #include <string>
+#include "databaselogic.hpp"
 
 using namespace dpp;
 
@@ -22,6 +23,9 @@ namespace evt {
 			bool deleteSlashCmd(std::string compid);
 			bool deleteFormCmd(std::string compid);
 			bool deleteButtonCmd(std::string compid);
+
+			mData::dataHandle * testCon;
+
 		private:
 			std::unordered_map<std::string,std::function<void(const select_click_t&)>> selectCmds;
 			std::unordered_map<std::string,std::function<void(const button_click_t&)>> buttonCmds;

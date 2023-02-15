@@ -233,7 +233,7 @@ void createCommandHandle() {
 int main(int argc, char *argv[]) {
 
 	cluster bot(BOT_TOKEN);
-	mData::dataHandle tCon(MYSQL_TEST);
+	
 
 
 	try {

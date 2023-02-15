@@ -15,7 +15,8 @@
 namespace mData {
 class dataHandle {
     public:
-        dataHandle(std::string tConOption);
+        dataHandle();
+        uint64_t getUser(uint64_t userId,uint64_t guildId = 0);
 
     private: 
         MYSQL * dataCon;
