@@ -4,14 +4,20 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 /* uncomment for applications that use vectors */
 /*#include <vector>*/
 
-#include <mysqlx/xdevapi.h>
+#include <mysql.h>
+
+
 
 namespace mData {
 class dataHandle {
     public:
-        dataHandle();
+        dataHandle(std::string tConOption);
+
+    private: 
+        MYSQL * dataCon;
 };
 }

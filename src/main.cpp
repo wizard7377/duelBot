@@ -6,6 +6,7 @@
 #include "gameLogic.hpp"
 #include "commandHandle.hpp"
 #include "baseGameInt.hpp"
+#include "databaselogic.hpp"
 #include "frontend.hpp"
 #include <iostream>
 #include <functional>
@@ -232,6 +233,8 @@ void createCommandHandle() {
 int main(int argc, char *argv[]) {
 
 	cluster bot(BOT_TOKEN);
+	mData::dataHandle tCon(MYSQL_TEST);
+
 
 	try {
 		handler = new evt::eventhandle(&bot);

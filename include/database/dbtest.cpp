@@ -1,9 +1,14 @@
 #include "databaselogic.hpp"
-#include <mysqlx/xdevapi.h>
+#include <iostream>
+#include <mysql.h>
+
 
 namespace mData {
 
-dataHandle::dataHandle() {
+dataHandle::dataHandle(std::string tConOption) {
+	//this->dataCon = NULL;
+
+
     
 }
 }

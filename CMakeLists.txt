@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
-set(FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR /usr/include/mysql-cppconn-8)
+set(FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR /usr/include/mysql)
 
 #Add directories 
 include(FetchContent)
@@ -19,7 +19,7 @@ add_subdirectory(libs/DPP)
 #set(CMAKE_CXX_FLAGS "-O0")
 
 
-add_link_options("-lmysqlcppconn8")
+add_link_options("-lmysqlclient")
 
 # Create an executable
 add_executable(${PROJECT_NAME}
@@ -41,7 +41,7 @@ target_link_libraries(${PROJECT_NAME}
     dpp
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
-    /usr/lib/x86_64-linux-gnu/libmysqlcppconn8.so
+    /usr/lib/x86_64-linux-gnu/libmysqlclient.a
     #${MYSQL_LIBRARY}
 
 
