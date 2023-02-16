@@ -97,6 +97,7 @@ eventhandle::eventhandle(cluster * bot) {
 			handleChallengeSubmit(event.command.get_issuing_user(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,(*bot),eventPar);
 		}));
 	});
+	
 	this->addSlashCmd("getrate",[this,bot](const slashcommand_t &event) {
 		std::cout << "cmd recived\n";
 		try {
@@ -141,6 +142,7 @@ eventhandle::eventhandle(cluster * bot) {
 		
 		}
 	});
+	
 		
 
 

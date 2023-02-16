@@ -3,7 +3,7 @@
 #include <mysql.h>
 #include "config.hpp"
 #include <thread>
-
+#include <functional>
 
 using namespace std;
 	
@@ -29,6 +29,7 @@ dataHandle::dataHandle() {
 	//this->dataCon = NULL;
  
 }
+
 
 reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 	std::string curQ = "";
@@ -101,6 +102,7 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 }
 
 //if negative, should be hidden
+
 reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 	reSet retAc;
 	uint64_t totalId = get<uint64_t>(this->getUser(userId,guildId)[0]);
@@ -130,12 +132,46 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 		}
 		retAc.push_back(atoi(curRow[0]));
 		bool isAllow = false;
-		if (curRow[1] == NULL) {
+		std::function<bool(uint64_t,int)> canSee; 
+		
+		canSee = ([&] (uint64_t guildIdPar,int gameIdPar) {
 			std::cout << "\n val is null \n\n";
-			isAllow = false;
+			bool isGuildDef = (guildIdPar != 0);
+			bool isGameDef = (gameIdPar < 0);
+			if (not (isGameDef or isGuildDef)) {
+					return true;
+				
+			} else if (((not isGameDef) and isGuildDef) or  (isGameDef and (not isGuildDef))) {
+
+				uint64_t tempTotalId = get<uint64_t>(this->getUser(userId)[0]);
+				string tempCurQT = ("SELECT showRate FROM userGameInfo WHERE gameId IS NULL AND userId = " + std::to_string(tempTotalId) + ";");
+				mysql_real_query(this->dataCon,tempCurQT.c_str(),tempCurQT.length());
+				result = mysql_store_result(this->dataCon);
+				curRow = mysql_fetch_row(result);
+				if (curRow[0] == NULL) {
+					return true;
+				} else {
+					return (*curRow[0] != '0');
+
+					//if (
+				}
+					
+			} else {
+				return canSee(guildIdPar,-1);
+			}
+
+		});
+
+		if (curRow[1] == NULL) {
+			isAllow = canSee(guildId,gameId);
 		} else {
 			isAllow = (*curRow[1] != '0');
 		}
+		
+		
+
+
+		
 		retAc.push_back(isAllow);
 		mysql_free_result(result);
 		return (retAc);
@@ -149,5 +185,6 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 
 	
 }
+
 
 }

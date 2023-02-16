@@ -12,6 +12,7 @@ class gameTimeType {
 		gameTimeType(int seconds, int minutes = 0, int hours = 0);
 		int hours, minutes, seconds;
 };
+
 class wrapState {};
 template <typename T>
 class baseGameInt : public wrapState {
