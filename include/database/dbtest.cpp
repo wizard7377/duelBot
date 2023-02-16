@@ -186,5 +186,39 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 	
 }
 
+//this
+//global
+//both
+//all
+//allbut
+bool dataHandle::editSetting (string setName, string val, int gameId, uint64_t userId, uint64_t guildId, int scopeSet) {
 
+	try {
+		string curQ = "SELECT duelId FROM userGuildIds WHERE ";
+
+		if (scopeSet == 0) { curQ.append(("userId = " + to_string(userId) + " AND guildId = " + to_string(guildId) + ";")); } 
+		else if (scopeSet == 1) { curQ.append(("userId = " + to_string(userId) + " AND guildId IS NULL;")); } 
+		else if (scopeSet == 2) { curQ.append(("userId = " + to_string(userId) + " AND (guildId = " + to_string(guildId) + " OR guildId IS NULL);")); } 
+		else if (scopeSet == 3) { curQ.append(("userId = " + to_string(userId) + ";")); } 
+		else if (scopeSet == 4) { curQ.append(("userId = " + to_string(userId) + " AND guildId IS NOT NULL;")); } 
+		else { return false; }
+
+		std::cout << "\n curQ cur Is: " << curQ << std::endl;
+		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
+		MYSQL_RES * result = mysql_store_result(this->dataCon);
+		MYSQL_ROW curRow;
+		while ((curRow = mysql_fetch_row(result)) != NULL) {
+			std::cout << string(curRow[0]) << std::endl;
+			curQ = ("UPDATE userGameInfo SET " + setName + " = " + val + " WHERE userId = " + string(curRow[0]) + " AND gameId = " + to_string(gameId) + ";"); 
+			std::cout << curQ << std::endl;
+			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
+		}
+		return true;
+	
+	} catch (...) { return false; }
+
+
+
+
+}
 }

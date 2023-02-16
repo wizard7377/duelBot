@@ -10,7 +10,15 @@ using namespace dpp;
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event);
 extern evt::eventhandle * handler;
 
-
+command_option getScopeChoice() {
+	return (command_option(co_string,"effectglobal","What should this command effect (defaults to only this)",false)
+		.add_choice(command_option_choice("affect only this server","this"))
+		.add_choice(command_option_choice("affect only global setting","global"))
+		.add_choice(command_option_choice("affect both","both"))
+		.add_choice(command_option_choice("affect all servers and global","all"))
+		.add_choice(command_option_choice("affect all servers, but not global","allbut"))
+	);
+}
 
 namespace botCmds {
 
@@ -44,6 +52,21 @@ dpp::slashcommand getRateDef() {
 			add_choice(dpp::command_option_choice("chess", std::string("chess"))))
 	.add_option(command_option(co_user, "player", "player you wish to get the rating of (leave blank for self)",false))
 	);
+}
+
+slashcommand changeSetDef() {
+	return (slashcommand().set_name("changeSetting").set_description("Change vaue of a setting")
+
+	.add_option(command_option(co_sub_command,"showrate","allow others to see your rating")
+		.add_option(command_option(co_boolean,"value","Should the players in this guild be able to see your rating?",true))
+		.add_option(command_option(co_string,"gametype","Game type",false)
+			.add_choice(command_option_choice("TicTacToe","tictactoe"))
+			.add_choice(command_option_choice("Checkers","checkers"))
+		)
+		.add_option(getScopeChoice())
+	)
+	);
+		
 }
 
 

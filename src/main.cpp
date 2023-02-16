@@ -16,9 +16,15 @@
 #include "drawgame.hpp"
 #include <cmath>
 #include <chrono>  
+#include <filesystem>
+#include <nlohmann/json.hpp>
+
+
 using namespace dpp;
+using json = nlohmann::json;
 
-
+extern std::string getFullPath(std::string filePath);
+extern std::string getFullPath(std::vector<std::string> filePath);
 
 using snowPair = std::pair<snowflake,snowflake>;
 
@@ -231,8 +237,10 @@ void createCommandHandle() {
 
 
 int main(int argc, char *argv[]) {
+	std::ifstream jFile(getFullPath("secrets/config.json"));
+	json gameconfig = json::parse(jFile)["DISCORD"];
 
-	cluster bot(BOT_TOKEN);
+	cluster bot(gameconfig["BOT_TOKEN"]);
 	
 
 
@@ -266,6 +274,7 @@ int main(int argc, char *argv[]) {
 			bot.global_command_create(botCmds::infoDef());
 			bot.global_command_create(botCmds::challengeDef());
 			bot.global_command_create(botCmds::getRateDef());
+			bot.global_command_create(botCmds::changeSetDef());
 	}
     });
 	

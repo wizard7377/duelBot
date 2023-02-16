@@ -21,6 +21,7 @@ class dataHandle {
         dataHandle();
         reSet getUser(uint64_t userId,uint64_t guildId = 0);
         reSet getRate(int gameId,uint64_t userId,uint64_t guildId = 0);
+        bool editSetting(string setName, string val, int gameId, uint64_t userId, uint64_t guildId = 0, int scopeSet = 0);
 
     private: 
         MYSQL * dataCon;

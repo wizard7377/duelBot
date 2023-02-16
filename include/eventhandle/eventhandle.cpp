@@ -142,6 +142,30 @@ eventhandle::eventhandle(cluster * bot) {
 		
 		}
 	});
+
+	this->addSlashCmd("changesetting",[this,bot](const slashcommand_t &event) {
+		event.thinking(true);
+		auto cmd_data = event.command.get_command_interaction();
+		auto bToStr = ([] (bool inVal) {
+			if (inVal) {
+				return "1";
+			} else {
+				return "0";
+			}
+		});
+		auto subCmd = cmd_data.options[0];
+		bool runGood = false;
+		if (subCmd.name == "showrate") {
+			if (this->testCon->editSetting("showRate",bToStr(subCmd.get_value<bool>(0)),gameNums.at(subCmd.get_value<std::string>(1)),event.command.get_issuing_user().id,event.command.get_guild().id,scopeNums.at(subCmd.get_value<std::string>(2)))) {
+				event.edit_response("Done!");
+			} else {
+				event.edit_response("Fail!");
+
+			}
+		}
+			
+			
+	});
 	
 		
 
