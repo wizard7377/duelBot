@@ -15,7 +15,7 @@ namespace evt {
 		public:
 			eventhandle(cluster* bot);
 			bool addSelectCmd(std::string compid,std::function<void(const select_click_t&)> newCmd);
-			bool addSlashCmd(std::string compid,std::function<void(const slashcommand_t&,cluster&)> newCmd);
+			bool addSlashCmd(std::string compid,std::function<void(const slashcommand_t&)> newCmd);
 			bool addFormCmd(std::string compid,std::function<void(const form_submit_t&)> newCmd);
 			bool addButtonCmd(std::string compid,std::function<void(const button_click_t&)> newCmd);
 			
@@ -29,7 +29,7 @@ namespace evt {
 		private:
 			std::unordered_map<std::string,std::function<void(const select_click_t&)>> selectCmds;
 			std::unordered_map<std::string,std::function<void(const button_click_t&)>> buttonCmds;
-			std::unordered_map<std::string,std::function<void(const slashcommand_t&,cluster&)>> slashCmds;
+			std::unordered_map<std::string,std::function<void(const slashcommand_t&)>> slashCmds;
 			std::unordered_map<std::string,std::function<void(const form_submit_t&)>> formCmds;
 	};
 }

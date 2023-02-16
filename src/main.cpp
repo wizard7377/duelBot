@@ -217,10 +217,10 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 }
 
 void createCommandHandle() {
-	handler->addSlashCmd("info", botCmds::infoCmd );
+	//handler->addSlashCmd("info", botCmds::infoCmd );
 
 
-	handler->addSlashCmd("challenge",botCmds::challengeCmd);
+	//handler->addSlashCmd("challenge",botCmds::challengeCmd);
 
 
 		
@@ -265,6 +265,7 @@ int main(int argc, char *argv[]) {
 			
 			bot.global_command_create(botCmds::infoDef());
 			bot.global_command_create(botCmds::challengeDef());
+			bot.global_command_create(botCmds::getRateDef());
 	}
     });
 	

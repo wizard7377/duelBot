@@ -35,6 +35,17 @@ dpp::slashcommand challengeDef() {
 	);
 }
 
+dpp::slashcommand getRateDef() {
+	return (dpp::slashcommand().set_name("getRate").set_description("Get the rating of a user")
+	.add_option(command_option(co_string, "game", "game you wish to get rating of", true).
+			add_choice(dpp::command_option_choice("tictactoe", std::string("tictactoe"))).
+			add_choice(dpp::command_option_choice("checkers", std::string("checkers"))).
+			add_choice(dpp::command_option_choice("go (game)", std::string("goboardgame"))).
+			add_choice(dpp::command_option_choice("chess", std::string("chess"))))
+	.add_option(command_option(co_user, "player", "player you wish to get the rating of (leave blank for self)",false))
+	);
+}
+
 
 
 std::function<void(const slashcommand_t&,cluster&)> infoCmd = ([](const slashcommand_t &event,cluster& bot) {
