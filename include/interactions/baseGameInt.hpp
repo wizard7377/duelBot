@@ -5,6 +5,10 @@
 #include <boost/chrono.hpp>
 #include <vector>
 #include <functional>
+#include <chrono>
+#include <thread>
+
+using gameTime = std::chrono::duration<double,std::milli>;
 namespace gameInt {
 
 class gameTimeType {
@@ -19,7 +23,7 @@ class baseGameInt : public wrapState {
 	public:
 		std::vector<std::vector<int>> getBoard();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-		baseGameInt(gameTimeType* control[3], std::function<void(bool,int)> onEnd); 
+		baseGameInt(gameTime control[3], std::function<void(bool,int)> onEnd); 
 		std::string intToMove(int userMove);
 		int moveToInt(std::string userMove,bool typeReq = false);
 		std::vector<std::vector<std::string>> getAllMoves();
@@ -27,14 +31,16 @@ class baseGameInt : public wrapState {
 		bool isDuoMove();
 		bool curPlayer = true;
 
-		gameTimeType * timeLeft[2];
-		gameTimeType* timeControl[3];
-		
+		gameTime * timeLeft[2];
+		gameTime * timeControl[3];
+		std::chrono::time_point<std::chrono::steady_clock> lastMove;
+		gameTime timeMove(bool userTime);
 	
 	private:
-		bool timeMove();
-		boost::chrono::system_clock::time_point lastMove;
+		
+		
 		T * gameLogic;
+		std::thread * timeThread;
 		bool userMove = true;
 		std::function<void(bool,int)> endCase;
 };

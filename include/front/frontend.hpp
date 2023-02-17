@@ -42,7 +42,7 @@ template <typename T>
 class baseGameHandle : public wrapThreadHandle {
 	public:
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Can only have logic of game types");
-		baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*)> inHandles[2]);
+		baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*)> inHandles[2],std::vector<gameTime> inTimes = {10min,5s,6s});
 		std::function<void()> onStart;
 		gameInt::baseGameInt<T> * shState;
 

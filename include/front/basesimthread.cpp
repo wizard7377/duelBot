@@ -13,6 +13,8 @@
 #include <random>
 #include <thread>
 #include "eventhandle.hpp"
+#include <chrono>
+#include <cmath>
 using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
@@ -22,6 +24,20 @@ template class gameFront::baseSimThread<game::checkersLogic>;
 template class gameFront::baseSimThread<game::baseGameLogic>;
 
 
+
+std::string gToStr(gameTime inTime) {
+	int numSec = std::chrono::duration_cast<std::chrono::seconds>(inTime).count();
+	std::string curStr = "";
+	if (numSec >= 60) {
+		curStr = curStr + std::to_string((int)(numSec/60)) + ":";
+	} 
+	if ((int)(numSec%60) >= 10) {
+		curStr = curStr + std::to_string((int)(numSec%60));
+	} else {
+		curStr = curStr + "0" + std::to_string((int)(numSec%60));
+	}
+	return curStr;
+}
 
 
 
@@ -284,13 +300,18 @@ message * baseSimThread<T>::msgMake() {
 template <typename T>
 message * baseSimThread<T>::makeGameEmbed() {
 	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
+	
 	embed mainEmb = embed().
 		set_color(colors::blue_aquamarine).
 		set_title("Move: of the game between: " + bot->user_get_sync(this->userIdOne).username + " and " + bot->user_get_sync(userIdTwo).username).
 		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
-		set_image("attachment://game.png");
+		set_image("attachment://game.png").
+		add_field("Time left (you)", gToStr(this->gameInteraction->timeMove(this->isPlayerOne))).
+		add_field("Time left (opponent)", gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)));
 
 	message * msg = new message((this->gameThread),mainEmb);
+	//std::cout << this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(this->isPlayerOne)) << "  AND  " << !this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)) << std::endl;
+	std::cout << this->isPlayerOne << "  AND  " << !this->isPlayerOne << std::endl;
 	this->imgThread = new std::thread( [this,msg,imgPath] { msg->add_file("game.png",utility::read_file(imgPath)); } );
 	return msg;
 
