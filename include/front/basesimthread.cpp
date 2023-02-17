@@ -82,15 +82,36 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 	
 }
 
+
+template <typename T>
+void baseSimThread<T>::endCall(bool userWon, int winCase) {
+	message * msg;
+	if (userWon) {
+		msg = new message((this->gameThread),winMsgs.at(winCase).first);
+	} else {
+		msg = new message((this->gameThread),winMsgs.at(winCase).second);
+	}
+	this->bot->message_create(*msg);
+}
+
+
+
+
 template <typename T>
 message * baseSimThread<T>::msgMake() {
 	message * msg = makeGameEmbed();
 
 	std::vector<std::string> inMoves;
-	
-	for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
-		//std::cout << this->gameInteraction->getAllMoves()[i].size();
-		if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->intToMove(i)); }
+	if (this->gameInteraction->isDuoMove()) {
+		for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
+			//std::cout << this->gameInteraction->getAllMoves()[i].size();
+			if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->intToMove(i)); }
+		}
+	} else {
+		for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
+			//std::cout << this->gameInteraction->getAllMoves()[i].size();
+			if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->getAllMoves()[i][0]); }
+		}
 	}
 	//std::cout <<  __LINE__ << std::endl;
 	std::string ranPre = std::to_string(rand());

@@ -15,8 +15,10 @@ namespace gameFront {
 template <typename T>
 baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*)> inHandles[2]) {
 	gameInt::gameTimeType * tCon[3] = {new gameInt::gameTimeType(0),new gameInt::gameTimeType(0),new gameInt::gameTimeType(0)};
-	const std::function<void(bool,int)> iEnd = ([](bool idkOne, int idkTwo) {
+	const std::function<void(bool,int)> iEnd = ([this](bool winner, int winCase) {
 		std::cout << "game has ended :((\n";
+		this->gameHandles[0]->endCall(winner,winCase);
+		this->gameHandles[1]->endCall(!winner,winCase);
 	}); 
 	this->shState = new gameInt::baseGameInt<T>(tCon,iEnd);
 	for (int i = 0; i <= 1; i++) {

@@ -35,6 +35,7 @@ class inType {
 	public: 
 		std::function<void()> giveMove;
 		virtual void getMove() = 0;  
+		virtual void endCall(bool userWon, int winType) = 0;  
 };
 
 template <typename T>
@@ -63,7 +64,7 @@ class baseThread : public wrapThread {
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
 		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
 	    std::function<void(message msg)> moveCall;
-	    void endCall(bool userWin, int winType) {
+	    void endCall(bool userWon, int winType) {
 			std::cout << "game has ended :(" << std::endl;
 		}
 
@@ -101,9 +102,7 @@ class baseSimThread : public wrapThread, public inType {
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
 		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
 	    std::function<void(message msg)> moveCall;
-	    void endCall(bool userWin, int winType) {
-			std::cout << "game has ended :(" << std::endl;
-		}
+	    void endCall(bool userWon, int winType);
 		void getMove() override;
 
 	private:

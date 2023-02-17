@@ -7,6 +7,7 @@
 #include <random>
 #include <unordered_map>
 #include <typeindex>
+#include <tuple>
 #include "gameLogic.hpp"
 
 
@@ -25,6 +26,10 @@ struct gameConfig {
 const std::unordered_map<std::type_index,gameConfig> gameCon {
 	{std::type_index(typeid(game::ticTacToeLogic)),{"tictactoe","000"}},
 	{std::type_index(typeid(game::checkersLogic)),{"checkers","001"}}
+};
+
+const std::unordered_map<int,std::pair<std::string,std::string>> winMsgs {
+	{0,{"Default win!","Default lose"}}
 };
 
 

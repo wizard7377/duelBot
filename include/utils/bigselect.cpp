@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <algorithm>
 
 using namespace dpp;
 
@@ -15,7 +16,19 @@ namespace utl {
 
 bigSelect::bigSelect(std::vector<std::string> startVals) {
 	component * curCom;
-    	if (startVals.size() > 0) { 
+
+	//this solution is horrible but i'll change it later
+	std::remove_if(startVals.begin(),startVals.end(), 
+	[](std::string inStr) { return (inStr == ""); }
+	);
+	for (auto a : startVals) {
+		std::cout << a;
+		std::cout << " , ";
+	} 
+	std::cout << std::endl;
+	
+
+    if (startVals.size() > 0) { 
 		for (int i = 0; i < startVals.size(); i++) {
 
 			if ((i % 25) == 0) {
@@ -44,7 +57,7 @@ bigSelect::bigSelect(std::vector<std::string> startVals) {
 
 	this->selectMenus.push_back(curCom);
 	
-    	this->changePage();
+    this->changePage();
 
 }
 
