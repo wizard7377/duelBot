@@ -23,6 +23,7 @@ namespace evt {
 			bool deleteSlashCmd(std::string compid);
 			bool deleteFormCmd(std::string compid);
 			bool deleteButtonCmd(std::string compid);
+		
 
 			mData::dataHandle * testCon;
 
@@ -31,5 +32,6 @@ namespace evt {
 			std::unordered_map<std::string,std::function<void(const button_click_t&)>> buttonCmds;
 			std::unordered_map<std::string,std::function<void(const slashcommand_t&)>> slashCmds;
 			std::unordered_map<std::string,std::function<void(const form_submit_t&)>> formCmds;
+			
 	};
 }

@@ -39,6 +39,7 @@ int boolToInt(bool input) {
 }
 
 Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
+	
 	Mat * currentImg = new Mat(IMG_SIZE,IMG_SIZE,CV_8UC3,Scalar(69,42,32));
 	
 	int sizeX = newBoard.size();

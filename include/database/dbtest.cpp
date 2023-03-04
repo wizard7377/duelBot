@@ -10,6 +10,8 @@ using namespace std;
 
 namespace mData {
 
+
+
 dataHandle::dataHandle() {
 	this->dataCon = NULL;
 	try {
@@ -25,11 +27,49 @@ dataHandle::dataHandle() {
 	} catch (...) {
 		std::cout << "Error conn \n";
 	}
+	if (mysql_stat(this->dataCon) == NULL) { 
+		std::cout << "connection failed\n";
+		throw 0; 
+	} else {
+		std::cout << "Final checks succeded\n";
+	}
 	
 	//this->dataCon = NULL;
  
 }
 
+std::vector<std::vector<std::string>> dataHandle::execQ(std::string query, bool retType) {
+	try {
+		std::vector<std::vector<std::string>> retVec = {};
+		mysql_real_query(this->dataCon,query.c_str(),query.length());
+		MYSQL_RES * result = mysql_store_result(this->dataCon);
+		 
+		if (mysql_num_rows(result) > 0) {
+
+			for (int i = 0; i < mysql_num_rows(result); i++) { 
+				retVec.push_back({});
+				MYSQL_ROW resRow = mysql_fetch_row(result);
+				for (int ii = 0; ii < mysql_field_count(this->dataCon); ii++) { retVec[ii].push_back(resRow[i]); }
+			}
+		}
+
+		if (retType) {
+			retVec.push_back({
+				std::to_string(mysql_insert_id(this->dataCon)),
+				std::to_string(mysql_num_rows(result)),
+				std::string(mysql_error(this->dataCon))
+			});
+		}
+		return retVec;
+	} catch (...) { 
+		std::cout << "A error has occured\n"; 
+		return (std::vector<std::vector<std::string>>({}));
+	}
+	
+
+
+
+}
 
 reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 	std::string curQ = "";

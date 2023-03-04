@@ -262,6 +262,7 @@ message * baseSimThread<T>::msgMake() {
 			//event.reply(this->makeGameEmbed());
 			message * nMsg = this->makeGameEmbed();
 			nMsg->set_content("Move made!");
+			try { this->imgThread->join(); } catch (...) {}
 			event.edit_original_response(*nMsg);
 			this->handler->deleteButtonCmd(itemIds[8]);	
 			message eMsg = event.command.msg;
@@ -299,6 +300,7 @@ message * baseSimThread<T>::msgMake() {
 
 template <typename T>
 message * baseSimThread<T>::makeGameEmbed() {
+	
 	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
 	
 	embed mainEmb = embed().

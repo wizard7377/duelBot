@@ -22,7 +22,7 @@ class dataHandle {
         reSet getUser(uint64_t userId,uint64_t guildId = 0);
         reSet getRate(int gameId,uint64_t userId,uint64_t guildId = 0);
         bool editSetting(string setName, string val, int gameId, uint64_t userId, uint64_t guildId = 0, int scopeSet = 0);
-
+        std::vector<std::vector<std::string>> execQ(std::string query, bool retType = false);
     private: 
         MYSQL * dataCon;
 };

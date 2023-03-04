@@ -17,11 +17,14 @@
 #include <cmath>
 #include <chrono>  
 #include <filesystem>
+#include "ratesys.hpp"
 #include <nlohmann/json.hpp>
+
 
 
 using namespace dpp;
 using json = nlohmann::json;
+
 
 extern std::string getFullPath(std::string filePath);
 extern std::string getFullPath(std::vector<std::string> filePath);
@@ -237,6 +240,8 @@ void createCommandHandle() {
 
 
 int main(int argc, char *argv[]) {
+	
+	
 	std::ifstream jFile(getFullPath("secrets/config.json"));
 	json gameconfig = json::parse(jFile)["DISCORD"];
 

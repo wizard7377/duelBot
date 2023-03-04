@@ -6,7 +6,11 @@
 #include <iostream>
 #include "gamenums.hpp"
 #include "eventhandle.hpp"
-
+/*
+CHANGE SCOPE OF TRY BLOCKS
+CHANGE SCOPE OF TRY BLOCKS
+CHANGE SCOPE OF TRY BLOCKS
+*/
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event);
 
 using namespace dpp;
@@ -47,6 +51,8 @@ eventhandle::eventhandle(cluster * bot) {
 			std::cout << "An error has occured" << std::endl;
 		}
 	});
+	
+	
 
 	this->addSlashCmd("info",[bot](const slashcommand_t &event) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
@@ -200,6 +206,8 @@ bool eventhandle::addButtonCmd(std::string compid,std::function<void(const butto
 }
 
 
+
+
 bool eventhandle::deleteSelectCmd(std::string compid) {
 	try { this->selectCmds.erase(compid); }
 	catch (...) { return false; }
@@ -220,5 +228,6 @@ bool eventhandle::deleteButtonCmd(std::string compid) {
 	catch (...) { return false; }
 	return true;
 }
+
 
 }
