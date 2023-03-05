@@ -11,10 +11,10 @@ CHANGE SCOPE OF TRY BLOCKS
 CHANGE SCOPE OF TRY BLOCKS
 CHANGE SCOPE OF TRY BLOCKS
 */
-extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event);
+
 
 using namespace dpp;
-
+extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event,bool isRanked);
 namespace evt {
 	
 eventhandle::eventhandle(cluster * bot) {
@@ -58,6 +58,7 @@ eventhandle::eventhandle(cluster * bot) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
 	});
 	this->addSlashCmd("challenge",[this,bot](const slashcommand_t &event) {
+		std::cout << "started\n";
 		//command_interaction cmdData = std::get<command_interaction>(event.command.data);
 		interaction_modal_response gameForm(("userForm"+event.command.usr.username),"Enter to create challenge against oponent, enter none to get no time control");
 		gameForm.add_component(
@@ -95,13 +96,21 @@ eventhandle::eventhandle(cluster * bot) {
 			set_text_style(text_short).
 			set_required(false)
 		);
+	
 		event.dialog(gameForm);
 		//std::cout << std::endl << event.get_parameter("player").index() << std::endl;
 		//std::cout << std::endl << event.get_parameter("game").index() << std::endl;
 		//std::cout << std::endl << std::get<std::string>(event.get_parameter("player")) << std::endl;
-		this->addFormCmd(("userForm"+event.command.usr.username),([event,bot](const form_submit_t& eventPar) {	
-			handleChallengeSubmit(event.command.get_issuing_user(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,(*bot),eventPar);
+		bool isRank;
+		
+		try { isRank = std::get<bool>(event.get_parameter("ranked")); } catch (...) { isRank = false; }
+		
+		this->addFormCmd(("userForm"+event.command.usr.username),([event,bot,isRank](const form_submit_t& eventPar) {
+			
+			handleChallengeSubmit(event.command.get_issuing_user(),std::get<dpp::snowflake>(event.get_parameter("player")),std::get<std::string>(event.get_parameter("game")),event.command.get_guild().name,(*bot),eventPar,isRank);
+				
 		}));
+		
 	});
 	
 	this->addSlashCmd("getrate",[this,bot](const slashcommand_t &event) {
