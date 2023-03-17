@@ -8,6 +8,7 @@ include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
+find_package(OpenMP)
 #find_package(MySQL REQUIRED)
 include_directories(${FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR})
 include_directories(secrets;include;${OpenCV_INCLUDE_DIRS})
@@ -42,6 +43,7 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
     /usr/lib/x86_64-linux-gnu/libmysqlclient.a
+    OpenMP::OpenMP_CXX
     #${MYSQL_LIBRARY}
 
 

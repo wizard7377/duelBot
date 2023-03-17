@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include <map>
+#include "colorstuff.hpp"
 #include <variant>
 #include <cctype>
 #include <config.hpp>
@@ -19,6 +20,7 @@
 #include <filesystem>
 #include "ratesys.hpp"
 #include <nlohmann/json.hpp>
+
 
 
 
@@ -43,7 +45,8 @@ extern evt::eventhandle * handler;
 
 int main(int argc, char *argv[]) {
 	
-	
+	std::cout << colorForm("An color has occured ",RED_TERM);
+	std::cout << "But not anymore!\n";
 	std::ifstream jFile(getFullPath("secrets/config.json"));
 	json gameconfig = json::parse(jFile)["DISCORD"];
 

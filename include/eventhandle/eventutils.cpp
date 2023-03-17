@@ -11,7 +11,8 @@
 #include <typeinfo>
 #include "eventhandle.hpp"
 #include "frontend.hpp"
- 
+#include "gamenums.hpp"
+#include "ratesys.hpp"
 
 using namespace dpp;
 
@@ -118,14 +119,18 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 	
 	std::string timeControls[3] = { getTimePar(0,event),getTimePar(1,event),getTimePar(2,event) };
 	message msg;
-
-	
+    std::cout << isRanked << std::endl;
+    std::cout << std::to_string(getRate(handler->testCon,userId.id,gameNums.at(gameName))) << std::endl;
+    std::string userMention = userId.get_mention();
+	if (isRanked) {
+        userMention = userMention + " (" + std::to_string(getRate(handler->testCon,userId.id,gameNums.at(gameName))) + ")";
+    }
 
 	if ((timeControls[0]=="")&&(timeControls[1]=="")&&(timeControls[2]=="")) {
-		msg = "Hello, the user " + userId.get_mention() + " has challenged you to a game of " + gameName + " with no time controls in " + guildName + ", do you accept?";
+		msg = "Hello, the user " + userMention + " has challenged you to a game of " + gameName + " with no time controls in " + guildName + ", do you accept?";
 	
 	} else {
-		msg = "Hello, the user " + userId.get_mention() + " has challenged you to a game of " + gameName + " with time controls of " + 
+		msg = "Hello, the user " + userMention + " has challenged you to a game of " + gameName + " with time controls of " + 
 		timeControls[0]+"|"+timeControls[1]+"|"+timeControls[2] + " in " + guildName + ", do you accept?";
 	}
 	msg.add_component(component().add_component(

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-unordered_map<string,int> gameNums = {
+static unordered_map<string,int> gameNums = {
     {"tictactoe",0},
     {"checkers",1}
 };
@@ -14,7 +14,7 @@ unordered_map<string,int> gameNums = {
 //both
 //all
 //allbut
-unordered_map<string,int> scopeNums = {
+static unordered_map<string,int> scopeNums = {
     {"this",0},
     {"global",1},
     {"both",2},

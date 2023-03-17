@@ -4,9 +4,12 @@
 #include "config.hpp"
 #include <thread>
 #include <functional>
+#include <exception>
+#include "colorstuff.hpp"
 
 using namespace std;
 	
+class noResult : public exception {};
 
 namespace mData {
 
@@ -21,12 +24,12 @@ dataHandle::dataHandle() {
 		std::cout << "error occured in database init \n";
 		exit(0);
 	}
-	std::cout << "Database init succeded" << std::endl;
-	try {
-		mysql_real_connect(this->dataCon,MYOP_HOST,MYOP_USER,MYOP_PASS,MYOP_DATA,MYOP_PORT,MYOP_SOCK,MYOP_FLAG);
-	} catch (...) {
-		std::cout << "Error conn \n";
-	}
+	std::cout << "Database lib init succeded" << std::endl;
+	
+	if (mysql_real_connect(this->dataCon,MYOP_HOST,MYOP_USER,MYOP_PASS,MYOP_DATA,MYOP_PORT,MYOP_SOCK,MYOP_FLAG) == NULL) throw noResult();
+	
+		
+	
 	if (mysql_stat(this->dataCon) == NULL) { 
 		std::cout << "connection failed\n";
 		throw 0; 
@@ -38,12 +41,29 @@ dataHandle::dataHandle() {
  
 }
 
+reSet dataHandle::makeGUserRaw(int gameId,uint64_t totalId) {
+	reSet retAc = {};
+	try {
+		std::string curQ = ("INSERT INTO userGameInfo (userId, gameId) VALUES (" + to_string(totalId) + ", " + to_string(gameId) + ");");	
+		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
+		retAc = {std::to_string(mysql_insert_id(this->dataCon))};
+	} catch (...) {
+		retAc = {nullptr};
+		std::cout << colorForm("An error has occured\n",RED_TERM);
+
+	}
+	return retAc;
+			
+			
+		
+}
+
 std::vector<std::vector<std::string>> dataHandle::execQ(std::string query, bool retType) {
 	try {
 		std::vector<std::vector<std::string>> retVec = {};
 		mysql_real_query(this->dataCon,query.c_str(),query.length());
 		MYSQL_RES * result = mysql_store_result(this->dataCon);
-		 
+		if (result != 0) {
 		if (mysql_num_rows(result) > 0) {
 
 			for (int i = 0; i < mysql_num_rows(result); i++) { 
@@ -60,11 +80,19 @@ std::vector<std::vector<std::string>> dataHandle::execQ(std::string query, bool 
 				std::string(mysql_error(this->dataCon))
 			});
 		}
+		} else {
+			throw noResult();
+		}
+		mysql_free_result(result);
 		return retVec;
+	} catch (noResult) {
+		throw;
 	} catch (...) { 
 		std::cout << "A error has occured\n"; 
-		return (std::vector<std::vector<std::string>>({}));
+		//return (std::vector<std::vector<std::string>>({}));
+		throw exception();
 	}
+	
 	
 
 
@@ -79,7 +107,7 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 			curQ = ("SELECT duelId FROM userGuildIds WHERE guildId = "  + std::to_string(guildId) + " AND userId = " + std::to_string(userId) + ";");
 			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 			MYSQL_RES * result = mysql_store_result(this->dataCon);
-			
+			if (result != 0) {
 			if (mysql_num_rows(result) > 0) {
 				
 				MYSQL_ROW resRow = mysql_fetch_row(result);
@@ -97,6 +125,7 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 				mysql_free_result(result);
 				return retAc;
 			}
+			}
 				
 		
 		} catch (...) {
@@ -108,9 +137,10 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 	} else {
 		try {
 			curQ = ("SELECT duelId FROM userGuildIds WHERE guildId IS NULL AND userId = " + std::to_string(userId) + ";");
+			std::cout << curQ << std::endl;
 			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 			MYSQL_RES * result = mysql_store_result(this->dataCon);
-			
+			if (result != 0) {
 			if (mysql_num_rows(result) > 0) {
 				
 				MYSQL_ROW resRow = mysql_fetch_row(result);
@@ -128,17 +158,26 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 				return retAc;
 			
 			}
+			} else {
+				mysql_free_result(result);
+				throw noResult();
+			}
+
 				
 		
+		} catch (noResult) {
+			throw;
 		} catch (...) {
 			std::cout << "An error has occured \n";
 		}
 
 
 
+
+
 	}
 
-	return {0};
+	return {(uint64_t)(0)};
 }
 
 //if negative, should be hidden
@@ -219,6 +258,61 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 
 	} catch (...) {
 		return {0};
+
+	}
+	
+
+	
+}
+
+
+
+
+
+void dataHandle::setRate(int reqRate,int gameId,uint64_t userId,uint64_t guildId) {
+	reSet retAc;
+	uint64_t totalId = get<uint64_t>(this->getUser(userId,guildId)[0]);
+	std::string curQ = "";
+	MYSQL_RES * result;
+	try {
+		if (gameId < 0) {
+			curQ = ("SELECT gameRate, showRate FROM userGameInfo WHERE gameId IS NULL AND userId = " + std::to_string(totalId) + ";");
+		} else {
+			curQ = ("SELECT gameRate, showRate FROM userGameInfo WHERE gameId = " + std::to_string(gameId) + " AND userId = " + std::to_string(totalId) + ";");
+		}
+		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
+		result = mysql_store_result(this->dataCon);
+		
+		if (mysql_num_rows(result) <= 0) {
+			string tempCurQ = ("INSERT INTO userGameInfo (userId, gameId) VALUES (" + to_string(totalId) + ", " + to_string(gameId) + ");");
+			mysql_real_query(this->dataCon,tempCurQ.c_str(),tempCurQ.length());
+			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
+			//could props optimize with last insert but too lazy rn
+			result = mysql_store_result(this->dataCon);
+			std::cout << "res is: " << result << std::endl;
+			
+		}
+
+		curQ = ("UPDATE userGameInfo SET gameRate = " + std::to_string(reqRate) + " WHERE userId = " + std::to_string(userId) + " AND gameId = " + std::to_string(gameId) + ([&] { if (guildId != 0) { return ("AND guildId = " + std::to_string(guildId)); } else { return std::string(""); }})() + ";"); 
+		//std::cout << curQ << std::endl;
+		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
+		
+		
+		
+		
+		
+
+		
+		
+		
+
+
+		
+		
+		
+		return;
+	} catch (...) {
+		return;
 
 	}
 	

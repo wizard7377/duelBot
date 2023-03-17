@@ -264,7 +264,7 @@ message * baseSimThread<T>::msgMake() {
 			nMsg->set_content("Move made!");
 			try { this->imgThread->join(); } catch (...) {}
 			event.edit_original_response(*nMsg);
-			this->handler->deleteButtonCmd(itemIds[8]);	
+			
 			message eMsg = event.command.msg;
 			eMsg.components = std::vector<component>();
 			eMsg.filecontent = event.command.msg.filecontent;
@@ -272,6 +272,7 @@ message * baseSimThread<T>::msgMake() {
 			this->bot->message_edit(eMsg);
 			//this->msgMake();
 			this->giveMove();
+			this->handler->deleteButtonCmd(itemIds[8]);	
 		}
 			
 	});
