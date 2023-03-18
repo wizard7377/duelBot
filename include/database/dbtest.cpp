@@ -280,6 +280,7 @@ void dataHandle::setRate(int reqRate,int gameId,uint64_t userId,uint64_t guildId
 		} else {
 			curQ = ("SELECT gameRate, showRate FROM userGameInfo WHERE gameId = " + std::to_string(gameId) + " AND userId = " + std::to_string(totalId) + ";");
 		}
+		
 		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 		result = mysql_store_result(this->dataCon);
 		
@@ -293,7 +294,8 @@ void dataHandle::setRate(int reqRate,int gameId,uint64_t userId,uint64_t guildId
 			
 		}
 
-		curQ = ("UPDATE userGameInfo SET gameRate = " + std::to_string(reqRate) + " WHERE userId = " + std::to_string(userId) + " AND gameId = " + std::to_string(gameId) + ([&] { if (guildId != 0) { return ("AND guildId = " + std::to_string(guildId)); } else { return std::string(""); }})() + ";"); 
+		curQ = ("UPDATE userGameInfo SET gameRate = " + std::to_string(reqRate) + " WHERE userId = " + std::to_string(totalId) + " AND gameId = " + std::to_string(gameId) + ([&] { if (guildId != 0) { return ("AND guildId = " + std::to_string(guildId)); } else { return std::string(""); }})() + ";"); 
+		std::cout << colorForm("curQ is: ",CYAN_TERM) << colorForm(curQ,PURPLE_TERM) << std::endl;
 		//std::cout << curQ << std::endl;
 		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 		

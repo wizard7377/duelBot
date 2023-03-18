@@ -1,3 +1,5 @@
+#if 0
+
 #include "frontend.hpp"
 #include <functional>
 #include <map>
@@ -17,9 +19,9 @@ using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
 
-template class gameFront::baseThread<game::ticTacToeLogic>;
-template class gameFront::baseThread<game::checkersLogic>;
-template class gameFront::baseThread<game::baseGameLogic>;
+//template class gameFront::baseThread<game::ticTacToeLogic>;
+//template class gameFront::baseThread<game::checkersLogic>;
+//template class gameFront::baseThread<game::baseGameLogic>;
 
 
 
@@ -316,3 +318,6 @@ std::string baseThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>
 
 
 }
+
+
+#endif

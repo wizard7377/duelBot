@@ -28,14 +28,51 @@ using namespace dpp;
 
 namespace gameFront {
 
-
-class wrapThread {};
-class wrapThreadHandle {};
 class inType {
 	public: 
 		std::function<void()> giveMove;
 		virtual void getMove() = 0;  
 		virtual void endCall(bool userWon, int winType) = 0;  
+};
+class wrapThread : public inType {};
+class wrapThreadHandle {};
+
+template <typename T>
+class baseSimThread : public wrapThread {
+	public:
+	    
+	    baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt);
+	    //~baseThread();
+		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
+		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
+	    std::function<void(message msg)> moveCall;
+	    void endCall(bool userWon, int winType);
+		void getMove() override;
+
+	//private:
+	    cluster* bot;
+		bool isPlayerOne;
+	    snowflake userIdOne;
+	    snowflake userIdTwo;
+	    snowflake gameThread;
+		evt::eventhandle * handler;
+		channel gameThreadObj;
+	    std::string emojiCode;
+		dg::baseDrawGame * gameDraw;
+	    gameInt::baseGameInt<T> * gameInteraction;
+		event_handle buttonEventId;
+		event_handle selectEventId;
+		message * makeGameEmbed();
+		message * msgMake();
+		std::thread * imgThread;
+		std::string curMove[2] = {"",""};
+		std::mutex mtx;
+		bool pOneFirst;
+		bool curPlayer;
+		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;
+		std::map<std::string,std::function<void(const select_click_t&)>> gameSelectCmds;
+
+
 };
 
 template <typename T>
@@ -47,14 +84,17 @@ class baseGameHandle : public wrapThreadHandle {
 		gameInt::baseGameInt<T> * shState;
 
 	private:
-		inType * gameHandles[2];
+		//inType * gameHandles[2];
+		baseSimThread<T> * gameHandles[2];
+		
 
 
 
 
 
 };
-	
+
+/*	
 template <typename T>
 class baseThread : public wrapThread {
 	public:
@@ -92,44 +132,9 @@ class baseThread : public wrapThread {
 
 
 };
-
-template <typename T>
-class baseSimThread : public wrapThread, public inType {
-	public:
-	    
-	    baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt);
-	    //~baseThread();
-		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
-	    std::function<void(message msg)> moveCall;
-	    void endCall(bool userWon, int winType);
-		void getMove() override;
-
-	private:
-	    cluster* bot;
-		bool isPlayerOne;
-	    snowflake userIdOne;
-	    snowflake userIdTwo;
-	    snowflake gameThread;
-		evt::eventhandle * handler;
-		channel gameThreadObj;
-	    std::string emojiCode;
-		dg::baseDrawGame * gameDraw;
-	    gameInt::baseGameInt<T> * gameInteraction;
-		event_handle buttonEventId;
-		event_handle selectEventId;
-		message * makeGameEmbed();
-		message * msgMake();
-		std::thread * imgThread;
-		std::string curMove[2] = {"",""};
-		std::mutex mtx;
-		bool pOneFirst;
-		bool curPlayer;
-		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;
-		std::map<std::string,std::function<void(const select_click_t&)>> gameSelectCmds;
+*/
 
 
-};
 
 
 

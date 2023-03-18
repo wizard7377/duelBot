@@ -45,8 +45,7 @@ extern evt::eventhandle * handler;
 
 int main(int argc, char *argv[]) {
 	
-	std::cout << colorForm("An color has occured ",RED_TERM);
-	std::cout << "But not anymore!\n";
+	
 	std::ifstream jFile(getFullPath("secrets/config.json"));
 	json gameconfig = json::parse(jFile)["DISCORD"];
 
