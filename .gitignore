@@ -17,4 +17,7 @@ duelBot
 include/**/*.json
 resources/**
 output/**
+imgs/**
+imgs
+docs/**
 
