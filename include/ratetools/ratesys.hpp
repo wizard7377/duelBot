@@ -49,11 +49,11 @@ class rateQ {
 
 class frontRQ {
 	public:
-		frontRQ(std::function<void(snowPair,snowPair)> inFunc);
-
+		frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle * inCon);
+		bool addPlayerInt(dpp::interaction inInter);
 	private:
 		std::function<void(snowPair,snowPair)> sTempFunc;
-		std::thread gThread;
+		std::thread * gThread;
 		rateQ * logicQ;
 		std::unordered_map<snowflake,snowflake> playThreads = {};
 };

@@ -1,3 +1,9 @@
+/**
+ * @file main.cpp
+ * @copyright Wizard and Co. 2023, Don't steal it (please and thank you (this is a test (doc)))
+ */
+
+
 #include <dpp/dpp.h>
 #include <map>
 #include "colorstuff.hpp"

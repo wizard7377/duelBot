@@ -76,8 +76,10 @@ eventhandle::eventhandle(cluster * bot) {
 	//tttQS.emplace_back(rQ::frontRQ( makeQ<game::ticTacToeLogic>(bot,{5min,0s,0s},tttFuncs,this)));
 	
 	//this->curQueues.emplace_back(tttQS);
-	this->curQueues[0].emplace_back(makeQ<game::ticTacToeLogic>(bot, {5min, 5s, 0s}, tttFuncs, this));
-	this->curQueues[0].emplace_back(makeQ<game::ticTacToeLogic>(bot, {5min, 0s, 0s}, tttFuncs, this));	
+	std::vector<gameTime> curTimes {5min, 5s, 0s};
+	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
+	std::vector<gameTime> curTimesTwo {5min, 5s, 0s};
+	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));	
 		
 	
 	this->testCon = new mData::dataHandle();
@@ -116,6 +118,17 @@ eventhandle::eventhandle(cluster * bot) {
 	
 	
 
+	this->addSlashCmd("joinqueue",[bot,this](const slashcommand_t &event) {
+		event.thinking(true);
+		auto subcommand = event.command.get_command_interaction().options[0];
+		int gameInt = scopeNums[subcommand.name];
+		int scopeInt = subcommand.get_value<int64_t>(0);
+		if (this->curQueues[gameInt][scopeInt]->addPlayerInt(event.command)) {
+			event.edit_response("Queue joined succesfully, please standby");
+		} else {
+			event.edit_response(":x: There has been a error joining the queue");
+		}
+	});
 	this->addSlashCmd("info",[bot](const slashcommand_t &event) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
 	});

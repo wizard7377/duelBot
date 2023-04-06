@@ -42,7 +42,7 @@ namespace evt {
 			std::unordered_map<std::string,std::function<void(const button_click_t&)>> buttonCmds;
 			std::unordered_map<std::string,std::function<void(const slashcommand_t&)>> slashCmds;
 			std::unordered_map<std::string,std::function<void(const form_submit_t&)>> formCmds;
-			std::vector<std::vector<rQ::frontRQ>> curQueues = {};
+			std::vector<std::vector<rQ::frontRQ*>> curQueues = {{}};
 
 			
 			

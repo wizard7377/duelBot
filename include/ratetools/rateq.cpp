@@ -37,8 +37,12 @@ void rateQ::addPlayer(snowflake inPlay) {
 
 std::vector<gBias> rateQ::getGames() {
 	std::vector<gBias> retQ = {};
-	this->meanPlay = (this->meanPlay * (this->numPlay/(this->numPlay+this->joinQ.size())));
-	this->meanPlay += (this->curSum/(this->numPlay+this->joinQ.size()));
+	if ((this->numPlay+this->joinQ.size()) > 0) {
+		this->meanPlay = (this->meanPlay * (this->numPlay/(this->numPlay+this->joinQ.size())));
+		this->meanPlay += (this->curSum/(this->numPlay+this->joinQ.size()));
+	} else {
+		this->meanPlay = 10000;
+	}
 	this->curSum = 0;
 	this->numPlay += this->joinQ.size();
 	this->curPlay.push_back(this->joinQ);
