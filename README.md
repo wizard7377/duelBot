@@ -12,3 +12,5 @@ https://github.com/brainboxdotcc/DPP
 Any advice is appreciated! 
 
 View the insanity here: https://discord.gg/qCb8SJJEz3
+
+PS, join the D++ discord server: https://discord.gg/dpp
