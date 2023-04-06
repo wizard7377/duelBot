@@ -12,6 +12,7 @@
 #include <functional>
 #include "drawgame.hpp"
 #include "eventhandle.hpp"
+#include "frontend.hpp"
 #include "frontendcon.hpp"
 
 /*
@@ -34,11 +35,11 @@ class inType {
 		virtual void getMove() = 0;  
 		virtual void endCall(bool userWon, int winType) = 0;  
 };
-class wrapThread : public inType {};
+class wrapThread {};
 class wrapThreadHandle {};
 
 template <typename T>
-class baseSimThread : public wrapThread {
+class baseSimThread : public wrapThread, public inType {
 	public:
 	    
 	    baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt);
@@ -83,7 +84,7 @@ class baseGameHandle : public wrapThreadHandle {
 		std::function<void()> onStart;
 		gameInt::baseGameInt<T> * shState;
 
-	private:
+	
 		//inType * gameHandles[2];
 		baseSimThread<T> * gameHandles[2];
 		

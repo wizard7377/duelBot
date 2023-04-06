@@ -57,13 +57,14 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PUBLIC
     libs/DPP/include
     include/database
-    include/ratetools
+    
     include/utils
     include/games
     include/front
     include/draw
     include/interactions
     include/eventhandle
+    include/ratetools
     src/commands
     
 

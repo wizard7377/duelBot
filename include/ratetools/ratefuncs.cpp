@@ -13,6 +13,12 @@ int getBias(int valOne, int valTwo, int dScore) {
 	return ((int)(dScore*fVal));
 }
 
+double getBiasRaw(int valOne, int valTwo, int dScore) {
+	if (valOne < valTwo) { int tVal = valTwo; valTwo = valOne; valOne = tVal; }
+	double fVal = ((valOne - std::sqrt(valOne * valTwo))/(DCOF*(valOne+valTwo)));
+	return (dScore*fVal);
+}
+
 
 /*
 
@@ -40,7 +46,7 @@ int getRate(mData::dataHandle * dataCon, dpp::snowflake userVal, int gameVal, dp
 int setRates(mData::dataHandle * dataCon,snowflake setPlayer, snowflake otherPlayer, int gameVal, bool isWinner, snowflake guildVal, snowflake otherGuild) {
 	int pRates[2] = {getRate(dataCon,setPlayer,gameVal,guildVal),getRate(dataCon,otherPlayer,gameVal,otherGuild) };
 	int pBias = getBias(pRates[0],pRates[1],GAME_VAL);
-	if (setPlayer > otherPlayer) { pBias = -pBias; }
+	//if (setPlayer > otherPlayer) { pBias = -pBias; }
 	int setOffset = pBias;
 	if (isWinner) setOffset += GAME_VAL; else setOffset -= GAME_VAL;
 

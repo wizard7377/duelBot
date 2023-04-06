@@ -4,8 +4,13 @@
 #include <functional>
 #include <unordered_map>
 #include <iostream>
+#include <concepts>
+#include "colorstuff.hpp"
 #include "gamenums.hpp"
+#include "frontend.hpp"
+//#include "ratesys.hpp"
 #include "eventhandle.hpp"
+
 /*
 CHANGE SCOPE OF TRY BLOCKS
 CHANGE SCOPE OF TRY BLOCKS
@@ -13,11 +18,68 @@ CHANGE SCOPE OF TRY BLOCKS
 */
 
 
+
 using namespace dpp;
+
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event,bool isRanked);
 namespace evt {
+
+
+/***
+ * @brief Generates a function required for the front end queue (yes i know its a template function (a function that generates a function) generating a function which is in of itself a template function)
+ * @param botPar global bot
+ * @param inTimes all the times
+*/
+template <typename T>
+//requires std::derived_from<T,game::baseGameLogic>
+std::function<void(snowPair,snowPair)> makeQ(cluster* botPar,std::vector<gameTime> inTimes,std::function<gameFront::baseSimThread<T>*(gameInt::baseGameInt<T>*,snowPair,snowPair)> inFuncs[2],eventhandle * inEvent) {
 	
+	return ([botPar,inTimes,inFuncs,inEvent](snowPair players,snowPair threads) {
+		gameFront::baseGameHandle<T> * cHand;
+		gameInt::baseGameInt<T> * gInt;
+		//Create gameInt and gameHandle, however because there interdependent i need to do this
+		gInt = new gameInt::baseGameInt<T>(inTimes.data(),
+		([cHand](bool winner, int winCase) {
+			std::cout << "game has ended :((\n";
+			std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
+			setRates(cHand->gameHandles[0]->handler->testCon,cHand->gameHandles[0]->userIdOne,cHand->gameHandles[0]->userIdTwo,0,winner); // weeeeeeeeeee very lazy
+			std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
+			setRates(cHand->gameHandles[1]->handler->testCon,cHand->gameHandles[1]->userIdOne,cHand->gameHandles[1]->userIdTwo,0,!winner); // weeeeeeeeeee very lazy
+			std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
+			cHand->gameHandles[0]->endCall(winner,winCase);
+			cHand->gameHandles[1]->endCall(!winner,winCase);
+		})); 
+		//Create game handle and such threads
+		std::function<gameFront::inType*(gameInt::baseGameInt<T>*)> inFuncs[2] = {
+			[&](gameInt::baseGameInt<T>* gInt) { return new gameFront::baseSimThread<T>(botPar,players.first,players.second,threads.first,inEvent,gInt); },
+			[&](gameInt::baseGameInt<T>* gInt) { return new gameFront::baseSimThread<T>(botPar,players.second,players.first,threads.second,inEvent,gInt); }
+		};
+		cHand = new gameFront::baseGameHandle<T>(
+			inFuncs,
+			inTimes
+		);
+	});
+}
+
+
 eventhandle::eventhandle(cluster * bot) {
+
+	std::function<gameFront::baseSimThread<game::ticTacToeLogic>*(gameInt::baseGameInt<game::ticTacToeLogic>*,snowPair, snowPair)> tttFuncs[2] = {
+		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
+		,
+		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
+	};
+	//std::vector<rQ::frontRQ> tttQS;
+
+		
+	//tttQS.emplace_back(rQ::frontRQ( makeQ<game::ticTacToeLogic>(bot,{5min,5s,0s},tttFuncs,this)));
+	//tttQS.emplace_back(rQ::frontRQ( makeQ<game::ticTacToeLogic>(bot,{5min,0s,0s},tttFuncs,this)));
+	
+	//this->curQueues.emplace_back(tttQS);
+	this->curQueues[0].emplace_back(makeQ<game::ticTacToeLogic>(bot, {5min, 5s, 0s}, tttFuncs, this));
+	this->curQueues[0].emplace_back(makeQ<game::ticTacToeLogic>(bot, {5min, 0s, 0s}, tttFuncs, this));	
+		
+	
 	this->testCon = new mData::dataHandle();
 	
 	bot->on_select_click([this](const auto& event) {

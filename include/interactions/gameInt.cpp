@@ -23,7 +23,7 @@ gameTimeType::gameTimeType(int seconds, int minutes, int hours) {
 }
 
 template <typename T>
-baseGameInt<T>::baseGameInt(gameTime control[3], std::function<void(bool,int)> onEnd) {
+baseGameInt<T>::baseGameInt(const gameTime control[3], std::function<void(bool,int)> onEnd) {
 	for (int i = 0; i < 3; i++) {
 		this->timeControl[i] = new gameTime;
 		*this->timeControl[i] = control[i];
