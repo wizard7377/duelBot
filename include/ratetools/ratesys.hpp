@@ -50,7 +50,8 @@ class rateQ {
 class frontRQ {
 	public:
 		frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle * inCon);
-		bool addPlayerInt(dpp::interaction inInter);
+		//bool addPlayerInt(dpp::interaction inInter);
+		bool addPlayerInt(snowPair inPair);
 	private:
 		std::function<void(snowPair,snowPair)> sTempFunc;
 		std::thread * gThread;

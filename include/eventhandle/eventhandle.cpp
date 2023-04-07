@@ -64,6 +64,7 @@ std::function<void(snowPair,snowPair)> makeQ(cluster* botPar,std::vector<gameTim
 
 eventhandle::eventhandle(cluster * bot) {
 
+	this->testCon = new mData::dataHandle();
 	std::function<gameFront::baseSimThread<game::ticTacToeLogic>*(gameInt::baseGameInt<game::ticTacToeLogic>*,snowPair, snowPair)> tttFuncs[2] = {
 		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
 		,
@@ -82,7 +83,7 @@ eventhandle::eventhandle(cluster * bot) {
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));	
 		
 	
-	this->testCon = new mData::dataHandle();
+	
 	
 	bot->on_select_click([this](const auto& event) {
 		try {
@@ -123,11 +124,14 @@ eventhandle::eventhandle(cluster * bot) {
 		auto subcommand = event.command.get_command_interaction().options[0];
 		int gameInt = scopeNums[subcommand.name];
 		int scopeInt = subcommand.get_value<int64_t>(0);
-		if (this->curQueues[gameInt][scopeInt]->addPlayerInt(event.command)) {
-			event.edit_response("Queue joined succesfully, please standby");
-		} else {
-			event.edit_response(":x: There has been a error joining the queue");
-		}
+		(new std::thread([=,this] {
+			if (this->curQueues[gameInt][scopeInt]->addPlayerInt(snowPair(event.command.usr.id,((bot->thread_create_sync("testT",event.command.channel_id,1440,CHANNEL_PRIVATE_THREAD,true,1))).id))) {
+				event.edit_response("Queue joined succesfully, please standby");
+			} else {
+			
+				event.edit_response(":x: There has been a error joining the queue");
+			}
+		}))->detach();
 	});
 	this->addSlashCmd("info",[bot](const slashcommand_t &event) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");

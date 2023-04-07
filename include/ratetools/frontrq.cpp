@@ -38,8 +38,24 @@ frontRQ::frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle
 
 /***
  * @brief adds player to queue from interaction
- * @param inInter the interaction to get thread and player info from
+ * @param inPair the interaction to get thread and player info from
  */
+bool frontRQ::addPlayerInt(snowPair inPair) {
+	snowflake playerAdd = inPair.first;
+	snowflake threadAdd = inPair.second;
+	if (this->playThreads.contains(playerAdd)) { return false; }
+	try {
+		this->playThreads.emplace(playerAdd,threadAdd);
+		this->logicQ->addPlayer(playerAdd);
+		return true;
+	} catch (...) {
+		return false;
+	}
+	return false;
+}
+
+
+/*
 bool frontRQ::addPlayerInt(interaction inInter) {
 	snowflake playerAdd = inInter.usr.id;
 	snowflake threadAdd = inInter.get_channel().id;
@@ -53,6 +69,8 @@ bool frontRQ::addPlayerInt(interaction inInter) {
 	}
 	return false;
 }
+*/
+
 
 
 
