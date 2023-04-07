@@ -58,6 +58,8 @@ std::function<void(snowPair,snowPair)> makeQ(cluster* botPar,std::vector<gameTim
 			inFuncs,
 			inTimes
 		);
+		botPar->thread_member_add(threads.first,players.first);
+		botPar->thread_member_add(threads.second,players.second);
 	});
 }
 

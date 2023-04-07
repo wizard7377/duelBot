@@ -70,7 +70,7 @@ std::vector<gBias> rateQ::getGames() {
 				nVal.bias = (int)(curBias);
 				retQ.push_back(nVal);
 				this->curPlay[i].erase(this->curPlay[i].begin()+ii);
-				this->curPlay[j].erase(this->curPlay[jj].begin()+ii);
+				this->curPlay[j].erase(this->curPlay[j].begin()+jj);
 			}
 		}
 	}}}

@@ -127,7 +127,7 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 		this->userMove = !(this->userMove);
 	}
 	*/
-	this->endCase(this->userMove,-1);
+	//this->endCase(this->userMove,-1);
 	this->userMove = !(this->userMove);
 	return 1;
 }

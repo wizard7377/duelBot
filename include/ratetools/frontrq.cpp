@@ -26,6 +26,7 @@ frontRQ::frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle
 			for (auto cG : curGamesP) {
 				snowPair curThreads(this->playThreads[cG.first],this->playThreads[cG.second]);
 				this->sTempFunc(cG,curThreads);
+				
 				this->playThreads.erase(cG.first); this->playThreads.erase(cG.second);
 			}
 			std::this_thread::sleep_for(tDelay);
