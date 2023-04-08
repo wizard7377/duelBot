@@ -174,7 +174,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 		for (auto b : relP) {
 			//std::cout << b.tString() << ",";
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
 		for (auto a : relP) {
 			//std::string stringNow = checkRowNames[a.x] + checkColNames[a.y];
 			std::string stringNow = "";

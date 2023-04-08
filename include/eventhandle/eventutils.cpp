@@ -70,6 +70,10 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 
 };
 
+bool checkExists(snowflake userOne, snowflake userTwo) {
+	snowPair tempArr = {std::min(userOne,userTwo),std::max(userOne,userTwo)};
+	return userThreads.contains(tempArr);
+}
 bool threadOnChallenge(cluster& bot, snowflake userOne, snowflake userTwo, snowflake channelId) {
 
 	std::thread( ([=,&bot]() {
@@ -119,8 +123,8 @@ void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameN
 	
 	std::string timeControls[3] = { getTimePar(0,event),getTimePar(1,event),getTimePar(2,event) };
 	message msg;
-    std::cout << isRanked << std::endl;
-    std::cout << std::to_string(getRate(handler->testCon,userId.id,gameNums.at(gameName))) << std::endl;
+    //std::cout << isRanked << std::endl;
+    //std::cout << std::to_string(getRate(handler->testCon,userId.id,gameNums.at(gameName))) << std::endl;
     std::string userMention = userId.get_mention();
 	if (isRanked) {
         userMention = userMention + " (" + std::to_string(getRate(handler->testCon,userId.id,gameNums.at(gameName))) + ")";

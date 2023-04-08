@@ -314,7 +314,7 @@ message * baseSimThread<T>::makeGameEmbed() {
 
 	message * msg = new message((this->gameThread),mainEmb);
 	//std::cout << this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(this->isPlayerOne)) << "  AND  " << !this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)) << std::endl;
-	std::cout << this->isPlayerOne << "  AND  " << !this->isPlayerOne << std::endl;
+	//std::cout << this->isPlayerOne << "  AND  " << !this->isPlayerOne << std::endl;
 	this->imgThread = new std::thread( [this,msg,imgPath] { msg->add_file("game.png",utility::read_file(imgPath)); } );
 	return msg;
 

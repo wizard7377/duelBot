@@ -22,10 +22,10 @@ bigSelect::bigSelect(std::vector<std::string> startVals) {
 	[](std::string inStr) { return (inStr == ""); }
 	);
 	for (auto a : startVals) {
-		std::cout << a;
-		std::cout << " , ";
+		//std::cout << a;
+		//std::cout << " , ";
 	} 
-	std::cout << std::endl;
+	//std::cout << std::endl;
 	
 
     if (startVals.size() > 0) { 

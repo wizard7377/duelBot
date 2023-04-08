@@ -3,6 +3,7 @@
 #include <chrono>
 #include <dpp/dpp.h>
 #include <iostream>
+#include "colorstuff.hpp"
 //std::this_thread::sleep_for(*curTime + (*this->timeControl[1]) + (*this->timeControl[2]));
 //this->endCase(this->userMove,1);
 
@@ -17,9 +18,13 @@ frontRQ::frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle
 	this->logicQ = new rateQ(inCon);
 	this->gThread = new std::thread([&] {
 		while (true) {
-			std::cout << "Running!\n";
+			//std::cout << "Running!\n";
+			
 			std::vector<gBias> curGames = this->logicQ->getGames();
 			std::vector<snowPair> curGamesP;
+			if (curGames.size() > 0) {
+				std::cout << "Created " << colorForm(std::to_string(curGames.size()),GREEN_TERM) << " new game(s)\n";
+			}
 			for (auto a : curGames) {
 				curGamesP.push_back(a.players);
 			}
@@ -29,6 +34,7 @@ frontRQ::frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle
 				
 				this->playThreads.erase(cG.first); this->playThreads.erase(cG.second);
 			}
+			
 			std::this_thread::sleep_for(tDelay);
 		}
 	});

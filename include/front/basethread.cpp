@@ -48,7 +48,7 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->emojiCode = gameEmojiName[gameName];
 	this->gameDraw = new dg::basicDrawGame(gameName);
 	this->handler = handlerPar;
-	std::cout << rpsTurns << std::endl;
+	//std::cout << rpsTurns << std::endl;
 	if (rpsTurns == 0) { this->pOneFirst = (std::rand() > (RAND_MAX / 2)); }
 	this->curPlayer = this->pOneFirst;
 	//mas lazy

@@ -22,6 +22,7 @@ CHANGE SCOPE OF TRY BLOCKS
 using namespace dpp;
 
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event,bool isRanked);
+extern bool checkExists(snowflake userOne, snowflake userTwo);
 namespace evt {
 
 
@@ -40,12 +41,12 @@ std::function<void(snowPair,snowPair)> makeQ(cluster* botPar,std::vector<gameTim
 		//Create gameInt and gameHandle, however because there interdependent i need to do this
 		gInt = new gameInt::baseGameInt<T>(inTimes.data(),
 		([cHand](bool winner, int winCase) {
-			std::cout << "game has ended :((\n";
-			std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
+			//std::cout << "game has ended :((\n";
+			//std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
 			setRates(cHand->gameHandles[0]->handler->testCon,cHand->gameHandles[0]->userIdOne,cHand->gameHandles[0]->userIdTwo,0,winner); // weeeeeeeeeee very lazy
-			std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
+			//std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
 			setRates(cHand->gameHandles[1]->handler->testCon,cHand->gameHandles[1]->userIdOne,cHand->gameHandles[1]->userIdTwo,0,!winner); // weeeeeeeeeee very lazy
-			std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
+			//std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
 			cHand->gameHandles[0]->endCall(winner,winCase);
 			cHand->gameHandles[1]->endCall(!winner,winCase);
 		})); 
@@ -83,7 +84,8 @@ eventhandle::eventhandle(cluster * bot) {
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesTwo {5min, 5s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));	
-		
+	std::vector<gameTime> curTimesThree {2min, 0s, 0s};
+	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesThree, tttFuncs, this),this->testCon));	
 	
 	
 	
@@ -139,7 +141,11 @@ eventhandle::eventhandle(cluster * bot) {
 		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
 	});
 	this->addSlashCmd("challenge",[this,bot](const slashcommand_t &event) {
-		std::cout << "started\n";
+		//std::cout << "started\n";
+		if (checkExists(event.command.usr.id,std::get<dpp::snowflake>(event.get_parameter("player")))) {
+			event.reply(message("You have already challenged, or are already being challenged by this player!").set_flags(m_ephemeral));
+			return;
+		}
 		//command_interaction cmdData = std::get<command_interaction>(event.command.data);
 		interaction_modal_response gameForm(("userForm"+event.command.usr.username),"Enter to create challenge against oponent, enter none to get no time control");
 		gameForm.add_component(
@@ -195,7 +201,7 @@ eventhandle::eventhandle(cluster * bot) {
 	});
 	
 	this->addSlashCmd("getrate",[this,bot](const slashcommand_t &event) {
-		std::cout << "cmd recived\n";
+		//std::cout << "cmd recived\n";
 		try {
 			event.thinking(true);
 	
@@ -222,7 +228,7 @@ eventhandle::eventhandle(cluster * bot) {
 			
 					int res = std::get<int>(valSet[0]);					
 					bool canShow = std::get<bool>(valSet[1]);
-					std::cout << "Can show and isPlayer are: " << std::to_string(canShow)  << ", and " << std::to_string(isPlayer) << std::endl;
+					//std::cout << "Can show and isPlayer are: " << std::to_string(canShow)  << ", and " << std::to_string(isPlayer) << std::endl;
 					if (canShow or isPlayer) { event.edit_response(("Got: " + std::to_string(res))); }
 					else { event.edit_response(":x: You do not have permission to view this player's rating"); };
 

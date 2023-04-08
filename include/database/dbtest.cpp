@@ -111,8 +111,8 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 			if (mysql_num_rows(result) > 0) {
 				
 				MYSQL_ROW resRow = mysql_fetch_row(result);
-				std::cout << mysql_num_rows(result) << std::endl;
-				std::cout << mysql_num_fields(result) << std::endl;
+				//std::cout << mysql_num_rows(result) << std::endl;
+				//std::cout << mysql_num_fields(result) << std::endl;
 				//idk why the -48 is needed 
 				retAc.push_back(std::stoull(resRow[0]));
 				mysql_free_result(result);
@@ -137,15 +137,15 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 	} else {
 		try {
 			curQ = ("SELECT duelId FROM userGuildIds WHERE guildId IS NULL AND userId = " + std::to_string(userId) + ";");
-			std::cout << curQ << std::endl;
+			//std::cout << curQ << std::endl;
 			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 			MYSQL_RES * result = mysql_store_result(this->dataCon);
 			if (result != 0) {
 			if (mysql_num_rows(result) > 0) {
 				
 				MYSQL_ROW resRow = mysql_fetch_row(result);
-				std::cout << mysql_num_rows(result) << std::endl;
-				std::cout << mysql_num_fields(result) << std::endl;
+				//std::cout << mysql_num_rows(result) << std::endl;
+				//std::cout << mysql_num_fields(result) << std::endl;
 				retAc.push_back(std::stoull(resRow[0]));
 				mysql_free_result(result);
 				return retAc;
@@ -202,19 +202,19 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 			//could props optimize with last insert but too lazy rn
 			result = mysql_store_result(this->dataCon);
-			std::cout << "res is: " << result << std::endl;
+			//std::cout << "res is: " << result << std::endl;
 			
 		}
 		MYSQL_ROW curRow = mysql_fetch_row(result);
 		if (curRow == NULL) {
-			std::cout << "Retrived last\n";
+			//std::cout << "Retrived last\n";
 		}
 		retAc.push_back(atoi(curRow[0]));
 		bool isAllow = false;
 		std::function<bool(uint64_t,int)> canSee; 
 		
 		canSee = ([&] (uint64_t guildIdPar,int gameIdPar) {
-			std::cout << "\n val is null \n\n";
+			//std::cout << "\n val is null \n\n";
 			bool isGuildDef = (guildIdPar != 0);
 			bool isGameDef = (gameIdPar < 0);
 			if (not (isGameDef or isGuildDef)) {
@@ -290,12 +290,12 @@ void dataHandle::setRate(int reqRate,int gameId,uint64_t userId,uint64_t guildId
 			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 			//could props optimize with last insert but too lazy rn
 			result = mysql_store_result(this->dataCon);
-			std::cout << "res is: " << result << std::endl;
+			//std::cout << "res is: " << result << std::endl;
 			
 		}
 
 		curQ = ("UPDATE userGameInfo SET gameRate = " + std::to_string(reqRate) + " WHERE userId = " + std::to_string(totalId) + " AND gameId = " + std::to_string(gameId) + ([&] { if (guildId != 0) { return ("AND guildId = " + std::to_string(guildId)); } else { return std::string(""); }})() + ";"); 
-		std::cout << colorForm("curQ is: ",CYAN_TERM) << colorForm(curQ,PURPLE_TERM) << std::endl;
+		//std::cout << colorForm("curQ is: ",CYAN_TERM) << colorForm(curQ,PURPLE_TERM) << std::endl;
 		//std::cout << curQ << std::endl;
 		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 		
@@ -339,14 +339,14 @@ bool dataHandle::editSetting (string setName, string val, int gameId, uint64_t u
 		else if (scopeSet == 4) { curQ.append(("userId = " + to_string(userId) + " AND guildId IS NOT NULL;")); } 
 		else { return false; }
 
-		std::cout << "\n curQ cur Is: " << curQ << std::endl;
+		//std::cout << "\n curQ cur Is: " << curQ << std::endl;
 		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 		MYSQL_RES * result = mysql_store_result(this->dataCon);
 		MYSQL_ROW curRow;
 		while ((curRow = mysql_fetch_row(result)) != NULL) {
-			std::cout << string(curRow[0]) << std::endl;
+			//std::cout << string(curRow[0]) << std::endl;
 			curQ = ("UPDATE userGameInfo SET " + setName + " = " + val + " WHERE userId = " + string(curRow[0]) + " AND gameId = " + to_string(gameId) + ";"); 
-			std::cout << curQ << std::endl;
+			//std::cout << curQ << std::endl;
 			mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 		}
 		return true;
