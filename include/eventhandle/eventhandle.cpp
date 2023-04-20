@@ -84,7 +84,7 @@ eventhandle::eventhandle(cluster * bot) {
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesTwo {5min, 5s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));	
-	std::vector<gameTime> curTimesThree {2min, 0s, 0s};
+	std::vector<gameTime> curTimesThree {1min, 0s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesThree, tttFuncs, this),this->testCon));	
 	
 	

@@ -31,6 +31,7 @@ const std::unordered_map<std::type_index,gameConfig> gameCon {
 const std::unordered_map<int,std::pair<std::string,std::string>> winMsgs {
 	{0,{"Default win!","Default lose"}},
 	{1,{"You won on time!","You lost on time :clock12:"}},
+	{2,{"Opponent resigned","You resigned"}},
 	{-1,{"Debug win!","Debug lose!"}}
 };
 

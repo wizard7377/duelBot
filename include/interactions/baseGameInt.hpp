@@ -7,7 +7,7 @@
 #include <functional>
 #include <chrono>
 #include <thread>
-
+#include <atomic>
 using gameTime = std::chrono::duration<double,std::milli>;
 namespace gameInt {
 
@@ -35,14 +35,16 @@ class baseGameInt : public wrapState {
 		gameTime * timeControl[3];
 		std::chrono::time_point<std::chrono::steady_clock> lastMove;
 		gameTime timeMove(bool userTime);
+		std::function<void(bool,int)> endCase;
 	
 	private:
 		
 		
 		T * gameLogic;
 		std::thread * timeThread;
+		std::atomic<bool> * hasTimeLeft;
 		bool userMove = true;
-		std::function<void(bool,int)> endCase;
+		//std::function<void(bool,int)> endCase;
 };
 
 }

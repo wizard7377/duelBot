@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <string>
 #include <variant>
-/* uncomment for applications that use vectors */
 #include <vector>
 
 #include "dbtypes.hpp"

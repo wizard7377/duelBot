@@ -24,6 +24,7 @@ gameTimeType::gameTimeType(int seconds, int minutes, int hours) {
 
 template <typename T>
 baseGameInt<T>::baseGameInt(const gameTime control[3], std::function<void(bool,int)> onEnd) {
+	this->hasTimeLeft = new std::atomic<bool>(true);
 	for (int i = 0; i < 3; i++) {
 		this->timeControl[i] = new gameTime;
 		*this->timeControl[i] = control[i];
@@ -97,7 +98,10 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 	*curTime = this->timeMove(this->userMove);
 	this->timeThread = new std::thread([this,curTime] {
 		std::this_thread::sleep_for(*curTime + (*this->timeControl[1]) + (*this->timeControl[2]));
-		this->endCase(this->userMove,1);
+		if (this->hasTimeLeft->load()) {
+			this->hasTimeLeft->store(false);
+			this->endCase(this->userMove,1);
+		}
 	});
 	if (this->userMove) {
 		(this->timeLeft[0]) = (curTime);

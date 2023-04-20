@@ -9,7 +9,6 @@
 #include "colorstuff.hpp"
 #include <variant>
 #include <cctype>
-#include <config.hpp>
 #include "gameLogic.hpp"
 #include "commandHandle.hpp"
 #include "baseGameInt.hpp"

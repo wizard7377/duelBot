@@ -1,14 +1,32 @@
 #include "databaselogic.hpp"
 #include <iostream>
 #include <mysql.h>
-#include "config.hpp"
 #include <thread>
 #include <functional>
 #include <exception>
 #include "colorstuff.hpp"
+#include <filesystem>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+
+extern std::string getFullPath(std::string filePath);
+extern std::string getFullPath(std::vector<std::string> filePath);
+
+
+
+using json = nlohmann::json;
 
 using namespace std;
-	
+namespace fs = std::filesystem;
+
+
+
+
+
+
+
+
 class noResult : public exception {};
 
 namespace mData {
@@ -17,6 +35,8 @@ namespace mData {
 
 dataHandle::dataHandle() {
 	this->dataCon = NULL;
+	std::ifstream jFile(getFullPath("secrets/config.json"));
+	json gameConfig = json::parse(jFile)["MYSQL"];
 	try {
 		mysql_library_init(0,NULL,NULL);
 		this->dataCon = mysql_init(this->dataCon);
@@ -25,8 +45,10 @@ dataHandle::dataHandle() {
 		exit(0);
 	}
 	std::cout << "Database lib init succeded" << std::endl;
-	
-	if (mysql_real_connect(this->dataCon,MYOP_HOST,MYOP_USER,MYOP_PASS,MYOP_DATA,MYOP_PORT,MYOP_SOCK,MYOP_FLAG) == NULL) throw noResult();
+
+	//CLEAN
+	//CLEAN JSON ACCESS UP
+	if (mysql_real_connect(this->dataCon,gameConfig["MYOP_HOST"].get<string>().c_str(),gameConfig["MYOP_USER"].get<string>().c_str(),gameConfig["MYOP_PASS"].get<string>().c_str(),gameConfig["MYOP_DATA"].get<string>().c_str(),gameConfig["MYOP_PORT"],NULL,gameConfig["MYOP_FLAG"]) == NULL) throw noResult();
 	
 		
 	

@@ -276,6 +276,11 @@ message * baseSimThread<T>::msgMake() {
 		}
 			
 	});
+	this->handler->addButtonCmd(itemIds[7],[startSel,msg,this](const button_click_t& event) {
+		
+		event.reply("You resigned");
+		this->gameInteraction->endCase(true,2);
+	});
 	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();
 		this->bot->message_edit(*msg);
