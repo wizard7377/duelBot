@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
-set(FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR /usr/include/mysql)
+set(FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR /usr/local/mysql)
 
 
 include(FetchContent)
@@ -10,14 +10,20 @@ FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
 #find_package(OpenMP)
 
-include_directories(${FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR})
+include_directories(${FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR}/include)
 include_directories(include;${OpenCV_INCLUDE_DIRS})
 #file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 file(GLOB_RECURSE INC_SOURCES "include/*.cpp") 
 add_subdirectory(libs/DPP)
 
+if (EXISTS secrets/config.json)
+    message(STATUS "config.json found")
+else()
+    message(FATAL_ERROR "config.json not found")
+endif()
 
-add_link_options("-lmysqlclient")
+
+#add_link_options("-lmysqlclient")
 
 
 add_executable(${PROJECT_NAME}
@@ -30,7 +36,7 @@ target_link_libraries(${PROJECT_NAME}
     dpp
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
-    /usr/lib/x86_64-linux-gnu/libmysqlclient.a
+    ${FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR}/lib/libmysqlclient.a
     #OpenMP::OpenMP_CXX
 
 )

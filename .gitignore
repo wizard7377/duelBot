@@ -20,4 +20,5 @@ output/**
 imgs/**
 imgs
 docs/**
+build/
 
