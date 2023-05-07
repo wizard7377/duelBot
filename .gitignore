@@ -16,7 +16,7 @@ _deps
 duelBot
 include/**/*.json
 resources/**
-output/**
+output/basic/*.png
 .vscode/**
 imgs/**
 imgs
