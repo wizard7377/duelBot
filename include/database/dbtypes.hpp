@@ -3,7 +3,7 @@
 #include <variant>
 #include <vector>
 #include <string>
-
+#include <cstdint>
 class erVal {};
 using namespace std;
 

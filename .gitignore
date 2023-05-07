@@ -17,6 +17,7 @@ duelBot
 include/**/*.json
 resources/**
 output/**
+.vscode/**
 imgs/**
 imgs
 docs/**

@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
-set(FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR /usr/local/mysql)
-
+if (NOT DEFINED MYSQL_CONN_DIR)
+    set(MYSQL_CONN_DIR /usr/local/mysql)
+endif()
+set(DUEL_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
@@ -10,13 +12,13 @@ FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
 #find_package(OpenMP)
 
-include_directories(${FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR}/include)
-include_directories(include;${OpenCV_INCLUDE_DIRS})
+include_directories(${MYSQL_CONN_DIR}/include)
+include_directories(${DUEL_ROOT}/include;${OpenCV_INCLUDE_DIRS})
 #file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 file(GLOB_RECURSE INC_SOURCES "include/*.cpp") 
-add_subdirectory(libs/DPP)
+add_subdirectory(${DUEL_ROOT}/libs/DPP)
 
-if (EXISTS secrets/config.json)
+if (EXISTS ${DUEL_ROOT}/secrets/config.json)
     message(STATUS "config.json found")
 else()
     message(FATAL_ERROR "config.json not found")
@@ -27,7 +29,7 @@ endif()
 
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp
+    ${DUEL_ROOT}/src/main.cpp
     ${INC_SOURCES}
 )
 
@@ -36,7 +38,7 @@ target_link_libraries(${PROJECT_NAME}
     dpp
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
-    ${FULL_PATH_TO_MYSQL_CONNECTOR_CPP_DIR}/lib/libmysqlclient.a
+    ${MYSQL_CONN_DIR}/lib/libmysqlclient.a
     #OpenMP::OpenMP_CXX
 
 )

@@ -14,10 +14,10 @@ using json = nlohmann::json;
 
 
 std::string getFullPath(std::string filePath) {
-	return (fs::current_path() /= filePath);
+	return (fs::current_path().parent_path() /= filePath);
 }
 std::string getFullPath(std::vector<std::string> filePath) {
-	fs::path retPath = fs::current_path();
+	fs::path retPath = fs::current_path().parent_path();
 	for (auto sub: filePath) {
 		retPath /= sub;
 	}

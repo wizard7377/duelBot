@@ -7,6 +7,7 @@
 #include "colorstuff.hpp"
 #include <filesystem>
 #include <fstream>
+#include <format>
 #include <nlohmann/json.hpp>
 
 
@@ -66,7 +67,8 @@ dataHandle::dataHandle() {
 reSet dataHandle::makeGUserRaw(int gameId,uint64_t totalId) {
 	reSet retAc = {};
 	try {
-		std::string curQ = ("INSERT INTO userGameInfo (userId, gameId) VALUES (" + to_string(totalId) + ", " + to_string(gameId) + ");");	
+		std::string curQ = std::format("INSERT INTO userGameInfo (userId, gameId) VALUES ({}, {});",totalId,gameId);
+		//std::string curQ = ("INSERT INTO userGameInfo (userId, gameId) VALUES (" + to_string(totalId) + ", " + to_string(gameId) + ");");	
 		mysql_real_query(this->dataCon,curQ.c_str(),curQ.length());
 		retAc = {std::to_string(mysql_insert_id(this->dataCon))};
 	} catch (...) {

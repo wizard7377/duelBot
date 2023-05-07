@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include <format>
+#include <source_location>
 
 #ifndef IMG_SIZE
 #define IMG_SIZE 960
@@ -70,6 +72,7 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 std::string basicDrawGame::getBoard(std::vector<std::vector<int>> newBoard) {
 	Mat * retMat = this->changeBoard(newBoard);
 	std::string retPath = getFullPath({"output","basic",((std::to_string(currentImgBasic))+".png")});
+	
 	currentImgBasic++;
 	imwrite(retPath,*retMat);
 	delete retMat;
@@ -84,7 +87,7 @@ std::string basicDrawGame::getBoard(std::vector<std::vector<int>> newBoard) {
 basicDrawGame::basicDrawGame(std::string boardName,std::string conFile) {
 	
 	std::ifstream jFile(getFullPath({"config",conFile}));
-
+	
 	/*
 	std::string linestr;
 	while (std::getline (jFile, linestr)) {

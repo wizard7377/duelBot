@@ -14,6 +14,7 @@
 #include <thread>
 #include "eventhandle.hpp"
 #include <chrono>
+#include <format>
 #include <cmath>
 using namespace dpp;
 
@@ -281,6 +282,10 @@ message * baseSimThread<T>::msgMake() {
 		event.reply("You resigned");
 		this->gameInteraction->endCase(true,2);
 	});
+	this->handler->addButtonCmd(itemIds[6],[startSel,msg,this](const button_click_t& event) {
+		
+		event.reply("You requested a draw");
+	});
 	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();
 		this->bot->message_edit(*msg);
@@ -320,6 +325,7 @@ message * baseSimThread<T>::makeGameEmbed() {
 	message * msg = new message((this->gameThread),mainEmb);
 	//std::cout << this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(this->isPlayerOne)) << "  AND  " << !this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)) << std::endl;
 	//std::cout << this->isPlayerOne << "  AND  " << !this->isPlayerOne << std::endl;
+	
 	this->imgThread = new std::thread( [this,msg,imgPath] { msg->add_file("game.png",utility::read_file(imgPath)); } );
 	return msg;
 

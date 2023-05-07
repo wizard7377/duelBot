@@ -36,6 +36,7 @@ class baseGameInt : public wrapState {
 		std::chrono::time_point<std::chrono::steady_clock> lastMove;
 		gameTime timeMove(bool userTime);
 		std::function<void(bool,int)> endCase;
+		void requestDraw();
 	
 	private:
 		
