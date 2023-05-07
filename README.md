@@ -12,66 +12,52 @@ Or the [D++](https://dpp.dev/index.html) discord server:
 
 [D++ - The C++ Discord API Library](https://discord.gg/dpp)
 
-## Building:
 
-#### Dependencies:
 
-- [Nholmann](https://json.nlohmann.me) (For JSON)
-- [OpenCV](https://docs.opencv.org/4.x/d9/df8/tutorial_root.html) (For making the board images shown to the players)
-- [MySQL](https://www.mysql.com/) (Storing ratings), Server and C Connector
+If you are a developer curious in building DuelBot, visit `BUILDING.md`
 
-#### Build tools:
+## Commands:
 
-- [CMake](https://cmake.org/)
+`info`: Provides a short description of DuelBot and links to this repository
 
-- [Make](https://www.gnu.org/software/make/)
+`challenge <game> <player> [<ranked?>]`: Challenge `player` to `game`, by default, a game is played ranked, however it can be unranked if `ranked` is set to false. This will pop up a modal, with three input lines, the start time, the increment time, and the grace time, which, in chess time notation, is `start (m)|increment (s)|grace (s)`. The receiving user can choose to either accept or reject this game
 
-- C++ Compiler with support for C++20 (GCC 13 should do it)
+`getrate <game> [<player>]`: Get's a given player's (by default sender of command) rating in `game`, if they allow others to see their rating.
 
-#### Setup:
+`changesetting <setting> <value> [<gametype>][<effectglobal>]`: Change user option `setting` to `value` for `gametype`. `effectglobal`, if set, can be used to change where it is changed, where global is the default and any server specific setting has higher precedence 
 
-If you do **not** have the database setup, run this MySQL query:
+`joinqueue <game> [<time>]`: Join a queue for the game `game`  with time control `time`, always ranked
 
-```sql
-CREATE DATABASE  IF NOT EXISTS 'duelData' USE 'duelData';
-DROP TABLE IF EXISTS userGameInfo;
-CREATE TABLE userGameInfo (gameUserId bigint NOT NULL AUTO_INCREMENT,userId bigint NOT NULL,gameId int DEFAULT NULL,gameRate int DEFAULT '10000',showRate tinyint(1) DEFAULT NULL,PRIMARY KEY (gameUserId),KEY userId (userId),CONSTRAINT userGameInfo_ibfk_1 FOREIGN KEY (userId) REFERENCES userGuildIds (duelId));
-DROP TABLE IF EXISTS userGuildIds;
-CREATE TABLE userGuildIds (duelId bigint NOT NULL AUTO_INCREMENT,userId bigint NOT NULL,guildId bigint DEFAULT NULL,PRIMARY KEY (duelId));
-```
 
-If you do **not** have  `/secrets/config.json` setup, create it as follows:
 
-```json
-{
-    "DISCORD" : {
-        "BOT_TOKEN": "YOUR_BOT_TOKEN"
-    },
-    "MYSQL" : {
-        "MYOP_HOST" : "YOUR_HOST_IP",
-        "MYOP_USER" : "YOUR_DATABASE_USERNAME",
-        "MYOP_PASS" : "YOUR_DATABASE_PASSWORD",
-        "MYOP_DATA" : "duelData",
-        "MYOP_PORT" : 3306,
-        "MYOP_FLAG" : 0
-    }
-}
-```
+## For Mathematical and rating curiosity:
 
-Replace the bot token, the MySQL host, user, and password with the relevant information, keep all others the same (unless a change is required to suit your local environment)
+I developed a formula for the rating bias, and it goes as follows:
 
-#### Building:
+$$
+\frac{r_1-\sqrt{r_1r_2}}{a\ast(r_1r_2)}
+$$
 
-Building duelBot is quite simple, just follow the instructions below:
+Where $r_1$ is your rating, $r_2$ is your opponents rating, and $a$ is a constant, which serves as a limiting factor as a equation, so say you gain $b$ points for winning, $0$ for drawing, and $-b$ for drawing by default. What $a$ does, is it limits how far your final point gain/loss can differ from the average. If we write our default rule from before as $(-b,0,b)$, we can say the worst case scenario (where we lose the most points for losing and win the least for winning) is:
 
-1. Enter build directory (`mkdir build && cd build`)
+$$
+\left(-b-\frac{b}{a},-\frac{b}{a},b-\frac{b}{a}\right)
+$$
 
-2. Get CMake to generate your Makefile (`cmake ..`)
+And the best case scenario is:
 
-3. Run Make, this will take a little bit, with `make`. If you want to build it faster, run `make -jn` where n is the number of jobs you want to be running in parallel (I find it best to set it to number of cores - 2). If you want to do something that has a very high probability of not working and subpar result if it does, run `make -j`, which will run all jobs in parallel, which is highly volatile and slow
+$$
+\left(-b+\frac{b}{a},\frac{b}{a},b+\frac{b}{a}\right)
+$$
 
-4. Run `./duelBot` and enjoy!
+By default, in DuelBot, it `b=8` and `a=2`, therefore the above become:
 
-## Note to Windows users:
+$$
+(-12,-4,4)
+$$
 
-I am aware the last instruction (and the article in general) are geared towards Linux, and you may ask, what is my advice for windows users? My advice, as I will say time and time again, is to use <u>Windows Subsystem for Linux</u> (**WSL**). Seriously, it will save you so much time.
+And
+
+$$
+(-4,4,12)
+$$
