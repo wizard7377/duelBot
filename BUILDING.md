@@ -43,7 +43,10 @@ If you do **not** have  `/secrets/config.json` setup, create it as follows:
 ```json
 {
     "DISCORD" : {
-        "BOT_TOKEN": "YOUR_BOT_TOKEN"
+        "BOT_TOKEN" : {
+             "BUILD" : "YOUR_BOT_TOKEN",
+             "TEST" : "SECOND_TOKEN"
+        }
     },
     "MYSQL" : {
         "MYOP_HOST" : "YOUR_HOST_IP",
@@ -56,19 +59,21 @@ If you do **not** have  `/secrets/config.json` setup, create it as follows:
 }
 ```
 
-Replace the bot token, the MySQL host, user, and password with the relevant information, keep all others the same (unless a change is required to suit your local environment)
+Replace the bot token, the MySQL host, user, and password with the relevant information, keep all others the same (unless a change is required to suit your local environment). A quick note, if you want to have two tokens at your disposable, just set `"TEST"` and run `cmake -DTOK_BUILD=OFF ..`
 
 #### Building:
 
 Building DuelBot is quite simple, just follow the instructions below:
 
-1. Enter build directory (`mkdir build && cd build`)
+1. Generate the directory where board image output will be stored (`mkdir output/basic`)
 
-2. Get CMake to generate your Makefile (`cmake ..`)
+2. Enter build directory (`mkdir build && cd build`)
 
-3. Run Make, this will take a little bit, with `make`. If you want to build it faster, run `make -jn` where n is the number of jobs you want to be running in parallel (I find it best to set it to number of cores - 2). If you want to do something that has a very high probability of not working and subpar result if it does, run `make -j`, which will run all jobs in parallel, which is highly volatile and slow
+3. Get CMake to generate your Makefile (`cmake ..`)
 
-4. Run `./duelBot` and enjoy!
+4. Run Make, this will take a little bit, with `make`. If you want to build it faster, run `make -jn` where n is the number of jobs you want to be running in parallel (I find it best to set it to number of cores - 2). If you want to do something that has a very high probability of not working and subpar result if it does, run `make -j`, which will run all jobs in parallel, which is highly volatile and slow
+
+5. Run `./duelBot` and enjoy!
 
 ## Note to Windows users:
 
