@@ -12,8 +12,6 @@ Or the [D++](https://dpp.dev/index.html) discord server:
 
 [D++ - The C++ Discord API Library](https://discord.gg/dpp)
 
-
-
 If you are a developer curious in building DuelBot, visit `BUILDING.md`
 
 ## Commands:
@@ -27,8 +25,6 @@ If you are a developer curious in building DuelBot, visit `BUILDING.md`
 `changesetting <setting> <value> [<gametype>][<effectglobal>]`: Change user option `setting` to `value` for `gametype`. `effectglobal`, if set, can be used to change where it is changed, where global is the default and any server specific setting has higher precedence 
 
 `joinqueue <game> [<time>]`: Join a queue for the game `game`  with time control `time`, always ranked
-
-
 
 ## For Mathematical and rating curiosity:
 
