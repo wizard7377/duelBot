@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
+OPTION(TOK_BUILD "Token type" ON)
+IF (${TOK_BUILD})
+    ADD_DEFINITIONS(-DTOKEN_TYPE="BUILD")
+ELSE()
+    ADD_DEFINITIONS(-DTOKEN_TYPE="TEST")
+ENDIF()
 if (NOT DEFINED MYSQL_CONN_DIR)
     set(MYSQL_CONN_DIR /usr/local/mysql)
 endif()
@@ -25,7 +31,7 @@ else()
 endif()
 
 
-#add_link_options("-lmysqlclient")
+add_link_options("-lmysqlclient")
 
 
 add_executable(${PROJECT_NAME}

@@ -32,7 +32,9 @@
 using namespace dpp;
 using json = nlohmann::json;
 
-
+#ifndef TOKEN_TYPE
+	#define TOKEN_TYPE "BUILD"
+#endif
 extern std::string getFullPath(std::string filePath);
 extern std::string getFullPath(std::vector<std::string> filePath);
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event,bool isRanked);
@@ -53,8 +55,8 @@ int main(int argc, char *argv[]) {
 	
 	std::ifstream jFile(getFullPath("secrets/config.json"));
 	json gameconfig = json::parse(jFile)["DISCORD"];
-	
-	cluster bot(gameconfig["BOT_TOKEN"]);
+	std::cout << TOKEN_TYPE << std::endl;
+	cluster bot(gameconfig["BOT_TOKEN"][TOKEN_TYPE]);
 	
 
 	
