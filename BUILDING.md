@@ -31,11 +31,11 @@ Or the [D++](https://dpp.dev/index.html) discord server:
 If you do **not** have the database setup, run this MySQL query:
 
 ```sql
-CREATE DATABASE  IF NOT EXISTS 'duelData' USE 'duelData';
-DROP TABLE IF EXISTS userGameInfo;
-CREATE TABLE userGameInfo (gameUserId bigint NOT NULL AUTO_INCREMENT,userId bigint NOT NULL,gameId int DEFAULT NULL,gameRate int DEFAULT '10000',showRate tinyint(1) DEFAULT NULL,PRIMARY KEY (gameUserId),KEY userId (userId),CONSTRAINT userGameInfo_ibfk_1 FOREIGN KEY (userId) REFERENCES userGuildIds (duelId));
+CREATE DATABASE  IF NOT EXISTS duelData; USE duelData;
 DROP TABLE IF EXISTS userGuildIds;
 CREATE TABLE userGuildIds (duelId bigint NOT NULL AUTO_INCREMENT,userId bigint NOT NULL,guildId bigint DEFAULT NULL,PRIMARY KEY (duelId));
+DROP TABLE IF EXISTS userGameInfo;
+CREATE TABLE userGameInfo (gameUserId bigint NOT NULL AUTO_INCREMENT,userId bigint NOT NULL,gameId int DEFAULT NULL,gameRate int DEFAULT '10000',showRate tinyint(1) DEFAULT NULL,PRIMARY KEY (gameUserId),KEY userId (userId),CONSTRAINT userGameInfo_ibfk_1 FOREIGN KEY (userId) REFERENCES userGuildIds (duelId));
 ```
 
 If you do **not** have  `/secrets/config.json` setup, create it as follows:
