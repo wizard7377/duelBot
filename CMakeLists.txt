@@ -17,12 +17,16 @@ FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download
 FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
 #find_package(OpenMP)
-
+include(ExternalProject)
+ExternalProject_Add(DPP
+    PREFIX libs/DPP
+    URL https://github.com/brainboxdotcc/DPP/archive/refs/tags/v10.0.23.tar.gz
+)
 include_directories(${MYSQL_CONN_DIR}/include)
 include_directories(${DUEL_ROOT}/include;${OpenCV_INCLUDE_DIRS})
 #file(GLOB_RECURSE SECRETS "secrets/*.hpp")
 file(GLOB_RECURSE INC_SOURCES "include/*.cpp") 
-add_subdirectory(${DUEL_ROOT}/libs/DPP)
+#add_subdirectory(libs/DPP)
 
 if (EXISTS ${DUEL_ROOT}/secrets/config.json)
     message(STATUS "config.json found")
@@ -37,6 +41,7 @@ add_link_options("-lmysqlclient")
 add_executable(${PROJECT_NAME}
     ${DUEL_ROOT}/src/main.cpp
     ${INC_SOURCES}
+    
 )
 
 
@@ -48,6 +53,7 @@ target_link_libraries(${PROJECT_NAME}
     #OpenMP::OpenMP_CXX
 
 )
+add_dependencies(${PROJECT_NAME} DPP)
  
 
 target_include_directories(${PROJECT_NAME} PUBLIC

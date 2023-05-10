@@ -10,6 +10,9 @@
 #include <format>
 #include <nlohmann/json.hpp>
 
+#ifndef TOKEN_TYPE
+	#define TOKEN_TYPE "BUILD"
+#endif
 
 extern std::string getFullPath(std::string filePath);
 extern std::string getFullPath(std::vector<std::string> filePath);
@@ -37,7 +40,7 @@ namespace mData {
 dataHandle::dataHandle() {
 	this->dataCon = NULL;
 	std::ifstream jFile(getFullPath("secrets/config.json"));
-	json gameConfig = json::parse(jFile)["MYSQL"];
+	json gameConfig = json::parse(jFile)[TOKEN_TYPE]["MYSQL"];
 	try {
 		mysql_library_init(0,NULL,NULL);
 		this->dataCon = mysql_init(this->dataCon);

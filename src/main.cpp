@@ -54,9 +54,9 @@ int main(int argc, char *argv[]) {
 	
 	
 	std::ifstream jFile(getFullPath("secrets/config.json"));
-	json gameconfig = json::parse(jFile)["DISCORD"];
+	json gameconfig = json::parse(jFile)[TOKEN_TYPE]["DISCORD"];
 	std::cout << TOKEN_TYPE << std::endl;
-	cluster bot(gameconfig["BOT_TOKEN"][TOKEN_TYPE]);
+	cluster bot(gameconfig["BOT_TOKEN"]);
 	
 
 	
