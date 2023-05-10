@@ -42,19 +42,31 @@ If you do **not** have  `/secrets/config.json` setup, create it as follows:
 
 ```json
 {
-    "DISCORD" : {
-        "BOT_TOKEN" : {
-             "BUILD" : "YOUR_BOT_TOKEN",
-             "TEST" : "SECOND_TOKEN"
+    "BUILD" : {
+        "DISCORD" : {
+            "BOT_TOKEN" : "YOUR_BOT_TOKEN"
+        },
+        "MYSQL" : {
+            "MYOP_HOST" : "YOUR_HOST_IP",
+            "MYOP_USER" : "YOUR_DATABASE_USERNAME",
+            "MYOP_PASS" : "YOUR_DATABASE_PASSWORD",
+            "MYOP_DATA" : "duelData",
+            "MYOP_PORT" : 3306,
+            "MYOP_FLAG" : 0
         }
     },
-    "MYSQL" : {
-        "MYOP_HOST" : "YOUR_HOST_IP",
-        "MYOP_USER" : "YOUR_DATABASE_USERNAME",
-        "MYOP_PASS" : "YOUR_DATABASE_PASSWORD",
-        "MYOP_DATA" : "duelData",
-        "MYOP_PORT" : 3306,
-        "MYOP_FLAG" : 0
+    "TEST" : {
+        "DISCORD" : {
+            "BOT_TOKEN" : "YOUR_BOT_TOKEN"
+        },
+        "MYSQL" : {
+            "MYOP_HOST" : "YOUR_HOST_IP",
+            "MYOP_USER" : "YOUR_DATABASE_USERNAME",
+            "MYOP_PASS" : "YOUR_DATABASE_PASSWORD",
+            "MYOP_DATA" : "duelData",
+            "MYOP_PORT" : 3306,
+            "MYOP_FLAG" : 0
+        }
     }
 }
 ```
