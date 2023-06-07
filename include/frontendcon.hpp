@@ -32,7 +32,8 @@ const std::unordered_map<int,std::pair<std::string,std::string>> winMsgs {
 	{0,{"Default win!","Default lose"}},
 	{1,{"You won on time!","You lost on time :clock12:"}},
 	{2,{"Opponent resigned","You resigned"}},
-	{-1,{"Debug win!","Debug lose!"}}
+	{-1,{"Debug win!","Debug lose!"}},
+	{-2,{"Draw by choice","Draw by choice"}}
 };
 
 

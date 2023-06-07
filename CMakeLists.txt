@@ -10,6 +10,7 @@ ENDIF()
 if (NOT DEFINED MYSQL_CONN_DIR)
     set(MYSQL_CONN_DIR /usr/local/mysql)
 endif()
+
 set(DUEL_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(FetchContent)
@@ -18,15 +19,21 @@ FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
 #find_package(OpenMP)
 include(ExternalProject)
-ExternalProject_Add(DPP
+FetchContent_Declare(DPP
     PREFIX libs/DPP
-    URL https://github.com/brainboxdotcc/DPP/archive/refs/tags/v10.0.23.tar.gz
+    BINARY_DIR build
+    URL https://github.com/brainboxdotcc/DPP/archive/refs/tags/v10.0.24.tar.gz
 )
-include_directories(${MYSQL_CONN_DIR}/include)
+FetchContent_MakeAvailable(DPP)
+if (EXISTS ${MYSQL_CONN_DIR}/include)
+    include_directories(${MYSQL_CONN_DIR}/include)
+else()
+    include_directories(/usr/include/mysql)
+endif()
 include_directories(${DUEL_ROOT}/include;${OpenCV_INCLUDE_DIRS})
 #file(GLOB_RECURSE SECRETS "secrets/*.hpp")
-file(GLOB_RECURSE INC_SOURCES "include/*.cpp") 
-#add_subdirectory(libs/DPP)
+file(GLOB_RECURSE INC_SOURCES "src/*.cpp") 
+#add_subdirectory(${DPP_BINARY_DIR})
 
 if (EXISTS ${DUEL_ROOT}/secrets/config.json)
     message(STATUS "config.json found")
@@ -49,25 +56,22 @@ target_link_libraries(${PROJECT_NAME}
     dpp
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
-    ${MYSQL_CONN_DIR}/lib/libmysqlclient.a
     #OpenMP::OpenMP_CXX
 
 )
-add_dependencies(${PROJECT_NAME} DPP)
+if (EXISTS ${MYSQL_CONN_DIR}/lib/libmysqlclient.a) 
+	target_link_libraries(${PROJECT_NAME} ${MYSQL_CONN_DIR}/lib/libmysqlclient.a)
+elseif (EXISTS ${MYSQL_CONN_DIR}/lib/libmysqlclient.so) 
+	target_link_libraries(${PROJECT_NAME} ${MYSQL_CONN_DIR}/lib/libmysqlclient.so)
+else() 
+	target_link_libraries(${PROJECT_NAME} /usr/lib/libmysqlclient.so)
+endif()
+#add_dependencies(${PROJECT_NAME} DPP)
  
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     libs/DPP/include
-    include/database
-    
-    include/utils
-    include/games
-    include/front
-    include/draw
-    include/interactions
-    include/eventhandle
-    include/ratetools
-    src/commands
+    include
     
 
 )

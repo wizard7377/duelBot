@@ -8,6 +8,9 @@
 #include "colorstuff.hpp"
 #include "gamenums.hpp"
 #include "frontend.hpp"
+#include <nlohmann/json.hpp>
+#include <chrono>
+#include <fstream>
 //#include "ratesys.hpp"
 #include "eventhandle.hpp"
 
@@ -18,9 +21,11 @@ CHANGE SCOPE OF TRY BLOCKS
 */
 
 
-
+using json = nlohmann::json;
 using namespace dpp;
 
+const static auto commandDuration = 1min;
+static bool shouldStop = false;
 extern void handleChallengeSubmit(user userId, snowflake challengeId, std::string gameName, std::string guildName, cluster& bot,const form_submit_t& event,bool isRanked);
 extern bool checkExists(snowflake userOne, snowflake userTwo);
 namespace evt {
@@ -66,6 +71,28 @@ std::function<void(snowPair,snowPair)> makeQ(cluster* botPar,std::vector<gameTim
 
 
 eventhandle::eventhandle(cluster * bot) {
+	new std::thread([&] {
+			while(true) {
+				std::this_thread::sleep_for(commandDuration);
+				try {
+					bool wasStop = shouldStop;
+					std::fstream cFile("stop.json");
+					json sData = json::parse(cFile);
+					if (sData["isCommand"]) {
+						shouldStop = ((sData["whatIs"] == 2) and (sData["whatIs"] != 3));
+						if (shouldStop) {
+							if (!wasStop) std::cout << "Preventing new games...\n";
+						} else if (wasStop) {
+							std::cout << "Allowing new games...\n";
+						}
+					}
+				} catch (...) {
+					std::cout << "No file\n";
+				}
+				
+			}
+		});
+				
 
 	this->testCon = new mData::dataHandle();
 	std::function<gameFront::baseSimThread<game::ticTacToeLogic>*(gameInt::baseGameInt<game::ticTacToeLogic>*,snowPair, snowPair)> tttFuncs[2] = {
@@ -124,6 +151,10 @@ eventhandle::eventhandle(cluster * bot) {
 	
 
 	this->addSlashCmd("joinqueue",[bot,this](const slashcommand_t &event) {
+		if (shouldStop) {
+			event.reply(message("DuelBot is going to update soon, therefore no games may be started at the present time").set_flags(m_ephemeral));
+			return;
+		}
 		event.thinking(true);
 		auto subcommand = event.command.get_command_interaction().options[0];
 		int gameInt = scopeNums[subcommand.name];
@@ -138,12 +169,16 @@ eventhandle::eventhandle(cluster * bot) {
 		}))->detach();
 	});
 	this->addSlashCmd("info",[bot](const slashcommand_t &event) {
-		event.reply("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git");
+		event.reply(message("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git").set_flags(m_ephemeral));
 	});
 	this->addSlashCmd("challenge",[this,bot](const slashcommand_t &event) {
 		//std::cout << "started\n";
 		if (checkExists(event.command.usr.id,std::get<dpp::snowflake>(event.get_parameter("player")))) {
 			event.reply(message("You have already challenged, or are already being challenged by this player!").set_flags(m_ephemeral));
+			return;
+		}
+		if (shouldStop) {
+			event.reply(message("DuelBot is going to update soon, therefore no games may be started at the present time").set_flags(m_ephemeral));
 			return;
 		}
 		//command_interaction cmdData = std::get<command_interaction>(event.command.data);

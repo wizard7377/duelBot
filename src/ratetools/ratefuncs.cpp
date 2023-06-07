@@ -43,12 +43,14 @@ int getRate(mData::dataHandle * dataCon, dpp::snowflake userVal, int gameVal, dp
 	return retVal;
 }
 
-int setRates(mData::dataHandle * dataCon,snowflake setPlayer, snowflake otherPlayer, int gameVal, bool isWinner, snowflake guildVal, snowflake otherGuild) {
+int setRates(mData::dataHandle * dataCon,snowflake setPlayer, snowflake otherPlayer, int gameVal, bool isWinner, snowflake guildVal, snowflake otherGuild, bool isTie) {
 	int pRates[2] = {getRate(dataCon,setPlayer,gameVal,guildVal),getRate(dataCon,otherPlayer,gameVal,otherGuild) };
 	int pBias = getBias(pRates[0],pRates[1],GAME_VAL);
 	//if (setPlayer > otherPlayer) { pBias = -pBias; }
 	int setOffset = pBias;
-	if (isWinner) setOffset += GAME_VAL; else setOffset -= GAME_VAL;
+	if (!isTie) { 
+		if (isWinner) setOffset += GAME_VAL; else setOffset -= GAME_VAL;
+	}
 
 	dataCon->setRate(setOffset+pRates[0],gameVal,setPlayer,guildVal);
 	return (setOffset+pRates[0]);

@@ -153,10 +153,7 @@ int baseGameInt<T>::moveToInt(std::string userMove, bool typeReq) {
 	}	
 }
 
-template <typename T>
-void baseGameInt<T>::requestDraw() {
-	
-}
+
 
 }
 

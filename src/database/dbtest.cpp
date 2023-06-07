@@ -9,6 +9,7 @@
 #include <fstream>
 #include <format>
 #include <nlohmann/json.hpp>
+#include <source_location>
 
 #ifndef TOKEN_TYPE
 	#define TOKEN_TYPE "BUILD"
@@ -254,6 +255,7 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 				mysql_real_query(this->dataCon,tempCurQT.c_str(),tempCurQT.length());
 				result = mysql_store_result(this->dataCon);
 				curRow = mysql_fetch_row(result);
+				if (curRow == 0) throw "Bad row";
 				if (curRow[0] == NULL) {
 					return true;
 				} else {
@@ -284,6 +286,7 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 		
 
 	} catch (...) {
+		std::cout << std::format("Error in {} : {}\n",std::source_location::current().file_name(),std::source_location::current().function_name());
 		return {0};
 
 	}

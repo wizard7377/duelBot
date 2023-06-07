@@ -51,6 +51,13 @@ baseSimThread<T>::~baseSimThread() {
 	this->bot->on_select_click.detach(this->selectEventId);
 }
 */
+template <typename T>
+baseSimThread<T>::~baseSimThread() {
+	this->bot->channel_delete(this->gameThread);
+	//this->gameThreadObj.metadata.locked = true;
+	//this->bot->channel_edit(this->gameThreadObj);
+
+}
 
 template <typename T>
 baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt) {
@@ -75,12 +82,12 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 
 	gameInt::gameTimeType* con[] = {new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0),new gameInt::gameTimeType(0,0,0)};
 	//this->gameInteraction = new gameInt::baseGameInt<T>(con,(std::bind(&baseSimThread::endCall,this,std::placeholders::_1,std::placeholders::_2)));
-	//std::cout << this->gameThread << std::endl;
+	//std::cout << std::to_string(this->gameThread) << std::endl;
 
 	if (this->isPlayerOne) {
 		this->msgMake();
 	} else {
-		this->bot->message_create(message(this->gameThread,"You don't go first"));
+		this->bot->message_create(message(std::to_string(this->gameThread),"You don't go first"));
 	}
 
 	
@@ -104,9 +111,9 @@ template <typename T>
 void baseSimThread<T>::endCall(bool userWon, int winCase) {
 	message * msg;
 	if (userWon) {
-		msg = new message((this->gameThread),winMsgs.at(winCase).first);
+		msg = new message((std::to_string(this->gameThread)),winMsgs.at(winCase).first);
 	} else {
-		msg = new message((this->gameThread),winMsgs.at(winCase).second);
+		msg = new message((std::to_string(this->gameThread)),winMsgs.at(winCase).second);
 	}
 	this->bot->message_create(*msg);
 }
@@ -285,6 +292,8 @@ message * baseSimThread<T>::msgMake() {
 	this->handler->addButtonCmd(itemIds[6],[startSel,msg,this](const button_click_t& event) {
 		
 		event.reply("You requested a draw");
+		this->drawCall();
+		//TODO
 	});
 	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();
@@ -322,7 +331,7 @@ message * baseSimThread<T>::makeGameEmbed() {
 		add_field("Time left (you)", gToStr(this->gameInteraction->timeMove(this->isPlayerOne))).
 		add_field("Time left (opponent)", gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)));
 
-	message * msg = new message((this->gameThread),mainEmb);
+	message * msg = new message((std::to_string(this->gameThread)),mainEmb);
 	//std::cout << this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(this->isPlayerOne)) << "  AND  " << !this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)) << std::endl;
 	//std::cout << this->isPlayerOne << "  AND  " << !this->isPlayerOne << std::endl;
 	
@@ -335,6 +344,51 @@ template <typename T>
 void baseSimThread<T>::getMove() {
 	this->msgMake();
 	//this->giveMove();
+}
+
+template <typename T>
+void baseSimThread<T>::requestDraw() {
+	if (this->drawReq) {
+		
+		std::string buttonNames[] = { std::to_string(this->uniId + 0) + std::to_string(this->gameThread), std::to_string(this->uniId + 1) + std::to_string(this->gameThread), std::to_string(this->uniId + 2) + std::to_string(this->gameThread) };
+		this->uniId += 3;
+		dpp::message drawMessage = dpp::message(this->gameThread, "Draw is requested, accept?");
+		//for (int i = 0; i < 3; i++) std::cout << buttonNames[i] << ": Is a button\n";
+		std::cout << buttonNames[0] << std::endl;
+		dpp::component buttonRow;
+		buttonRow.add_component(
+			dpp::component().set_label("Yes").set_style(dpp::cos_success).set_id(buttonNames[0])
+		).add_component(
+			dpp::component().set_label("No").set_style(dpp::cos_danger).set_id(buttonNames[1])
+		).add_component(
+			dpp::component().set_label("No (and don't ask again)").set_style(dpp::cos_danger).set_id(buttonNames[2])
+		);
+		drawMessage.add_component(buttonRow);
+		//TODO make draw expire
+		this->bot->message_create(drawMessage);
+		this->handler->addButtonCmd(buttonNames[0],
+			[this](const auto& event) {
+				this->gameInteraction->endCase(true,-2);
+				
+				event.reply();
+			}
+		);
+		this->handler->addButtonCmd(buttonNames[1],
+			[this](const auto& event) {
+				event.reply();
+				
+			}
+			
+		);
+		this->handler->addButtonCmd(buttonNames[2],
+			[this](const auto& event) {
+				event.reply();
+				this->drawReq = false;
+			
+			}
+			
+		);
+	}
 }
 
 	
