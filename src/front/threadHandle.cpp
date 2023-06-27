@@ -41,8 +41,8 @@ baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*
 			this->gameHandles[0]->endCall(winner,winCase);
 			this->gameHandles[1]->endCall(!winner,winCase);
 			this->ended = true;
-			delete this->gameHandles[0];
-			delete this->gameHandles[1];
+			//delete this->gameHandles[0];
+			//delete this->gameHandles[1];
 		}
 	}); 
 	//int setRates(mData::dataHandle * dataCon,snowflake setPlayer, snowflake otherPlayer, int gameVal, bool isWinner = true, snowflake guildVal = 0,snowflake otherGuild = 0);

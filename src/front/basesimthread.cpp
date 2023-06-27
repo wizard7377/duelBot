@@ -71,7 +71,7 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 	this->handler = handlerPar;
 	this->gameInteraction = shareInt;
 	//mas lazy
-	this->isPlayerOne = (userIdA >= userIdB);
+	this->isPlayerOne = ((userIdA > userIdB) ^ this->gameInteraction->randomVal);
 	
 	
 	
@@ -108,11 +108,12 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 
 
 template <typename T>
-void baseSimThread<T>::endCall(bool userWon, int winCase) {
+void baseSimThread<T>::endCall(int userWon, int winCase) {
 	message * msg;
-	if (userWon) {
+	this->isRun = false;
+	if (userWon > 0) {
 		msg = new message((std::to_string(this->gameThread)),winMsgs.at(winCase).first);
-	} else {
+	} else if (userWon == 0) {
 		msg = new message((std::to_string(this->gameThread)),winMsgs.at(winCase).second);
 	}
 	this->bot->message_create(*msg);
@@ -314,6 +315,7 @@ message * baseSimThread<T>::msgMake() {
 			this->bot->message_edit(*msg);
 		});
 	}
+	this->lastMsg = msg;
 	return msg;
 
 }
@@ -342,7 +344,7 @@ message * baseSimThread<T>::makeGameEmbed() {
 
 template <typename T>
 void baseSimThread<T>::getMove() {
-	this->msgMake();
+	if (isRun) this->msgMake();
 	//this->giveMove();
 }
 
