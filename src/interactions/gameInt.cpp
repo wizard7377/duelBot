@@ -6,6 +6,7 @@
 #include <algorithm> 
 #include <chrono>
 #include <thread>
+#include <random>
 
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
@@ -30,6 +31,11 @@ baseGameInt<T>::baseGameInt(const gameTime control[3], std::function<void(bool,i
 		*this->timeControl[i] = control[i];
 	}
 	this->lastMove = std::chrono::steady_clock::now();
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+  	std::mt19937 generator (seed);  // mt19937 is a standard mersenne_twister_engine
+
+	this->randomVal = generator() % 2;
 	this->gameLogic = new T();
 	
 	//this->lastMove = boost::chrono::system_clock::now();
@@ -117,6 +123,11 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 		} else {
 			isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo),playerTurn)); 
 		}
+	}
+
+	if (isCase) {
+		//TODO MAKE END WORK
+		this->endCase(!this->gameLogic->getWinner(),0);
 	}
 	this->lastMove = std::chrono::steady_clock::now();
 	

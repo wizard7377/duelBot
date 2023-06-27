@@ -34,7 +34,7 @@ class inType {
 		std::function<void()> giveMove;
 		~inType() {};
 		virtual void getMove() = 0;  
-		virtual void endCall(bool userWon, int winType) = 0;  
+		virtual void endCall(int userWon, int winType) = 0;  
 };
 class wrapThread {};
 class wrapThreadHandle {};
@@ -48,7 +48,7 @@ class baseSimThread : public wrapThread, public inType {
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
 		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
 	    std::function<void(message msg)> moveCall;
-	    void endCall(bool userWon, int winType);
+	    void endCall(int userWon, int winType);
 		void getMove() override;
 		std::function<void()> drawCall;
 
@@ -75,6 +75,8 @@ class baseSimThread : public wrapThread, public inType {
 		bool pOneFirst;
 		bool curPlayer;
 		bool drawReq = true;
+		bool isRun = true;
+		message * lastMsg;
 		
 		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;
 		std::map<std::string,std::function<void(const select_click_t&)>> gameSelectCmds;
