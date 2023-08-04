@@ -21,7 +21,7 @@ class point {
 class bigSelect {
 
 	public:
-		bigSelect(std::vector<std::string> startVals);
+		bigSelect(std::vector<std::string> startVals, std::string pOne = "???");
 		std::vector<component*> selectMenus;
 		int curPage = 0;
 		int numPage = 0;

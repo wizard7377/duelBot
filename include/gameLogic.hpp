@@ -23,7 +23,7 @@ class baseGameLogic {
 		virtual bool getWinner() { return false; }
 		virtual bool makeMoveOld(int inputOne, int inputTwo) { return false; }
 		virtual bool makeMoveOld(int inputOne) { return false; }
-		virtual bool makeMove(int inputOne,int inputTwo, bool playerTurn) { return false; }
+		virtual bool makeMove(int inputOne,int inputTwo, bool playerTurn) { return false; } //!< This function overload allows users to make a move in a two player game
 		virtual bool makeMove(int inputOne,bool playerTurn) { return false; }
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
@@ -36,7 +36,7 @@ class baseGameLogic {
 		
 	protected:
 
-		virtual void changeMoves(bool playerTurn = false) {};
+		virtual void changeMoves(bool playerTurn = false) {}; //!< Updates the list of moves
 		bool userTurn = true;
 
 };
@@ -103,7 +103,8 @@ class checkersLogic : public baseGameLogic {
 	private:
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
-		int pAt(int x, int y);
+		int pAt(int x, int y); //!< Needed to turn natrual notation (x,y) into actual notation (y,x)
+		void sAt(int x, int y, int piece); //!< Needed to turn natrual notation (x,y) into actual notation (y,x)
 		
 		
 };

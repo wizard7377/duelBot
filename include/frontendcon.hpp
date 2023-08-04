@@ -20,12 +20,17 @@ static std::map<std::string,std::string> gameEmojiName = {
 };
 struct gameConfig {
 	std::string gameName;
-	std::string gameId;
+	int gameId;
 };
 
 const std::unordered_map<std::type_index,gameConfig> gameCon {
-	{std::type_index(typeid(game::ticTacToeLogic)),{"tictactoe","000"}},
-	{std::type_index(typeid(game::checkersLogic)),{"checkers","001"}}
+	{std::type_index(typeid(game::ticTacToeLogic)),{"tictactoe",0}},
+	{std::type_index(typeid(game::checkersLogic)),{"checkers",1}}
+};
+
+const std::vector<std::string> gameNames = {
+	"tictactoe",
+	"checkers"
 };
 
 const std::unordered_map<int,std::pair<std::string,std::string>> winMsgs {

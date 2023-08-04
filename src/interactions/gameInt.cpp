@@ -11,6 +11,7 @@
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
 template class gameInt::baseGameInt<game::checkersLogic>;
+template class gameInt::baseGameInt<game::chessLogic>;
 
 using namespace std::literals::chrono_literals;
 
@@ -100,6 +101,7 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 
 template <typename T> 
 int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string inputTwo) {
+	
 	gameTime * curTime = new gameTime; 
 	*curTime = this->timeMove(this->userMove);
 	this->timeThread = new std::thread([this,curTime] {

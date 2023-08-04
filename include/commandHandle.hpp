@@ -72,22 +72,19 @@ slashcommand changeSetDef() {
 }
 
 slashcommand joinQueueDef() {
-	return (slashcommand().set_name("joinQueue").set_description("Join a queue for a game")
-
-	.add_option(command_option(co_sub_command,"tictactoe","Play a game of tictactoe against someone else")
-		.add_option(command_option(co_integer,"timecon","what time control will u use",false)
+	command_option defTimeOps = command_option(co_integer,"timecon","what time control will u use",false)
 			.add_choice(command_option_choice("5 | 5",0))
 			.add_choice(command_option_choice("5 | 0",1))
 			//TEST TEMP lose in less than two minute
-			.add_choice(command_option_choice("TEST",2))
-		
-		)
-		
-	)
+			.add_choice(command_option_choice("TEST",2));
+	return (slashcommand().set_name("joinQueue").set_description("Join a queue for a game")
 
-	.add_option(command_option(co_sub_command,"checkers","Play a game of checkers against someone else"))
-	.add_option(command_option(co_sub_command,"chess","Play a game of chess against someone else")
-	)
+	.add_option(command_option(co_sub_command,"tictactoe","Play a game of tictactoe against someone else").add_option(defTimeOps))
+		
+
+	.add_option(command_option(co_sub_command,"checkers","Play a game of checkers against someone else").add_option(defTimeOps))
+		
+	.add_option(command_option(co_sub_command,"chess","Play a game of chess against someone else").add_option(defTimeOps))
 	);
 		
 		

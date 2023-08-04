@@ -12,12 +12,13 @@
 #ifndef IMG_SIZE
 #define IMG_SIZE 960
 #endif
-
+//TODO Add board notation markings to images
 static unsigned long long int currentImgBasic = 1;
 
 using namespace cv;
 namespace fs = std::filesystem;
 using json = nlohmann::json;
+
 
 extern std::string getFullPath(std::string filePath);
 extern std::string getFullPath(std::vector<std::string> filePath);
@@ -42,22 +43,28 @@ int boolToInt(bool input) {
 
 Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 	
-	Mat * currentImg = new Mat(IMG_SIZE,IMG_SIZE,CV_8UC3,Scalar(69,42,32));
+	
 	
 	int sizeX = newBoard.size();
 	int sizeY = newBoard[0].size();
+	Mat * currentImg = new Mat(IMG_SIZE,IMG_SIZE,CV_8UC3,Scalar(69,42,32));
 	int spaceSizeX = IMG_SIZE/sizeX;
 	int spaceSizeY = IMG_SIZE/sizeY;
 	bool spaceColor = true;
 	for (int i = 0; i < sizeX; i++) {
 		for (int ii = 0; ii< sizeY; ii++) {
 			Rect space(spaceSizeY*ii,spaceSizeX*i,spaceSizeY,spaceSizeX);
+			
 			Mat tarSpace = (*currentImg)(space);
 			
 			
 			
-			(this->imgs[boolToInt(spaceColor)][newBoard[i][ii]]).copyTo(tarSpace);
-			spaceColor = !(spaceColor);
+			if (this->alternates) {
+				(this->imgs[boolToInt(spaceColor)][newBoard[i][ii]]).copyTo(tarSpace);
+				spaceColor = !(spaceColor);
+			} else {
+				this->imgs[0][newBoard[i][ii]].copyTo(tarSpace);
+			}
 
 			
 			
@@ -69,6 +76,11 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 	return currentImg;
 }
 
+/**
+ * @brief Returns path to a new board drawn
+ * @return Path to board
+ * @param newBoard Board state
+*/
 std::string basicDrawGame::getBoard(std::vector<std::vector<int>> newBoard) {
 	Mat * retMat = this->changeBoard(newBoard);
 	std::string retPath = getFullPath({"output","basic",((std::to_string(currentImgBasic))+".png")});
@@ -98,13 +110,14 @@ basicDrawGame::basicDrawGame(std::string boardName,std::string conFile) {
 	
 
 	json gameconfig = json::parse(jFile)[boardName];
+
 	/*for (auto a: (gameconfig["imgpaths"]).get<std::vector<std::vector<std::string>>>()) {
 		for (auto b: a) {
 			std::cout << b << std::endl;
 		}
 	}*/
 	
-	this->initBoardItems((gameconfig["imgpaths"]).get<std::vector<std::vector<std::string>>>());
+	this->initBoardItems(gameconfig);
 	//std::cout << std::to_string(this->imgs.size()) << std::endl;
 	//this->boardItems = std::vector<std::vector<int>>(userItems.size(),std::vector<int>(userItems[0].size(),0));
 	//this->changeBoard(userItems);

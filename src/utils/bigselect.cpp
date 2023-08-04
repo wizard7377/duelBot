@@ -14,7 +14,7 @@ std::string genName() {
 }
 namespace utl {
 
-bigSelect::bigSelect(std::vector<std::string> startVals) {
+bigSelect::bigSelect(std::vector<std::string> startVals,std::string pOne) {
 	component * curCom;
 
 	//this solution is horrible but i'll change it later
@@ -38,10 +38,10 @@ bigSelect::bigSelect(std::vector<std::string> startVals) {
 				}
 				curCom = new component();
 				curCom->set_type(cot_selectmenu);
-				curCom->set_placeholder("???");
+				curCom->set_placeholder(pOne);
 				curCom->set_id(genName());
 			}
-			curCom->add_select_option(select_option("move from: ", startVals[i],startVals[i]));
+			curCom->add_select_option(select_option(startVals[i], startVals[i],startVals[i]));
 
 
 
@@ -49,7 +49,7 @@ bigSelect::bigSelect(std::vector<std::string> startVals) {
 	} else {		
 		curCom = new component();
 		curCom->set_type(cot_selectmenu);
-		curCom->set_placeholder("???");
+		curCom->set_placeholder(pOne);
 		curCom->set_id(genName());
 		curCom->add_select_option(select_option("No options", "N/A","N/A"));
 	}

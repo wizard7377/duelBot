@@ -17,9 +17,9 @@ class baseDrawGame {
 		
 		//baseDrawGame(std::vector<std::vector<int>> userItems,std::string boardName,std::string conFile = "baseconfig.json");
 	protected:
-		void initBoardItems(std::vector<std::vector<std::string>> imagePaths);
+		void initBoardItems(json imagePaths);
 		std::vector<std::vector<Mat>> imgs;
-		
+		bool alternates = false;	
 
 };
 
@@ -28,6 +28,8 @@ class basicDrawGame : public baseDrawGame {
 		basicDrawGame(std::string boardName,std::string conFile = "basegameconfig.json");
 		Mat * changeBoard(std::vector<std::vector<int>> newBoard);
 		std::string getBoard(std::vector<std::vector<int>> newBoard);
+
+	
 };
 
 class advDrawGame : public baseDrawGame {

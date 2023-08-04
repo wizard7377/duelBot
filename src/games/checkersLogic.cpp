@@ -3,10 +3,11 @@
 #include <string>
 #include <functional>
 #include <cmath>
+#include <format>
 #include "gameLogic.hpp"
 #include "utl.hpp"
 
-
+//TODO Make this actually work
 template <typename T>
 T & getValAt(int index, std::vector<std::vector<T>> * inVec) {
 	return ((*inVec)[(int)(index % (*inVec)[0].size())][(int)(std::floor(index/(*inVec).size()))]);
@@ -75,15 +76,16 @@ namespace game {
 	
 	}
 	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
-		//std::cout << getValAt<int>(inputTwo,this->boardItems) << " to " <<  getValAt<int>(inputOne,this->boardItems) << std::endl;
+		
 		if (this->isCapture) { 
 			std::vector<utl::point> * curVals = &(this->capMovesVec.at(inputTwo));
-			this->boardItems->at(curVals->back().x)[curVals->back().y] = this->boardItems->at(curVals->front().x)[curVals->front().y];
+			
+			this->sAt(curVals->back().x,curVals->back().y,pAt(curVals->front().x,curVals->front().y));
 			for (int i = 0; i < curVals->size() - 1; i++) {
-				this->boardItems->at(curVals->at(i).x)[curVals->at(i).y] = 0;
-				this->boardItems->at((int)((curVals->at(i).x+curVals->at(i+1).x)/2))[(int)((curVals->at(i).y+curVals->at(i+1).y)/2)] = 0;
+				this->sAt((curVals->at(i).x),(curVals->at(i).y),0);
+				this->sAt((int)((curVals->at(i).x+curVals->at(i+1).x)/2),(int)((curVals->at(i).y+curVals->at(i+1).y)/2),0);
 			}
-
+			this->sAt(curVals->front().x,curVals->front().y,0);
 
 		} else {
 			utl::point pOne = utl::point(inputOne,8,false);
@@ -124,8 +126,16 @@ int checkersLogic::pAt(int x, int y) {
 		return -1;
 	}
 }
+void checkersLogic::sAt(int x, int y, int piece) {
+	this->boardItems->at(y).at(x) = piece;
+}
+
 
 void checkersLogic::changeMoves(bool playerTurn) {
+	//this->moveNames = {};
+	for (auto &a : this->moveNames) {
+		a = {};
+	}
 	this->isCapture = false;
 	
 	int *pNames;
@@ -204,6 +214,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			
 		}
 		
+		
 
 
 				
@@ -225,6 +236,7 @@ void checkersLogic::changeMoves(bool playerTurn) {
 			}
 		}
 	}
+	
 
 				
 

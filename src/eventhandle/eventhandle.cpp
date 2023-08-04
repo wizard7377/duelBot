@@ -31,6 +31,7 @@ extern bool checkExists(snowflake userOne, snowflake userTwo);
 namespace evt {
 
 
+
 /***
  * @brief Generates a function required for the front end queue (yes i know its a template function (a function that generates a function) generating a function which is in of itself a template function)
  * @param botPar global bot
@@ -95,11 +96,24 @@ eventhandle::eventhandle(cluster * bot) {
 				
 
 	this->testCon = new mData::dataHandle();
+
+	//TODO Clean this mess up
 	std::function<gameFront::baseSimThread<game::ticTacToeLogic>*(gameInt::baseGameInt<game::ticTacToeLogic>*,snowPair, snowPair)> tttFuncs[2] = {
 		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
 		,
 		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
 	};
+	std::function<gameFront::baseSimThread<game::checkersLogic>*(gameInt::baseGameInt<game::checkersLogic>*,snowPair, snowPair)> checksFuncs[2] = {
+		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
+		,
+		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
+	};
+	std::function<gameFront::baseSimThread<game::chessLogic>*(gameInt::baseGameInt<game::chessLogic>*,snowPair, snowPair)> chessFuncs[2] = {
+		([&] (gameInt::baseGameInt<game::chessLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::chessLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
+		,
+		([&] (gameInt::baseGameInt<game::chessLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::chessLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
+	};
+	 
 	//std::vector<rQ::frontRQ> tttQS;
 
 		
@@ -107,12 +121,19 @@ eventhandle::eventhandle(cluster * bot) {
 	//tttQS.emplace_back(rQ::frontRQ( makeQ<game::ticTacToeLogic>(bot,{5min,0s,0s},tttFuncs,this)));
 	
 	//this->curQueues.emplace_back(tttQS);
+	//TODO Make queue creation cleaner
 	std::vector<gameTime> curTimes {5min, 5s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
+	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimes, checksFuncs, this),this->testCon));
+	this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimes, chessFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesTwo {5min, 5s, 0s};
-	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));	
+	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
+	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimes, checksFuncs, this),this->testCon));
+	this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimes, chessFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesThree {1min, 0s, 0s};
-	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesThree, tttFuncs, this),this->testCon));	
+	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
+	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimes, checksFuncs, this),this->testCon));
+	this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimes, chessFuncs, this),this->testCon));
 	
 	
 	
@@ -157,8 +178,12 @@ eventhandle::eventhandle(cluster * bot) {
 		}
 		event.thinking(true);
 		auto subcommand = event.command.get_command_interaction().options[0];
-		int gameInt = scopeNums[subcommand.name];
-		int scopeInt = subcommand.get_value<int64_t>(0);
+		int gameInt = gameNums[subcommand.name];
+		int scopeInt;
+		try { scopeInt = event.command.get_command_interaction().get_value<int64_t>(1); }
+		catch (...) {
+			std::cout << std::format("Error at: {}::{}\n",__LINE__,__FILE__);
+			scopeInt = 0; }
 		(new std::thread([=,this] {
 			if (this->curQueues[gameInt][scopeInt]->addPlayerInt(snowPair(event.command.usr.id,((bot->thread_create_sync("testT",event.command.channel_id,1440,CHANNEL_PRIVATE_THREAD,true,1))).id))) {
 				event.edit_response("Queue joined succesfully, please standby");

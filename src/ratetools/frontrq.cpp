@@ -6,7 +6,6 @@
 #include "colorstuff.hpp"
 //std::this_thread::sleep_for(*curTime + (*this->timeControl[1]) + (*this->timeControl[2]));
 //this->endCase(this->userMove,1);
-
 const std::chrono::duration<double,std::milli> tDelay(5000);
 
 using namespace dpp;

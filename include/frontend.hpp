@@ -46,7 +46,7 @@ class baseSimThread : public wrapThread, public inType {
 	    baseSimThread(cluster* botPar, snowflake userIdA, snowflake userIdB, snowflake threadId, evt::eventhandle * handlerPar,gameInt::baseGameInt<T> * shareInt);
 	    //~baseThread();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-		std::string drawBoard(bool userMove, std::vector<std::vector<int>> boardState);
+		
 	    std::function<void(message msg)> moveCall;
 	    void endCall(int userWon, int winType);
 		void getMove() override;
@@ -61,7 +61,7 @@ class baseSimThread : public wrapThread, public inType {
 	    snowflake gameThread;
 		evt::eventhandle * handler;
 		dpp::thread gameThreadObj;
-	    std::string emojiCode;
+	    int gameCode;
 		dg::baseDrawGame * gameDraw;
 	    gameInt::baseGameInt<T> * gameInteraction;
 		event_handle buttonEventId;
@@ -80,7 +80,10 @@ class baseSimThread : public wrapThread, public inType {
 		
 		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;
 		std::map<std::string,std::function<void(const select_click_t&)>> gameSelectCmds;
-		
+	private:
+		bool imgMade = false;
+		std::string imgPath = "";
+		std::string getBoard();
 
 
 };

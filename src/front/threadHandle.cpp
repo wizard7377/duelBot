@@ -9,6 +9,7 @@
 
 template class gameFront::baseGameHandle<game::ticTacToeLogic>;
 template class gameFront::baseGameHandle<game::checkersLogic>;
+template class gameFront::baseGameHandle<game::chessLogic>;
 //template class gameFront::baseGameHandle<game::baseGameLogic>;
 
 using namespace dpp;

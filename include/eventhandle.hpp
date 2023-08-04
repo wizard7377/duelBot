@@ -17,6 +17,8 @@ using snowPair = std::pair<snowflake,snowflake>;
 namespace evt {
 
 	
+	
+	
 	/**
 	 * @brief Event Handle is a interface with events for D++ and the rest of the program, allowing events to be added to indivual catogoreis 
 	 * 
@@ -42,7 +44,7 @@ namespace evt {
 			std::unordered_map<std::string,std::function<void(const button_click_t&)>> buttonCmds;
 			std::unordered_map<std::string,std::function<void(const slashcommand_t&)>> slashCmds;
 			std::unordered_map<std::string,std::function<void(const form_submit_t&)>> formCmds;
-			std::vector<std::vector<rQ::frontRQ*>> curQueues = {{}};
+			std::vector<std::vector<rQ::frontRQ*>> curQueues = {{},{},{}};
 
 			
 			

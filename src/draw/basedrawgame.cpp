@@ -26,11 +26,14 @@ std::string getFullPath(std::vector<std::string> filePath) {
 namespace dg {
 
 
-void baseDrawGame::initBoardItems(std::vector<std::vector<std::string>> imagePaths) {
-	for (auto a: imagePaths) {
+void baseDrawGame::initBoardItems(json boardJson) {
+	this->alternates = (boardJson["cycle"].get<int>() > 1); 
+	for (auto a: boardJson["files"]) {
 		std::vector<Mat> tempVec;
-		for (auto b: a) {
-			tempVec.push_back(imread(getFullPath(b),IMREAD_COLOR));
+		for (auto b: a["imgs"]) {
+			std::vector<std::string> cPath = { a["path"] , (b.get<std::string>() + ".png") };
+			Mat curImg = imread(getFullPath(cPath),IMREAD_COLOR);
+			tempVec.push_back(curImg);
 		}
 		this->imgs.push_back(tempVec);
 	}

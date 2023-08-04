@@ -18,6 +18,13 @@ class gameTimeType {
 };
 
 class wrapState {};
+
+/**
+ * Main layer between game and thread, it takes a template argument, that of the game that is played
+ * @class baseGameInt
+ * @brief Main layer between game and thread
+ * @tparam T The type of game that will be played
+*/
 template <typename T>
 class baseGameInt : public wrapState {
 	public:
@@ -42,10 +49,10 @@ class baseGameInt : public wrapState {
 	private:
 		
 		
-		T * gameLogic;
+		T * gameLogic; //!< Actual logic for the game
 		std::thread * timeThread;
 		std::atomic<bool> * hasTimeLeft;
-		bool userMove = true;
+		bool userMove = true; //!< Tracks players turns
 		//std::function<void(bool,int)> endCase;
 };
 

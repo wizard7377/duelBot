@@ -19,12 +19,24 @@
 using namespace dpp;
 
 //template class gameInt::baseGameInt<game::baseGameLogic>;
-
+//TODO Make threads auto-delete
+//TODO Make config files into json
+//TODO Add new rate to end information
+//BUG Timing issues
+//TODO Make end screens also work
 template class gameFront::baseSimThread<game::ticTacToeLogic>;
 template class gameFront::baseSimThread<game::checkersLogic>;
+template class gameFront::baseSimThread<game::chessLogic>;
 template class gameFront::baseSimThread<game::baseGameLogic>;
 
-
+template <typename T>
+int gameTypeInt() { return -1; }
+template <>
+int gameTypeInt<game::ticTacToeLogic>() { return 0; }
+template <>
+int gameTypeInt<game::checkersLogic>() { return 1; }
+template <>
+int gameTypeInt<game::chessLogic>() { return 2; }
 
 std::string gToStr(gameTime inTime) {
 	int numSec = std::chrono::duration_cast<std::chrono::seconds>(inTime).count();
@@ -66,8 +78,10 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 	this->userIdOne = userIdA;
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;	
-	this->emojiCode = gameCon.at(std::type_index(typeid(T))).gameId;
-	this->gameDraw = new dg::basicDrawGame(gameCon.at(std::type_index(typeid(T))).gameName);
+	this->gameCode = gameCon.at(std::type_index(typeid(T))).gameId;
+	std::cout << gameNames.at(gameTypeInt<T>()) << std::endl;
+	std::cout << gameTypeInt<T>() << std::endl;
+	this->gameDraw = new dg::basicDrawGame(gameNames.at(gameTypeInt<T>()));
 	this->handler = handlerPar;
 	this->gameInteraction = shareInt;
 	//mas lazy
@@ -117,6 +131,8 @@ void baseSimThread<T>::endCall(int userWon, int winCase) {
 		msg = new message((std::to_string(this->gameThread)),winMsgs.at(winCase).second);
 	}
 	this->bot->message_create(*msg);
+	this->bot->message_create(*makeGameEmbed());
+	delete msg;
 }
 
 
@@ -139,10 +155,12 @@ message * baseSimThread<T>::msgMake() {
 		}
 	}
 	//std::cout <<  __LINE__ << std::endl;
+	std::string labelOne = "Move";
+	if (this->gameInteraction->isDuoMove()) labelOne = "Move from";
 	std::string ranPre = std::to_string(rand());
 	std::string itemIds[] = {reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId()};
-	utl::bigSelect * startSel = new utl::bigSelect(inMoves);
-	utl::bigSelect * endSel = new utl::bigSelect(this->gameInteraction->getAllMoves()[0]);
+	utl::bigSelect * startSel = new utl::bigSelect(inMoves,labelOne);
+	utl::bigSelect * endSel = new utl::bigSelect(this->gameInteraction->getAllMoves()[0],"Move to");
 	msg->add_component(
 		component().add_component(
 			startSel->pageStay()
@@ -280,6 +298,7 @@ message * baseSimThread<T>::msgMake() {
 			eMsg.filename = event.command.msg.filename;
 			this->bot->message_edit(eMsg);
 			//this->msgMake();
+			this->imgMade = false;
 			this->giveMove();
 			this->handler->deleteButtonCmd(itemIds[8]);	
 		}
@@ -323,7 +342,7 @@ message * baseSimThread<T>::msgMake() {
 template <typename T>
 message * baseSimThread<T>::makeGameEmbed() {
 	
-	std::string imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
+	std::string imgPath = this->getBoard();
 	
 	embed mainEmb = embed().
 		set_color(colors::blue_aquamarine).
@@ -340,6 +359,15 @@ message * baseSimThread<T>::makeGameEmbed() {
 	this->imgThread = new std::thread( [this,msg,imgPath] { msg->add_file("game.png",utility::read_file(imgPath)); } );
 	return msg;
 
+}
+
+template <typename T>
+std::string baseSimThread<T>::getBoard() {
+	if (!this->imgMade) {
+		this->imgMade != this->imgMade;
+		this->imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
+	}
+	return this->imgPath;
 }
 
 template <typename T>
@@ -396,48 +424,6 @@ void baseSimThread<T>::requestDraw() {
 	
 
 
-
-
-
-
-
-
-
-template <typename T>
-std::string baseSimThread<T>::drawBoard(bool userMove, std::vector<std::vector<int>> boardState) {
-		
-	
-	
-	char i = 'a';
-	std::string retString = ":white_large_square:";
-
-	
-	for (auto c : boardState) {
-	    //retString = retString + charToEmote[i];
-		//std::cout << std::to_string((int)(i)) << std::endl;
-		i++;
-	}
-	retString = retString + '\n';
-	
-
-	
-	i = '1';
-
-	for (auto a : boardState) {
-		//retString = retString+ charToEmote[i];
-		for (int b : a) {
-			retString= retString+ "<:" + (this->emojiCode)+"000"+addChar(std::to_string(b))+":"+gamesToEmojis[this->emojiCode]["000"][b] + ">";
-		
-		}
-		i++;
-		retString = retString + '\n';
-	}
-	
-	//std::cout << retString;
-	return retString;
-
-		
-}
 
 
 
