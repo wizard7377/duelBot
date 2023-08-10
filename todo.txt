@@ -1,0 +1,6 @@
+Features to add:
+More games (chess and connect 4, in particular)
+More settings
+Guild tournaments that can be set up
+Expansion on rank system
+

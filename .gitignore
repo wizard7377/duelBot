@@ -18,6 +18,7 @@ include/**/*.json
 resources/**
 output/basic/*.png
 .vscode/**
+.clangd
 imgs/**
 imgs
 docs/**

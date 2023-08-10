@@ -132,6 +132,8 @@ void baseSimThread<T>::endCall(int userWon, int winCase) {
 	}
 	this->bot->message_create(*msg);
 	this->bot->message_create(*makeGameEmbed());
+	msg = new message(std::format("Your new rating is: {}",std::to_string(std::get<int>(this->handler->testCon->getRate(this->gameInteraction->gameLogic->gameInt(),this->userIdOne)[0]))));
+	this->bot->direct_message_create(this->userIdOne,*msg);
 	delete msg;
 }
 
@@ -313,7 +315,6 @@ message * baseSimThread<T>::msgMake() {
 		
 		event.reply("You requested a draw");
 		this->drawCall();
-		//TODO
 	});
 	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();

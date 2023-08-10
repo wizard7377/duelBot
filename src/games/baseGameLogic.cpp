@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+
 #include "gameLogic.hpp"
 
 template <typename T>

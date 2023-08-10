@@ -110,7 +110,9 @@ basicDrawGame::basicDrawGame(std::string boardName,std::string conFile) {
 	
 
 	json gameconfig = json::parse(jFile)[boardName];
-
+	if (gameconfig.contains("letters")) {
+		this->hasLetters = true;
+	}
 	/*for (auto a: (gameconfig["imgpaths"]).get<std::vector<std::vector<std::string>>>()) {
 		for (auto b: a) {
 			std::cout << b << std::endl;

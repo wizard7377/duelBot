@@ -10,6 +10,10 @@
 using namespace cv;
 using json = nlohmann::json;
 namespace dg {
+/**
+ * @brief Basic interface to openCV for drawing game boards
+ * 
+ */
 class baseDrawGame {
 	public:
 		virtual std::string getBoard(std::vector<std::vector<int>> newBoard) {return "";}
@@ -19,6 +23,8 @@ class baseDrawGame {
 	protected:
 		void initBoardItems(json imagePaths);
 		std::vector<std::vector<Mat>> imgs;
+		std::vector<std::vector<Mat>> letterImgs;
+		bool hasLetters = false;
 		bool alternates = false;	
 
 };

@@ -22,13 +22,13 @@ command_option getScopeChoice() {
 
 namespace botCmds {
 
-
+/*! Info command */
 dpp::slashcommand infoDef() {
 	return dpp::slashcommand()
 		.set_name("info")
 		.set_description("info on the bot");
 }
-
+/*! Challenge command */
 dpp::slashcommand challengeDef() {
 	return dpp::slashcommand().set_name("challenge").set_description("challenge user to a game")
 	.add_option(
@@ -43,7 +43,7 @@ dpp::slashcommand challengeDef() {
 	)
 	.add_option(command_option(co_boolean,"ranked","Should the challenge be of a ranked game?",false));
 }
-
+/*! Get rating command */
 dpp::slashcommand getRateDef() {
 	return (dpp::slashcommand().set_name("getRate").set_description("Get the rating of a user")
 	.add_option(command_option(co_string, "game", "game you wish to get rating of", true).
@@ -55,7 +55,7 @@ dpp::slashcommand getRateDef() {
 	);
 }
 
-
+/*! Change setting command */
 slashcommand changeSetDef() {
 	return (slashcommand().set_name("changeSetting").set_description("Change vaue of a setting")
 
@@ -70,7 +70,7 @@ slashcommand changeSetDef() {
 	);
 		
 }
-
+/*! Join queue command */
 slashcommand joinQueueDef() {
 	command_option defTimeOps = command_option(co_integer,"timecon","what time control will u use",false)
 			.add_choice(command_option_choice("5 | 5",0))

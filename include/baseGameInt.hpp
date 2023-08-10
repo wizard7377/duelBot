@@ -35,23 +35,32 @@ class baseGameInt : public wrapState {
 		int moveToInt(std::string userMove,bool typeReq = false);
 		std::vector<std::vector<std::string>> getAllMoves();
 		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
-		bool isDuoMove();
+		/*! Checks if game is one input or two input
+		 * @brief Number of inputs
+		 * @return Is two player game?
+		*/
+		bool isDuoMove(); //TODO Fix mess involved with this 
 		bool curPlayer = true;
 
-		gameTime * timeLeft[2];
-		gameTime * timeControl[3];
-		std::chrono::time_point<std::chrono::steady_clock> lastMove;
+		gameTime * timeLeft[2]; //!< How much time is left per player
+		gameTime * timeControl[3]; //!< The time control
+		std::chrono::time_point<std::chrono::steady_clock> lastMove; //!< Time of the last move played
+		/*! Times user time based off current time and lastMove
+		 * @brief Times move
+		 * @param userTime who to deduct time from (false => 1, true => 2)
+		 * @return Time left
+		*/
 		gameTime timeMove(bool userTime);
-		std::function<void(bool,int)> endCase;
+		std::function<void(bool,int)> endCase; //!< Callback for end of game
 		bool randomVal;
 		
-	
+		T * gameLogic; //!< Actual logic for the game
 	private:
 		
 		
-		T * gameLogic; //!< Actual logic for the game
-		std::thread * timeThread;
-		std::atomic<bool> * hasTimeLeft;
+		
+		std::thread * timeThread; //!< Meseaures if time ran out
+		std::atomic<bool> * hasTimeLeft; //!< If the game should end due to timeout
 		bool userMove = true; //!< Tracks players turns
 		//std::function<void(bool,int)> endCase;
 };

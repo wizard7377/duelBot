@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <concepts>
 #include "utl.hpp"
 
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
@@ -15,25 +16,52 @@ namespace game {
 class baseGameLogic {
 	public:
 		baseGameLogic();
-		bool isCapture = false;
+		/*! Signals that moves involve more than two possible inputs */
+		bool isCapture = false; 
 		virtual bool isDuoMove() { return true; };
 		std::string gameId;
-		std::vector<std::vector<int>> * boardItems;
+		std::vector<std::vector<int>> * boardItems; //!< Board state
 		bool* allowedMoves;
-		virtual bool getWinner() { return false; }
-		virtual bool makeMoveOld(int inputOne, int inputTwo) { return false; }
-		virtual bool makeMoveOld(int inputOne) { return false; }
-		virtual bool makeMove(int inputOne,int inputTwo, bool playerTurn) { return false; } //!< This function overload allows users to make a move in a two player game
+		/*! Returns the player who won
+		 * @brief Gets winner
+		 * @return Player 1 is false, 2 is true
+		 */
+		virtual bool getWinner() { return false; } 
+		virtual bool makeMoveOld(int inputOne, int inputTwo) { return false; } //!< @deprecated
+		virtual bool makeMoveOld(int inputOne) { return false; } //!< @deprecated
+		/*! This function allows you to make a move in a two input game
+		 * @brief Make two input move
+		 * @param inputOne First input
+		 * @param inputTwo Second input
+		 * @param playerTurn Whose turn it is
+		 * @return Has the game ended?
+		 */
+		virtual bool makeMove(int inputOne,int inputTwo, bool playerTurn) { return false; } 
+		/*! This function allows you to make a move in a one input game
+		 * @brief Make one input move
+		 * @param inputOne One input
+		 * @param playerTurn Whose turn it is
+		 * @return Has the game ended?
+		 */
 		virtual bool makeMove(int inputOne,bool playerTurn) { return false; }
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
-		std::vector<std::vector<std::string>> moveNames;
+		/*! List of all possible moves, this the case of a single input game, 
+		 * any vector that has a size of zero is invalid and greater than valid. 
+		 * In a two player game, each inner vector repersents a possible first move, 
+		 * and the elements repersent all possible second moves 
+		 */
+		std::vector<std::vector<std::string>> moveNames; 
 		std::vector<std::vector<std::string>> moveNamesCon;
 		std::vector<std::vector<std::string>> extraMoveNames;
-		std::map<std::string,std::vector<utl::point>> capMoves;
-		std::vector<std::vector<utl::point>> capMovesVec;
-		std::vector<std::string> capMovesNames;
+		/*! Used only in games where it is possible to have more than two inputs per move, 
+		 * map from second input to the list of moves 
+		 */ 
+		std::map<std::string,std::vector<utl::point>> capMoves; 
 		
+		std::vector<std::vector<utl::point>> capMovesVec; /*!< List of all possible moves with greater than 2 inputs */
+		std::vector<std::string> capMovesNames; /*!< List of the repersentations of all moves with greater than 2 inputs*/
+		virtual int gameInt() { return -1; };
 	protected:
 
 		virtual void changeMoves(bool playerTurn = false) {}; //!< Updates the list of moves
@@ -57,6 +85,7 @@ class chessLogic : public baseGameLogic {
 			{10,8,9,11,12,9,8,10}
 		};
 		*/
+		int gameInt() override { return 2; }
 	private:
 		void changeMoves(bool playerTurn) override {};
 };
@@ -67,6 +96,7 @@ class ticTacToeLogic : public baseGameLogic {
 		bool isDuoMove() override { return false; }
 		bool makeMove(int inputOne,bool playerTurn) override;
 		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
+		int gameInt() override { return 0; }
 		
 
 		bool getWinner() override;
@@ -100,6 +130,7 @@ class checkersLogic : public baseGameLogic {
     		{0, 0, 0}
 		};
 		*/
+		int gameInt() override { return 1; }
 	private:
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
@@ -108,7 +139,10 @@ class checkersLogic : public baseGameLogic {
 		
 		
 };
-
+//TODO Change all cases to this
+//! Checks if the type is a game
+template <typename T> 
+concept isGame = std::derived_from<T,game::baseGameLogic>;
 }
 
 
