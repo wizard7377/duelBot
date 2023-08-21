@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.27)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
 OPTION(TOK_BUILD "Token type" ON)
