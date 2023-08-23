@@ -19,7 +19,7 @@ resources/**
 output/basic/*.png
 .vscode/**
 .clangd
-.chache/**
+.cache
 imgs/**
 imgs
 docs/**
