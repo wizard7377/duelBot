@@ -37,6 +37,20 @@ void baseDrawGame::initBoardItems(json boardJson) {
 		}
 		this->imgs.push_back(tempVec);
 	}
+
+	if (this->hasLetters) {
+		std::string letterPath = boardJson["letters"]; //Retrive directory of letters
+		json letterInfo = json::parse(std::ifstream(getFullPath({letterPath,"letterConfig.json"}))); //Get the info on the files
+		for (auto a : letterInfo["files"]) {
+			std::vector<Mat> tempVec;
+			for (auto b : a) {
+				std::string cPath = getFullPath({ letterPath, (b.get<std::string>() + ".png") });	
+				Mat curImg = imread(getFullPath(cPath),IMREAD_COLOR);
+				tempVec.push_back(curImg);
+			}
+			this->letterImgs.push_back(tempVec);
+		}
+	}
 }
 
 }

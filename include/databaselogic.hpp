@@ -67,6 +67,13 @@ class dataHandle {
         std::vector<std::vector<std::string>> execQ(std::string query, bool retType = false);
     private: 
         MYSQL * dataCon; //!< C API connection
+        /*!
+         * @brief Get the user database id
+         * 
+         * @param userId Given user snowflake
+         * @param guildId Given guild snowflake (default global)
+         * @return reSet Database id 
+         */
         reSet getUser(uint64_t userId,uint64_t guildId = 0);
         reSet makeGUserRaw(int gameId,uint64_t totalId);
         

@@ -1,3 +1,4 @@
+
 /**
  * @file main.cpp
  * @copyright Wizard and Co. 2023, Don't steal it (please and thank you (this is a test (doc)))
@@ -96,7 +97,7 @@ int main(int argc, char *argv[]) {
     });
 	
 	
-	
+		
 	bot.start(st_wait);
 		
 

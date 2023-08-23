@@ -45,10 +45,10 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 	
 	
 	
-	int sizeX = newBoard.size();
+	int sizeX = newBoard.size(); //Size of board in squares
 	int sizeY = newBoard[0].size();
-	Mat * currentImg = new Mat(IMG_SIZE,IMG_SIZE,CV_8UC3,Scalar(69,42,32));
-	int spaceSizeX = IMG_SIZE/sizeX;
+	Mat * currentImg = new Mat(IMG_SIZE,IMG_SIZE,CV_8UC3,Scalar(69,42,32)); //Current img being displayed
+	int spaceSizeX = IMG_SIZE/sizeX; //Size of one square
 	int spaceSizeY = IMG_SIZE/sizeY;
 	bool spaceColor = true;
 	for (int i = 0; i < sizeX; i++) {
@@ -65,7 +65,24 @@ Mat * basicDrawGame::changeBoard(std::vector<std::vector<int>> newBoard) {
 			} else {
 				this->imgs[0][newBoard[i][ii]].copyTo(tarSpace);
 			}
+			//TODO Fix letter implementation
+			if (this->hasLetters) {
+				if (i == 0) {
+					for (int x = 0; x < spaceSizeX; x++) {
+						for (int y = 0; y < spaceSizeX; y++) {
+							if (this->letterImgs[0][ii].at<Vec3b>(y,x) != Vec3b(0,0,0)) tarSpace.at<Vec3b>(y,x) = this->letterImgs[0][ii].at<Vec3b>(y,x);
+						}
+					}
+				} if (ii == 0) {
+					for (int x = 0; x < spaceSizeX; x++) {
+						for (int y = 0; y < spaceSizeX; y++) {
+							if (this->letterImgs[1][i].at<Vec3b>(y,x) != Vec3b(0,0,0)) tarSpace.at<Vec3b>(y,x) = this->letterImgs[1][i].at<Vec3b>(y,x);
+						}
+					}
+				} 
+			}
 
+					
 			
 			
 			
