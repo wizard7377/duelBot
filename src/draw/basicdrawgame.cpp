@@ -12,7 +12,6 @@
 #ifndef IMG_SIZE
 #define IMG_SIZE 960
 #endif
-//TODO Add board notation markings to images
 static unsigned long long int currentImgBasic = 1;
 
 using namespace cv;

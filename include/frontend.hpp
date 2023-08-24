@@ -76,6 +76,7 @@ class baseSimThread : public wrapThread, public inType {
 		bool curPlayer;
 		bool drawReq = true;
 		bool isRun = true;
+		int currentTurn = 0;
 		message * lastMsg;
 		
 		std::map<std::string,std::function<void(const button_click_t&)>> gameButtonCmds;

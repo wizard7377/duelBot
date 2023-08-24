@@ -385,7 +385,7 @@ void baseSimThread<T>::requestDraw() {
 		this->uniId += 3;
 		dpp::message drawMessage = dpp::message(this->gameThread, "Draw is requested, accept?");
 		//for (int i = 0; i < 3; i++) std::cout << buttonNames[i] << ": Is a button\n";
-		std::cout << buttonNames[0] << std::endl;
+		//std::cout << buttonNames[0] << std::endl;
 		dpp::component buttonRow;
 		buttonRow.add_component(
 			dpp::component().set_label("Yes").set_style(dpp::cos_success).set_id(buttonNames[0])
@@ -397,11 +397,30 @@ void baseSimThread<T>::requestDraw() {
 		drawMessage.add_component(buttonRow);
 		//TODO make draw expire
 		this->bot->message_create(drawMessage);
+		int turnNow = this->currentTurn;
 		this->handler->addButtonCmd(buttonNames[0],
-			[this](const auto& event) {
-				this->gameInteraction->endCase(true,-2);
+			[this,turnNow](const auto& event) {
+				if (this->currentTurn == turnNow) { //If its the same turn...
+					this->gameInteraction->endCase(true,-2); //Draw
+					event.reply(); //Acknowledge
+				} else {
+					std::string buttonNames = std::to_string(this->uniId); //Get button name
+					this->uniId++; //Make sure future calls are good
+					dpp::component buttonRow; //Set up row
+					dpp::message drawMessage = dpp::message(this->gameThread, "Draw request is expired, send another?"); //Set up message
+					buttonRow.add_component(
+						dpp::component().set_label("Yes").set_style(dpp::cos_success).set_id(buttonNames)
+					); //Add button
+					drawMessage.add_component(buttonRow);
+					
+					event.reply(drawMessage);
+					this->handler->addButtonCmd(buttonNames,[this](const button_click_t& event) { //Add draw
+		
+						event.reply("You requested a draw");
+						this->drawCall(); //Request draw
+					});
+				}
 				
-				event.reply();
 			}
 		);
 		this->handler->addButtonCmd(buttonNames[1],

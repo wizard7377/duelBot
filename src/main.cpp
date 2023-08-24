@@ -29,7 +29,7 @@
 
 
 
-//TODO FIGURE OUT WHY TEMPLATES ARENT WORKING
+
 //TODO Add more detailed docs so you can remeber things
 using namespace dpp;
 using json = nlohmann::json;
