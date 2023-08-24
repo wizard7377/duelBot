@@ -1,0 +1,33 @@
+name: Make docs
+on: 
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  pages: write
+jobs:
+  make_docs:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Get Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install doxygen
+      - name: Generate docs
+        run: |
+          mkdir build
+          doxygen
+      - name: Upload pages to build
+        uses: actions/upload-pages-artifact@v2.0.0
+        with:
+          path: build/html 
+      - name: Deploy GitHub Pages site
+        uses: actions/deploy-pages@v1.2.9
