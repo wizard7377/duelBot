@@ -26,6 +26,8 @@ class baseDrawGame {
 		std::vector<std::vector<Mat>> letterImgs;
 		bool hasLetters = false;
 		bool alternates = false;	
+		int spaceSizeX = 120;
+		int spaceSizeY = 120;
 
 };
 
@@ -34,7 +36,6 @@ class basicDrawGame : public baseDrawGame {
 		basicDrawGame(std::string boardName,std::string conFile = "basegameconfig.json");
 		Mat * changeBoard(std::vector<std::vector<int>> newBoard);
 		std::string getBoard(std::vector<std::vector<int>> newBoard);
-
 	
 };
 

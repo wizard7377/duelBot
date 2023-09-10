@@ -10,19 +10,19 @@ ENDIF()
 if (NOT DEFINED MYSQL_CONN_DIR)
     set(MYSQL_CONN_DIR /usr/local/mysql)
 endif()
-
 set(DUEL_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 FetchContent_MakeAvailable(json)
 find_package( OpenCV REQUIRED )
+find_package(spdlog REQUIRED)
 #find_package(OpenMP)
 include(ExternalProject)
 FetchContent_Declare(DPP
     PREFIX libs/DPP
     BINARY_DIR build
-    URL https://github.com/brainboxdotcc/DPP/archive/refs/tags/v10.0.24.tar.gz
+    URL https://github.com/brainboxdotcc/DPP/archive/refs/tags/v10.0.25.tar.gz
 )
 FetchContent_MakeAvailable(DPP)
 if (EXISTS ${MYSQL_CONN_DIR}/include)
@@ -56,8 +56,8 @@ target_link_libraries(${PROJECT_NAME}
     dpp
     ${OpenCV_LIBS}
     nlohmann_json::nlohmann_json
+    spdlog::spdlog
     #OpenMP::OpenMP_CXX
-
 )
 if (EXISTS ${MYSQL_CONN_DIR}/lib/libmysqlclient.a) 
 	target_link_libraries(${PROJECT_NAME} ${MYSQL_CONN_DIR}/lib/libmysqlclient.a)

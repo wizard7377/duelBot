@@ -3,13 +3,15 @@
 #include <dpp/dpp.h>
 #include <concepts>
 #include <functional>
-#include "baseGameInt.hpp"
-#include "ratesys.hpp"
-#include "colorstuff.hpp"
+#include <spdlog/spdlog.h>
+#include "gameInteraction.hpp"
+#include "rateQueue.hpp"
+#include "colorUtil.hpp"
 
 template class gameFront::baseGameHandle<game::ticTacToeLogic>;
 template class gameFront::baseGameHandle<game::checkersLogic>;
 template class gameFront::baseGameHandle<game::chessLogic>;
+template class gameFront::baseGameHandle<game::connectLogic>;
 //template class gameFront::baseGameHandle<game::baseGameLogic>;
 
 using namespace dpp;
@@ -21,7 +23,7 @@ template <typename T>
 baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*)> inHandles[2],std::vector<gameTime> inTimes) {
 	//std::cout << colorForm("Started",GREEN_TERM) << std::endl;
 	numGames++;
-	std::cout << std::format("The current number of games is: {}\n",numGames);
+	spdlog::info("The current number of games is: {}", numGames);
 	gameTime * tCon[3] = {new gameTime(0),new gameTime(0),new gameTime(0)};
 	
 	//std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
@@ -31,7 +33,7 @@ baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*
 	const std::function<void(bool,int)> iEnd = ([this](bool winner, int winCase) {
 		if (!(this->ended)) {
 			numGames--;
-			std::cout << std::format("The current number of games is: {}\n",colorForm(std::to_string(numGames),RED_TERM));
+			spdlog::info("The current number of games is: {}\n",colorForm(std::to_string(numGames),RED_TERM));
 			bool isTie = (winCase < 0);
 			//std::cout << "game has ended :((\n";
 			//std::cout << "At line: " << colorForm(std::to_string(__LINE__),RED_TERM) << std::endl;
@@ -42,6 +44,7 @@ baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*
 			this->gameHandles[0]->endCall(winner,winCase);
 			this->gameHandles[1]->endCall(!winner,winCase);
 			this->ended = true;
+			
 			//delete this->gameHandles[0];
 			//delete this->gameHandles[1];
 		}
@@ -67,7 +70,7 @@ baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*
 template <typename T>
 void baseGameHandle<T>::requestDraw(bool inPlayerOne) {
 	int playerNum = (int)(!inPlayerOne);
-	std::cout << "Draw requested\n";
+	//std::cout << "Draw requested\n";
 	this->gameHandles[playerNum]->requestDraw();
 }
 

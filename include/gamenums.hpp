@@ -7,7 +7,9 @@ using namespace std;
 
 static unordered_map<string,int> gameNums = {
     {"tictactoe",0},
-    {"checkers",1}
+    {"checkers",1},
+    {"chess",2},
+    {"connectfour",3}
 };
 //this
 //global

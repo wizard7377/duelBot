@@ -5,14 +5,16 @@
 #include <unordered_map>
 #include <iostream>
 #include <concepts>
-#include "colorstuff.hpp"
+#include <format>
+#include "colorUtil.hpp"
 #include "gamenums.hpp"
 #include "frontend.hpp"
 #include <nlohmann/json.hpp>
 #include <chrono>
 #include <fstream>
+#include <spdlog/spdlog.h>
 //#include "ratesys.hpp"
-#include "eventhandle.hpp"
+#include "eventHandler.hpp"
 
 /*
 CHANGE SCOPE OF TRY BLOCKS
@@ -70,7 +72,7 @@ std::function<void(snowPair,snowPair)> makeQ(cluster* botPar,std::vector<gameTim
 	});
 }
 
-
+//TODO account for message response timeouts
 eventhandle::eventhandle(cluster * bot) {
 	new std::thread([&] {
 			while(true) {
@@ -82,13 +84,14 @@ eventhandle::eventhandle(cluster * bot) {
 					if (sData["isCommand"]) {
 						shouldStop = ((sData["whatIs"] == 2) and (sData["whatIs"] != 3));
 						if (shouldStop) {
-							if (!wasStop) std::cout << "Preventing new games...\n";
+							if (!wasStop) spdlog::critical("Preventing new games...");
 						} else if (wasStop) {
-							std::cout << "Allowing new games...\n";
+							spdlog::info("Allowing new games...");
 						}
 					}
 				} catch (...) {
-					std::cout << "No file\n";
+					if (!(this->noFile)) spdlog::info("No control file information");
+					this->noFile = true;
 				}
 				
 			}
@@ -101,6 +104,11 @@ eventhandle::eventhandle(cluster * bot) {
 		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
 		,
 		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
+	};
+	std::function<gameFront::baseSimThread<game::connectLogic>*(gameInt::baseGameInt<game::connectLogic>*,snowPair, snowPair)> conFuncs[2] = {
+		([&] (gameInt::baseGameInt<game::connectLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::connectLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
+		,
+		([&] (gameInt::baseGameInt<game::connectLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::connectLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
 	};
 	std::function<gameFront::baseSimThread<game::checkersLogic>*(gameInt::baseGameInt<game::checkersLogic>*,snowPair, snowPair)> checksFuncs[2] = {
 		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
@@ -126,46 +134,47 @@ eventhandle::eventhandle(cluster * bot) {
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
 	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimes, checksFuncs, this),this->testCon));
 	this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimes, chessFuncs, this),this->testCon));
+	this->curQueues[3].push_back(new rQ::frontRQ(makeQ<game::connectLogic>(bot, curTimes, conFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesTwo {5min, 0s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));
 	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimesTwo, checksFuncs, this),this->testCon));
 	this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimesTwo, chessFuncs, this),this->testCon));
+	this->curQueues[3].push_back(new rQ::frontRQ(makeQ<game::connectLogic>(bot, curTimes, conFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesThree {1min, 0s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesThree, tttFuncs, this),this->testCon));
 	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimesThree, checksFuncs, this),this->testCon));
 	this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimesThree, chessFuncs, this),this->testCon));
-	
+	this->curQueues[3].push_back(new rQ::frontRQ(makeQ<game::connectLogic>(bot, curTimes, conFuncs, this),this->testCon));
 	
 	
 	bot->on_select_click([this](const auto& event) {
 		try {
 			std::thread([this,event] { try { this->selectCmds.at(event.custom_id)(event); } catch (...) {} } ).detach();
 		} catch (...) {
-			std::cout << "An error has occured" << std::endl;
+			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 		}
 	});
 	bot->on_button_click([this](const auto& event) {
 		try {
 			std::thread([this,event] { (this->buttonCmds.at(event.custom_id))(event); }).detach();
 		} catch (...) {
-			std::cout << "An error has occured" << std::endl;
+			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 		}
 	});
 	bot->on_form_submit([this](const auto& event) {
 		try {
 			std::thread([this,event] { this->formCmds.at(event.custom_id)(event); }).detach();
 		} catch (...) {
-			std::cout << "An error has occured" << std::endl;
+			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 		}
 	});
 	bot->on_slashcommand([this,bot](const auto& event) {
 		try {
-			//uint64_t retId = std::get<uint64_t>(this->testCon->getUser((uint64_t)(event.command.get_issuing_user().id))[0]);
-			//uint64_t retIdT = std::get<uint64_t>(this->testCon->getUser(((uint64_t)(event.command.get_issuing_user().id)),((uint64_t)(event.command.get_guild().id)))[0]);
-			//std::cout << std::endl << "Cur user is: " << std::to_string(retId) << " and: " << retIdT << std::endl << std::endl;
+			event.thinking(true);
+
 			std::thread([this,event,bot] { this->slashCmds.at(event.command.get_command_name())(event); }).detach();
 		} catch (...) {
-			std::cout << "An error has occured" << std::endl;
+			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 		}
 	});
 	
@@ -173,18 +182,19 @@ eventhandle::eventhandle(cluster * bot) {
 
 	this->addSlashCmd("joinqueue",[bot,this](const slashcommand_t &event) {
 		if (shouldStop) {
-			event.reply(message("DuelBot is going to update soon, therefore no games may be started at the present time").set_flags(m_ephemeral));
+			event.edit_response(message("DuelBot is going to update soon, therefore no games may be started at the present time").set_flags(m_ephemeral));
 			return;
 		}
-		event.thinking(true);
+		//event.thinking(true);
 		auto subcommand = event.command.get_command_interaction().options[0];
+		//std::cout << std::format("Subcommand name is: {}\n",subcommand.name);
 		int gameInt = gameNums[subcommand.name];
 		int scopeInt;
 		try { 
 			scopeInt = subcommand.get_value<int64_t>(0); //Gets the requested time rating
 		}
 		catch (...) {
-			std::cout << std::format("Error at: {}::{}\n",__LINE__,__FILE__);
+			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 			scopeInt = 0; //Not selected, default to first
 		}
 		std::cout << std::format("scopeInt is: {}\n",scopeInt); //TEMP
@@ -198,16 +208,16 @@ eventhandle::eventhandle(cluster * bot) {
 		}))->detach();
 	});
 	this->addSlashCmd("info",[bot](const slashcommand_t &event) {
-		event.reply(message("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git").set_flags(m_ephemeral));
+		event.edit_response(message("This bot is for playing two player games, and it's source code may be found at https://github.com/wizard7377/duelBot.git").set_flags(m_ephemeral));
 	});
 	this->addSlashCmd("challenge",[this,bot](const slashcommand_t &event) {
 		//std::cout << "started\n";
 		if (checkExists(event.command.usr.id,std::get<dpp::snowflake>(event.get_parameter("player")))) {
-			event.reply(message("You have already challenged, or are already being challenged by this player!").set_flags(m_ephemeral));
+			event.edit_response(message("You have already challenged, or are already being challenged by this player!").set_flags(m_ephemeral));
 			return;
 		}
 		if (shouldStop) {
-			event.reply(message("DuelBot is going to update soon, therefore no games may be started at the present time").set_flags(m_ephemeral));
+			event.edit_response(message("DuelBot is going to update soon, therefore no games may be started at the present time").set_flags(m_ephemeral));
 			return;
 		}
 		//command_interaction cmdData = std::get<command_interaction>(event.command.data);
@@ -267,7 +277,7 @@ eventhandle::eventhandle(cluster * bot) {
 	this->addSlashCmd("getrate",[this,bot](const slashcommand_t &event) {
 		//std::cout << "cmd recived\n";
 		try {
-			event.thinking(true);
+			//event.thinking(true);
 	
 			(new std::thread([this,event] {
 				try {
@@ -303,14 +313,14 @@ eventhandle::eventhandle(cluster * bot) {
 			}))->detach();
 			
 		} catch (...) {
-		
+			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 			event.edit_response("Bot dun goffed up");
 		
 		}
 	});
 
 	this->addSlashCmd("changesetting",[this,bot](const slashcommand_t &event) {
-		event.thinking(true);
+		//event.thinking(true);
 		auto cmd_data = event.command.get_command_interaction();
 		auto bToStr = ([] (bool inVal) {
 			if (inVal) {
@@ -340,7 +350,7 @@ eventhandle::eventhandle(cluster * bot) {
 
 
 
-	std::cout << "Event handelers succesfully started" << std::endl;
+	spdlog::info("Event handelers succesfully started");
 
 }
 //bool eventhandle::addSelectCmd(std::string compid,std::function<void(const select_click_t&)> newCmd) {

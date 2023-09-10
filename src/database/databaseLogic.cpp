@@ -1,11 +1,12 @@
-#include "databaselogic.hpp"
+#include "databaseLogic.hpp"
 #include <iostream>
 #include <mysql.h>
 #include <thread>
 #include <functional>
 #include <exception>
-#include "colorstuff.hpp"
+#include "colorUtil.hpp"
 #include <filesystem>
+#include <spdlog/spdlog.h>
 #include <fstream>
 #include <format>
 #include <nlohmann/json.hpp>
@@ -46,10 +47,10 @@ dataHandle::dataHandle() {
 		mysql_library_init(0,NULL,NULL);
 		this->dataCon = mysql_init(this->dataCon);
 	} catch (...) {
-		std::cout << "error occured in database init \n";
+		spdlog::error("error occured in database init");
 		exit(0);
 	}
-	std::cout << "Database lib init succeded" << std::endl;
+	spdlog::info("Database lib init succeded");
 
 	//CLEAN
 	//CLEAN JSON ACCESS UP
@@ -58,10 +59,10 @@ dataHandle::dataHandle() {
 		
 	
 	if (mysql_stat(this->dataCon) == NULL) { 
-		std::cout << "connection failed\n";
+		spdlog::error("connection failed");
 		throw 0; 
 	} else {
-		std::cout << "Final checks succeded\n";
+		spdlog::info("Final checks succeded");
 	}
 	
 	//this->dataCon = NULL;
@@ -116,7 +117,7 @@ std::vector<std::vector<std::string>> dataHandle::execQ(std::string query, bool 
 	} catch (noResult) {
 		throw;
 	} catch (...) { 
-		std::cout << "A error has occured\n"; 
+		spdlog::error("A error has occured"); 
 		//return (std::vector<std::vector<std::string>>({}));
 		throw exception();
 	}
@@ -196,7 +197,7 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 		} catch (noResult) {
 			throw;
 		} catch (...) {
-			std::cout << "An error has occured \n";
+			spdlog::error("A error has occured"); 
 		}
 
 
@@ -286,7 +287,8 @@ reSet dataHandle::getRate(int gameId,uint64_t userId,uint64_t guildId) {
 		
 
 	} catch (...) {
-		std::cout << std::format("Error in {} : {}\n",std::source_location::current().file_name(),std::source_location::current().function_name());
+		spdlog::error("A error has occured"); 
+		
 		return {0};
 
 	}
@@ -344,6 +346,7 @@ void dataHandle::setRate(int reqRate,int gameId,uint64_t userId,uint64_t guildId
 		
 		return;
 	} catch (...) {
+		spdlog::error("A error has occured"); 
 		return;
 
 	}
@@ -381,7 +384,10 @@ bool dataHandle::editSetting (string setName, string val, int gameId, uint64_t u
 		}
 		return true;
 	
-	} catch (...) { return false; }
+	} catch (...) { 
+		spdlog::error("A error has occured"); 
+		return false; 
+	}
 
 
 

@@ -19,6 +19,7 @@ class baseGameLogic {
 		/*! Signals that moves involve more than two possible inputs */
 		bool isCapture = false; 
 		virtual bool isDuoMove() { return true; };
+		virtual bool isOneD() { return false; }
 		std::string gameId;
 		std::vector<std::vector<int>> * boardItems; //!< Board state
 		bool* allowedMoves;
@@ -51,8 +52,18 @@ class baseGameLogic {
 		 * In a two player game, each inner vector repersents a possible first move, 
 		 * and the elements repersent all possible second moves 
 		 */
+		/**
+		 * @brief List of out moves
+		 * A std::vector of the names of all possible moves.
+		 * For a game with one input, each inner vector is a vector with a length of 1 and the name of the move
+		 * For a game with two inputs, inner vector contains a LIST of moves associated with the given index
+		*/
 		std::vector<std::vector<std::string>> moveNames; 
-		std::vector<std::vector<std::string>> moveNamesCon;
+		/**
+		 * @brief (2P) List of in moves
+		 * Contains a list of all in moves for every given space on the board
+		 */
+		std::vector<std::vector<std::string>> moveNamesCon; 
 		std::vector<std::vector<std::string>> extraMoveNames;
 		/*! Used only in games where it is possible to have more than two inputs per move, 
 		 * map from second input to the list of moves 
@@ -139,6 +150,44 @@ class checkersLogic : public baseGameLogic {
 		
 		
 };
+
+class connectLogic : public baseGameLogic {
+	public:
+		connectLogic();
+		bool isDuoMove() override { return false; }
+		bool makeMove(int inputOne,bool playerTurn) override;
+		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
+		int gameInt() override { return 3; }
+		
+
+		bool getWinner() override;
+		bool isOneD() override { return true; }
+		//std::vector<std::vector<int>> * boardItems;
+		/*
+		 = {
+    		{0, 0, 0},
+    		{0, 0, 0},
+    		{0, 0, 0}
+		};
+		*/
+	private:
+		void changeMoves(bool playerTurn) override;
+		bool checkForEnd();
+		/*!
+		 * Get number of pieces in line starting at (cX,cY) and going in direction <vX,vY>
+		 * @brief Get number of pieces in line
+		 * @param cX Current X
+		 * @param cY Current Y
+		 * @param vX Vector X
+		 * @param vY Vector Y
+		 */
+		int getLine(int cX, int cY, int vX, int vY);
+
+		int lastX; //!< Last move X
+		int lastY; //!< Last move Y
+		
+};
+
 //TODO Change all cases to this
 //! Checks if the type is a game
 template <typename T> 

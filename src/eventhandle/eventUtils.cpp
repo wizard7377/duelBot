@@ -3,16 +3,16 @@
 #include <variant>
 #include "gameLogic.hpp"
 //#include "commandHandle.hpp"
-#include "baseGameInt.hpp"
-#include "databaselogic.hpp"
+#include "gameInteraction.hpp"
+#include "databaseLogic.hpp"
 #include <iostream>
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
-#include "eventhandle.hpp"
+#include "eventHandler.hpp"
 #include "frontend.hpp"
 #include "gamenums.hpp"
-#include "ratesys.hpp"
+#include "rateQueue.hpp"
 
 using namespace dpp;
 
@@ -52,6 +52,18 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 			([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState) { return new gameFront::baseSimThread<game::ticTacToeLogic>(&bot,challengeId,userId.id,res.second,handler,inState); })
 		};
 		return new gameFront::baseGameHandle<game::ticTacToeLogic>(funcs);
+		
+	})
+	},
+	{
+	"connectfour",
+	([](cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler) {
+		std::function<gameFront::inType*(gameInt::baseGameInt<game::connectLogic>*)> funcs[2] = {
+			([&] (gameInt::baseGameInt<game::connectLogic>* inState) { return new gameFront::baseSimThread<game::connectLogic>(&bot,userId.id,challengeId,res.first,handler,inState); })
+			,
+			([&] (gameInt::baseGameInt<game::connectLogic>* inState) { return new gameFront::baseSimThread<game::connectLogic>(&bot,challengeId,userId.id,res.second,handler,inState); })
+		};
+		return new gameFront::baseGameHandle<game::connectLogic>(funcs);
 		
 	})
 	},

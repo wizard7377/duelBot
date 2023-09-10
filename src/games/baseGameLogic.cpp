@@ -21,11 +21,20 @@ std::string baseGameLogic::convertIntToString(int logicMove) {
 }
 
 int baseGameLogic::convertStringToInt(std::string userMove) {
-	int i = 0;
-	for (i = 0; i < this->moveNames.size(); i++) {
-		if (this->convertIntToString(i) == userMove) { return i; };
+	//TODO Make this less worse
+	if (this->isOneD()) {
+		int i = 0;
+		for (i = 0; i < this->moveNames.size(); i++) {
+			if (this->moveNames[i][0] == userMove) { return i; };
+		}
+		return i;
+	} else {
+		int i = 0;
+		for (i = 0; i < this->moveNames.size(); i++) {
+			if (this->convertIntToString(i) == userMove) { return i; };
+		}
+		return i;
 	}
-	return i;
 }
 
 }

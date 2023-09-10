@@ -8,7 +8,7 @@
 #include <variant>
 #include <vector>
 
-#include "dbtypes.hpp"
+#include "databaseTypes.hpp"
 
 #include <mysql.h>
 

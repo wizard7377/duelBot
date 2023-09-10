@@ -6,10 +6,10 @@
 #include <functional>
 #include <string>
 #include <concepts>
-#include "baseGameInt.hpp"
+#include "gameInteraction.hpp"
 #include "gameLogic.hpp"
-#include "ratesys.hpp"
-#include "databaselogic.hpp"
+#include "rateQueue.hpp"
+#include "databaseLogic.hpp"
 
 using namespace dpp;
 using snowPair = std::pair<snowflake,snowflake>;
@@ -46,7 +46,8 @@ namespace evt {
 
 			
 
-			std::vector<std::vector<rQ::frontRQ*>> curQueues = {{},{},{}};
+			std::vector<std::vector<rQ::frontRQ*>> curQueues = {{},{},{},{}};
+			bool noFile = false;
 
 			
 			

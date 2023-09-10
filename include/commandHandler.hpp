@@ -2,7 +2,7 @@
 #include <dpp/dpp.h>
 #include <string>
 #include <map>
-#include "eventhandle.hpp"
+#include "eventHandler.hpp"
 
 using namespace dpp;
 
@@ -21,7 +21,7 @@ command_option getScopeChoice() {
 }
 
 namespace botCmds {
-
+//TODO Make command creation cleaner
 /*! Info command */
 dpp::slashcommand infoDef() {
 	return dpp::slashcommand()
@@ -34,6 +34,7 @@ dpp::slashcommand challengeDef() {
 	.add_option(
 		dpp::command_option(dpp::co_string, "game", "game you wish to play", true).
 			add_choice(dpp::command_option_choice("tictactoe", std::string("tictactoe"))).
+			add_choice(dpp::command_option_choice("Connect 4", std::string("connectfour"))).
 			add_choice(dpp::command_option_choice("checkers", std::string("checkers"))).
 			add_choice(dpp::command_option_choice("go (game)", std::string("goboardgame"))).
 			add_choice(dpp::command_option_choice("chess", std::string("chess")))
@@ -48,6 +49,7 @@ dpp::slashcommand getRateDef() {
 	return (dpp::slashcommand().set_name("getRate").set_description("Get the rating of a user")
 	.add_option(command_option(co_string, "game", "game you wish to get rating of", true).
 			add_choice(dpp::command_option_choice("tictactoe", std::string("tictactoe"))).
+			add_choice(dpp::command_option_choice("Connect 4", std::string("connectfour"))).
 			add_choice(dpp::command_option_choice("checkers", std::string("checkers"))).
 			add_choice(dpp::command_option_choice("go (game)", std::string("goboardgame"))).
 			add_choice(dpp::command_option_choice("chess", std::string("chess"))))
@@ -81,7 +83,7 @@ slashcommand joinQueueDef() {
 
 	.add_option(command_option(co_sub_command,"tictactoe","Play a game of tictactoe against someone else").add_option(defTimeOps))
 		
-
+	.add_option(command_option(co_sub_command,"connectfour","Play a game of Connect 4 against someone else").add_option(defTimeOps))
 	.add_option(command_option(co_sub_command,"checkers","Play a game of checkers against someone else").add_option(defTimeOps))
 		
 	.add_option(command_option(co_sub_command,"chess","Play a game of chess against someone else").add_option(defTimeOps))

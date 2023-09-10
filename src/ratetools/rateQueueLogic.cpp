@@ -1,7 +1,7 @@
 #include <dpp/dpp.h>
 #include <vector>
-#include "ratesys.hpp"
-#include "databaselogic.hpp"
+#include "rateQueue.hpp"
+#include "databaseLogic.hpp"
 #include <cmath>
 
 #ifndef TW

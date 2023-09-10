@@ -1,9 +1,10 @@
-#include "ratesys.hpp"
+#include "rateQueue.hpp"
 #include <thread>
 #include <chrono>
 #include <dpp/dpp.h>
 #include <iostream>
-#include "colorstuff.hpp"
+#include "colorUtil.hpp"
+#include <spdlog/spdlog.h>
 //std::this_thread::sleep_for(*curTime + (*this->timeControl[1]) + (*this->timeControl[2]));
 //this->endCase(this->userMove,1);
 const std::chrono::duration<double,std::milli> tDelay(5000);
@@ -22,7 +23,7 @@ frontRQ::frontRQ(std::function<void(snowPair,snowPair)> inFunc,mData::dataHandle
 			std::vector<gBias> curGames = this->logicQ->getGames();
 			std::vector<snowPair> curGamesP;
 			if (curGames.size() > 0) {
-				std::cout << "Created " << colorForm(std::to_string(curGames.size()),GREEN_TERM) << " new game(s)\n";
+				spdlog::info("Created {} new game(s)", colorForm(std::to_string(curGames.size()),GREEN_TERM));
 			}
 			for (auto a : curGames) {
 				curGamesP.push_back(a.players);

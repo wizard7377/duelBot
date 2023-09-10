@@ -7,24 +7,25 @@
 
 #include <dpp/dpp.h>
 #include <map>
-#include "colorstuff.hpp"
+#include "colorUtil.hpp"
 #include <variant>
+#include <spdlog/spdlog.h>
 #include <cctype>
 #include "gameLogic.hpp"
-#include "commandHandle.hpp"
-#include "baseGameInt.hpp"
-#include "databaselogic.hpp"
+#include "commandHandler.hpp"
+#include "gameInteraction.hpp"
+#include "databaseLogic.hpp"
 #include "frontend.hpp"
 #include <iostream>
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
-#include "eventhandle.hpp"
-#include "drawgame.hpp"
+#include "eventHandler.hpp"
+#include "drawGame.hpp"
 #include <cmath>
 #include <chrono>  
 #include <filesystem>
-#include "ratesys.hpp"
+#include "rateQueue.hpp"
 #include <nlohmann/json.hpp>
 
 
@@ -57,15 +58,15 @@ int main(int argc, char *argv[]) {
 	
 	std::ifstream jFile(getFullPath("secrets/config.json"));
 	json gameconfig = json::parse(jFile)[TOKEN_TYPE]["DISCORD"];
-	std::cout << TOKEN_TYPE << std::endl;
+	spdlog::set_pattern("(DuelBot) [%T] %^%l%$: %v");
+	if (TOKEN_TYPE == "TEST") spdlog::warn("Using test token");
 	cluster bot(gameconfig["BOT_TOKEN"]);
 	
-
 	
 	try {
 		handler = new evt::eventhandle(&bot);
 	} catch (const std::exception& e) {
-		std::cout << e.what() << std::endl;
+		spdlog::critical("Event handle failed with: {}", e.what());
 		exit(0);
 	}
 

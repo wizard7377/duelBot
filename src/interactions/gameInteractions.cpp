@@ -1,4 +1,4 @@
-#include "baseGameInt.hpp"
+#include "gameInteraction.hpp"
 #include <string>
 #include <functional>
 #include <iostream>
@@ -10,6 +10,7 @@
 
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
+template class gameInt::baseGameInt<game::connectLogic>;
 template class gameInt::baseGameInt<game::checkersLogic>;
 template class gameInt::baseGameInt<game::chessLogic>;
 

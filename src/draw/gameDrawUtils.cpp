@@ -1,4 +1,4 @@
-#include "drawgame.hpp"
+#include "drawGame.hpp"
 #include <opencv2/opencv.hpp>
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -27,12 +27,15 @@ namespace dg {
 
 
 void baseDrawGame::initBoardItems(json boardJson) {
+	this->spaceSizeX = boardJson["isize"][0].get<int>();
+	this->spaceSizeY = boardJson["isize"][1].get<int>();
 	this->alternates = (boardJson["cycle"].get<int>() > 1); 
 	for (auto a: boardJson["files"]) {
 		std::vector<Mat> tempVec;
 		for (auto b: a["imgs"]) {
 			std::vector<std::string> cPath = { a["path"] , (b.get<std::string>() + ".png") };
 			Mat curImg = imread(getFullPath(cPath),IMREAD_COLOR);
+			//imshow("Display window", curImg);
 			tempVec.push_back(curImg);
 		}
 		this->imgs.push_back(tempVec);
@@ -46,6 +49,7 @@ void baseDrawGame::initBoardItems(json boardJson) {
 			for (auto b : a) {
 				std::string cPath = getFullPath({ letterPath, (b.get<std::string>() + ".png") });	
 				Mat curImg = imread(getFullPath(cPath),IMREAD_COLOR);
+				
 				tempVec.push_back(curImg);
 			}
 			this->letterImgs.push_back(tempVec);

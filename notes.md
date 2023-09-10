@@ -1,0 +1,1 @@
+Players should be repersented as player 1 and player 2, where player 1 is false (whenever booleans come up) and player 2 true.

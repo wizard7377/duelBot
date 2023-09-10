@@ -1,7 +1,7 @@
 #pragma once
 
 #include <dpp/dpp.h>
-#include "baseGameInt.hpp"
+#include "gameInteraction.hpp"
 #include "gameLogic.hpp"
 #include <typeindex>
 #include <typeinfo>
@@ -10,10 +10,10 @@
 #include <iostream>
 #include <atomic>
 #include <functional>
-#include "drawgame.hpp"
-#include "eventhandle.hpp"
+#include "drawGame.hpp"
+#include "eventHandler.hpp"
 #include "frontend.hpp"
-#include "frontendcon.hpp"
+#include "frontendUtils.hpp"
 
 /*
 
@@ -53,6 +53,7 @@ class baseSimThread : public wrapThread, public inType {
 		std::function<void()> drawCall;
 
 	//private:
+		bool timePer = false; //TODO Add setting for time percision, when on, make time in minutes and seconds vs just general
 		uint64_t uniId = 1;
 	    cluster* bot;
 		bool isPlayerOne;

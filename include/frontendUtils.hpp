@@ -13,7 +13,7 @@
 
 
 using namespace dpp;
-
+//TODO consiladate and remove unnecasary info
 static std::map<std::string,std::string> gameEmojiName = {
     {"tictactoe","000"},
 	{"checkers","001"}
@@ -30,7 +30,9 @@ const std::unordered_map<std::type_index,gameConfig> gameCon {
 
 const std::vector<std::string> gameNames = {
 	"tictactoe",
-	"checkers"
+	"checkers",
+	"chess",
+	"connectfour"
 };
 
 const std::unordered_map<int,std::pair<std::string,std::string>> winMsgs {

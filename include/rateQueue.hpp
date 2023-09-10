@@ -1,6 +1,6 @@
 #pragma once
 
-#include "databaselogic.hpp"
+#include "databaseLogic.hpp"
 #include <dpp/dpp.h>
 #include <unordered_map>
 #include <map>

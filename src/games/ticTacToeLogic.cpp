@@ -93,18 +93,12 @@ namespace game {
 	}
 
 	bool ticTacToeLogic::makeMove(int inputOne,bool playerTurn) {
-		auto getIntFromBool = [this]() {
-			if (this->userTurn) {
-				return 1;
-			} else {
-				return 2;
-			}
-		};
+		
 
 		//(*(this->boardItems))[(inputOne%3)][int(std::floor(inputOne/3))] = getIntFromBool();
 		int cordOne = (inputOne%3);
 		int cordTwo = int(std::floor(inputOne/3));
-		(*(this->boardItems))[2-cordTwo][cordOne] = getIntFromBool();
+		(*(this->boardItems))[2-cordTwo][cordOne] = (int)(this->userTurn) + 1;
 		this->allowedMoves[inputOne] = false;
 
 		this->userTurn = (!(this->userTurn));

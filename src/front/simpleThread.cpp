@@ -3,21 +3,23 @@
 #include <map>
 #include <iterator>
 #include <string>
-#include "baseGameInt.hpp"
+#include "gameInteraction.hpp"
 #include "gameLogic.hpp"
 #include <dpp/dpp.h>
 #include <algorithm>
-#include "drawgame.hpp"
+#include "drawGame.hpp"
+#include <spdlog/spdlog.h>
 #include "utl.hpp"
 #include <cstdlib>
 #include <random>
 #include <thread>
-#include "eventhandle.hpp"
+#include "eventHandler.hpp"
 #include <chrono>
 #include <format>
 #include <cmath>
 using namespace dpp;
-
+using min = std::chrono::minutes;
+using sec = std::chrono::seconds;
 //template class gameInt::baseGameInt<game::baseGameLogic>;
 //TODO Make threads auto-delete
 //TODO Make config files into json
@@ -25,6 +27,7 @@ using namespace dpp;
 //BUG Timing issues
 //TODO Make end screens also work
 template class gameFront::baseSimThread<game::ticTacToeLogic>;
+template class gameFront::baseSimThread<game::connectLogic>;
 template class gameFront::baseSimThread<game::checkersLogic>;
 template class gameFront::baseSimThread<game::chessLogic>;
 template class gameFront::baseSimThread<game::baseGameLogic>;
@@ -37,19 +40,25 @@ template <>
 int gameTypeInt<game::checkersLogic>() { return 1; }
 template <>
 int gameTypeInt<game::chessLogic>() { return 2; }
+template <>
+int gameTypeInt<game::connectLogic>() { return 3; }
+template <typename T = sec>
+uint64_t timeCount(gameTime inTime) {
+	return std::chrono::duration_cast<T>(inTime).count();
+}
+std::string gToStr(gameTime inTime,bool timePer = false) {
 
-std::string gToStr(gameTime inTime) {
-	int numSec = std::chrono::duration_cast<std::chrono::seconds>(inTime).count();
-	std::string curStr = "";
-	if (numSec >= 60) {
-		curStr = curStr + std::to_string((int)(numSec/60)) + ":";
-	} 
-	if ((int)(numSec%60) >= 10) {
-		curStr = curStr + std::to_string((int)(numSec%60));
+	int numSec = timeCount(inTime);
+	int curSec = timeCount(std::chrono::system_clock::now().time_since_epoch());
+
+	if (timePer) {
+		return (std::format("Done <t:{}:R> and <t:{}:R>",
+			std::to_string((((int)(numSec / 60)) * 60) + curSec),
+			std::to_string((numSec % 60) + curSec)
+		));
 	} else {
-		curStr = curStr + "0" + std::to_string((int)(numSec%60));
+		return (std::format("Done <t:{}:R>:",std::to_string(numSec+curSec)));
 	}
-	return curStr;
 }
 
 
@@ -78,7 +87,7 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 	this->userIdOne = userIdA;
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;	
-	this->gameCode = gameCon.at(std::type_index(typeid(T))).gameId;
+	//this->gameCode = gameCon.at(std::type_index(typeid(T))).gameId;
 	std::cout << gameNames.at(gameTypeInt<T>()) << std::endl;
 	std::cout << gameTypeInt<T>() << std::endl;
 	this->gameDraw = new dg::basicDrawGame(gameNames.at(gameTypeInt<T>()));
@@ -135,6 +144,7 @@ void baseSimThread<T>::endCall(int userWon, int winCase) {
 	msg = new message(std::format("Your new rating is: {}",std::to_string(std::get<int>(this->handler->testCon->getRate(this->gameInteraction->gameLogic->gameInt(),this->userIdOne)[0]))));
 	this->bot->direct_message_create(this->userIdOne,*msg);
 	delete msg;
+	
 }
 
 
@@ -287,7 +297,7 @@ message * baseSimThread<T>::msgMake() {
 			event.reply(message(":x: You haven't selected a move yet!").set_flags(m_ephemeral));
 		} else {
 			event.thinking();
-			this->gameInteraction->makeMove(this->curPlayer,curMove[0],curMove[1]);
+			this->gameInteraction->makeMove(this->isPlayerOne,curMove[0],curMove[1]);
 			//event.reply(this->makeGameEmbed());
 			message * nMsg = this->makeGameEmbed();
 			nMsg->set_content("Move made!");
@@ -350,8 +360,8 @@ message * baseSimThread<T>::makeGameEmbed() {
 		set_title("Move: of the game between: " + bot->user_get_sync(this->userIdOne).username + " and " + bot->user_get_sync(userIdTwo).username).
 		set_author("Duel Bot","https://github.com/wizard7377/duelBot.git",(bot->current_user_get_sync().get_avatar_url())).
 		set_image("attachment://game.png").
-		add_field("Time left (you)", gToStr(this->gameInteraction->timeMove(this->isPlayerOne))).
-		add_field("Time left (opponent)", gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)));
+		add_field("Time left (you)", gToStr(this->gameInteraction->timeMove(this->isPlayerOne),this->timePer)).
+		add_field("Time left (opponent)", gToStr(this->gameInteraction->timeMove(!this->isPlayerOne),this->timePer));
 
 	message * msg = new message((std::to_string(this->gameThread)),mainEmb);
 	//std::cout << this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(this->isPlayerOne)) << "  AND  " << !this->isPlayerOne << "-" << gToStr(this->gameInteraction->timeMove(!this->isPlayerOne)) << std::endl;
@@ -365,7 +375,7 @@ message * baseSimThread<T>::makeGameEmbed() {
 template <typename T>
 std::string baseSimThread<T>::getBoard() {
 	if (!this->imgMade) {
-		this->imgMade != this->imgMade;
+		//this->imgMade != this->imgMade;
 		this->imgPath = this->gameDraw->getBoard(this->gameInteraction->getBoard());
 	}
 	return this->imgPath;
