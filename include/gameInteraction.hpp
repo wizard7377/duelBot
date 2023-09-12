@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <gameLogic.hpp>
+#include "gameLogic.hpp"
+//#include "frontend.hpp"
 #include <boost/chrono.hpp>
 #include <vector>
 #include <functional>
@@ -28,9 +29,10 @@ class wrapState {};
 template <typename T>
 class baseGameInt : public wrapState {
 	public:
+		baseGameInt(const gameTime control[3], std::function<void(bool,int)> onEnd);
+		//baseGameInt(gameFront::baseGameHandle<T>& parent); 
 		std::vector<std::vector<int>> getBoard();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-		baseGameInt(const gameTime control[3], std::function<void(bool,int)> onEnd); 
 		std::string intToMove(int userMove);
 		int moveToInt(std::string userMove,bool typeReq = false);
 		std::vector<std::vector<std::string>> getAllMoves();
@@ -55,6 +57,7 @@ class baseGameInt : public wrapState {
 		bool randomVal;
 		
 		T * gameLogic; //!< Actual logic for the game
+		//gameFront::baseGameHandle<T>& parent; //!< IMPORTANT: object that created this object
 	private:
 		
 		

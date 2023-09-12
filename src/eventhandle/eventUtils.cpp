@@ -90,8 +90,9 @@ bool threadOnChallenge(cluster& bot, snowflake userOne, snowflake userTwo, snowf
 
 	std::thread( ([=,&bot]() {
 			snowflake tempArr[2] = {std::min(userOne,userTwo),std::max(userOne,userTwo)};
-			snowflake snowOne = (bot.thread_create_sync("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1)).id;
-			snowflake snowTwo = (bot.thread_create_sync("testT",channelId,1440,CHANNEL_PRIVATE_THREAD,true,1)).id;
+			dpp::user userArr[2] = {*dpp::find_user(userOne),*dpp::find_user(userTwo)};
+			snowflake snowOne = (bot.thread_create_sync(std::format("{} vs {}",userArr[0].username,userArr[1].username),channelId,1440,CHANNEL_PRIVATE_THREAD,true,1)).id;
+			snowflake snowTwo = (bot.thread_create_sync(std::format("{} vs {}",userArr[1].username,userArr[0].username),channelId,1440,CHANNEL_PRIVATE_THREAD,true,1)).id;
 			userThreads.emplace(std::make_pair(tempArr[0],tempArr[1]),std::make_pair(snowOne,snowTwo));
 	})).detach();
 

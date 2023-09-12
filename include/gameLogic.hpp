@@ -6,7 +6,7 @@
 #include <map>
 #include <concepts>
 #include "utl.hpp"
-
+//#include "gameInteraction.hpp"
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string colNames[] = {"1","2","3","4","5","6","7","8"};
 
@@ -16,6 +16,7 @@ namespace game {
 class baseGameLogic {
 	public:
 		baseGameLogic();
+		//baseGameLogic(gameInt::baseGameInt& parent);	
 		/*! Signals that moves involve more than two possible inputs */
 		bool isCapture = false; 
 		virtual bool isDuoMove() { return true; };
@@ -73,6 +74,9 @@ class baseGameLogic {
 		std::vector<std::vector<utl::point>> capMovesVec; /*!< List of all possible moves with greater than 2 inputs */
 		std::vector<std::string> capMovesNames; /*!< List of the repersentations of all moves with greater than 2 inputs*/
 		virtual int gameInt() { return -1; };
+
+		
+		//gameInt::baseGameInt& parent; //!< IMPORTANT: the object that created this
 	protected:
 
 		virtual void changeMoves(bool playerTurn = false) {}; //!< Updates the list of moves
@@ -104,6 +108,7 @@ class chessLogic : public baseGameLogic {
 class ticTacToeLogic : public baseGameLogic {
 	public:
 		ticTacToeLogic();
+		//ticTacToeLogic(gameInt::baseGameInt<ticTacToeLogic>& parent);
 		bool isDuoMove() override { return false; }
 		bool makeMove(int inputOne,bool playerTurn) override;
 		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
@@ -119,6 +124,7 @@ class ticTacToeLogic : public baseGameLogic {
     		{0, 0, 0}
 		};
 		*/
+		//gameInt::baseGameInt<ticTacToeLogic>& parent;
 	private:
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
@@ -128,6 +134,7 @@ class ticTacToeLogic : public baseGameLogic {
 class checkersLogic : public baseGameLogic {
 	public:
 		checkersLogic();
+		//checkersLogic(gameInt::baseGameInt<checkersLogic>& parent);
 		bool makeMove(int inputOne,bool playerTurn) override { return false; };
 		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override;
 		
@@ -142,6 +149,7 @@ class checkersLogic : public baseGameLogic {
 		};
 		*/
 		int gameInt() override { return 1; }
+		//gameInt::baseGameInt<checkersLogic>& parent;
 	private:
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
@@ -154,6 +162,7 @@ class checkersLogic : public baseGameLogic {
 class connectLogic : public baseGameLogic {
 	public:
 		connectLogic();
+		//connectLogic(gameInt::baseGameInt<connectLogic>& parent);
 		bool isDuoMove() override { return false; }
 		bool makeMove(int inputOne,bool playerTurn) override;
 		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
@@ -162,6 +171,7 @@ class connectLogic : public baseGameLogic {
 
 		bool getWinner() override;
 		bool isOneD() override { return true; }
+		//gameInt::baseGameInt<connectLogic>& parent
 		//std::vector<std::vector<int>> * boardItems;
 		/*
 		 = {

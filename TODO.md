@@ -26,11 +26,11 @@ battleship
 
 
 
-## Make threads have names other than `testT`
+## Make threads have names other than `testT` (**DONE**)
 
 
 
-## Make threads have only one message
+## Make threads have only one message (You know what, no)
 
 
 
@@ -38,11 +38,11 @@ battleship
 
 
 
-## Switch to spdlog
+## Switch to spdlog (*Mostly done*)
 
 ### (maybe?) make custom flag to make msg type uppercase
 
-### (maybe?) make D++ messages less apparent
+### (maybe?) make D++ messages less apparent (**DONE**)
 
 
 
@@ -50,4 +50,8 @@ battleship
 
 
 
-## Figure out how players are organized
+## Figure out how players are organized (*done, I think?*)
+
+
+
+## ...Refactor the code. Please future me, refactor it

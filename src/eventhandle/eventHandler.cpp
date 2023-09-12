@@ -170,7 +170,7 @@ eventhandle::eventhandle(cluster * bot) {
 	});
 	bot->on_slashcommand([this,bot](const auto& event) {
 		try {
-			event.thinking(true);
+			if (event.command.get_command_name() != "challenge") event.thinking(true);
 
 			std::thread([this,event,bot] { this->slashCmds.at(event.command.get_command_name())(event); }).detach();
 		} catch (...) {
@@ -199,7 +199,7 @@ eventhandle::eventhandle(cluster * bot) {
 		}
 		std::cout << std::format("scopeInt is: {}\n",scopeInt); //TEMP
 		(new std::thread([=,this] {
-			if (this->curQueues[gameInt][scopeInt]->addPlayerInt(snowPair(event.command.usr.id,((bot->thread_create_sync("testT",event.command.channel_id,1440,CHANNEL_PRIVATE_THREAD,true,1))).id))) {
+			if (this->curQueues[gameInt][scopeInt]->addPlayerInt(snowPair(event.command.usr.id,((bot->thread_create_sync(std::format("Queue thread of: {}",event.command.usr.username),event.command.channel_id,1440,CHANNEL_PRIVATE_THREAD,true,1))).id))) {
 				event.edit_response("Queue joined succesfully, please standby");
 			} else {
 			
