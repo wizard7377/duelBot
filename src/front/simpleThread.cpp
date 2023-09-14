@@ -26,22 +26,26 @@ using sec = std::chrono::seconds;
 //TODO Add new rate to end information
 //BUG Timing issues
 //TODO Make end screens also work
+//TODO undo
 template class gameFront::baseSimThread<game::ticTacToeLogic>;
+/*
 template class gameFront::baseSimThread<game::connectLogic>;
 template class gameFront::baseSimThread<game::checkersLogic>;
 template class gameFront::baseSimThread<game::chessLogic>;
 template class gameFront::baseSimThread<game::baseGameLogic>;
-
+*/
 template <typename T>
 int gameTypeInt() { return -1; }
 template <>
 int gameTypeInt<game::ticTacToeLogic>() { return 0; }
+/*
 template <>
 int gameTypeInt<game::checkersLogic>() { return 1; }
 template <>
 int gameTypeInt<game::chessLogic>() { return 2; }
 template <>
 int gameTypeInt<game::connectLogic>() { return 3; }
+*/
 template <typename T = sec>
 uint64_t timeCount(gameTime inTime) {
 	return std::chrono::duration_cast<T>(inTime).count();
@@ -154,25 +158,15 @@ template <typename T>
 message * baseSimThread<T>::msgMake() {
 	message * msg = makeGameEmbed();
 
-	std::vector<std::string> inMoves;
-	if (this->gameInteraction->isDuoMove()) {
-		for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
-			//std::cout << this->gameInteraction->getAllMoves()[i].size();
-			if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->intToMove(i)); }
-		}
-	} else {
-		for (int i = 0; i < this->gameInteraction->getAllMoves().size(); i++) {
-			//std::cout << this->gameInteraction->getAllMoves()[i].size();
-			if (this->gameInteraction->getAllMoves()[i].size() != 0) { inMoves.push_back(this->gameInteraction->getAllMoves()[i][0]); }
-		}
-	}
+	
+	moveList inMoves = this->gameInteraction->getFromMoves();
 	//std::cout <<  __LINE__ << std::endl;
 	std::string labelOne = "Move";
 	if (this->gameInteraction->isDuoMove()) labelOne = "Move from";
 	std::string ranPre = std::to_string(rand());
 	std::string itemIds[] = {reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId(),reqId()};
 	utl::bigSelect * startSel = new utl::bigSelect(inMoves,labelOne);
-	utl::bigSelect * endSel = new utl::bigSelect(this->gameInteraction->getAllMoves()[0],"Move to");
+	utl::bigSelect * endSel = new utl::bigSelect(this->gameInteraction->getToMoves(),"Move to");
 	msg->add_component(
 		component().add_component(
 			startSel->pageStay()
@@ -269,7 +263,7 @@ message * baseSimThread<T>::msgMake() {
 		if (this->gameInteraction->isDuoMove()) {
 			this->handler->deleteSelectCmd(msg->components[2].components[0].custom_id);
 			delete endSel;
-			endSel = new (utl::bigSelect)(this->gameInteraction->getAllMoves()[this->gameInteraction->moveToInt(event.values[0])]);			
+			endSel = new (utl::bigSelect)(this->gameInteraction->getToMoves(event.values[0]));	
 			msg->components[2].components[0] = endSel->pageStay();
 			this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
 				msg->components[2].components[0].set_placeholder(event.values[0]);

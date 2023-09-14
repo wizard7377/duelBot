@@ -10,6 +10,7 @@
 #include <thread>
 #include <atomic>
 using gameTime = std::chrono::duration<double,std::milli>;
+using moveList = std::vector<std::string>;
 namespace gameInt {
 
 class gameTimeType {
@@ -33,9 +34,40 @@ class baseGameInt : public wrapState {
 		//baseGameInt(gameFront::baseGameHandle<T>& parent); 
 		std::vector<std::vector<int>> getBoard();
 		static_assert(std::is_base_of<game::baseGameLogic,T>::value, "Base game interactions may only have templates of game types");
-		std::string intToMove(int userMove);
-		int moveToInt(std::string userMove,bool typeReq = false);
-		std::vector<std::vector<std::string>> getAllMoves();
+		/**!
+		 * Gets all possible moves in a two player game for a given first move
+		 * @brief Gets all second moves
+		 * @param fromMove First move
+		 * @return Possible second moves
+		*/
+		moveList getToMoves(std::string fromMove);
+		/**!
+		 * Gets all possible moves in a two player game
+		 * @brief Gets all first moves
+		 * @return Possible first moves
+		*/
+		moveList getFromMoves();
+		/**!
+		 * Changes a from move into its appropriate move vector
+		 * @brief From string to appropriate vector
+		 * @param fromMove Move string
+		 * @return Move vector
+		*/
+		posVec fromMoveVec(std::string fromMove);
+		/**!
+		 * Changes a to move and its from move to its appropriate move vector
+		 * @brief To string to appropriate vector
+		 * @param toMove Second move string
+		 * @param fromMove First move string
+		 * @return Move vector
+		*/
+		posVec toMoveVec(std::string fromMove, std::string toMove);
+		/**!
+		 * Gets default to moves
+		 * @brief Gets all default second moves
+		 * @return Possible second moves
+		*/
+		moveList getToMoves();
 		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
 		/*! Checks if game is one input or two input
 		 * @brief Number of inputs

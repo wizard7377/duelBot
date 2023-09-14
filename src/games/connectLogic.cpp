@@ -1,4 +1,4 @@
-
+#if 0
 #include <string>
 #include <cmath>
 #include <iostream>
@@ -111,3 +111,4 @@ bool connectLogic::getWinner() {
 
 
 }
+#endif

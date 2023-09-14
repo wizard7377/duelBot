@@ -22,11 +22,12 @@ struct gameConfig {
 	std::string gameName;
 	int gameId;
 };
-
+/*
 const std::unordered_map<std::type_index,gameConfig> gameCon {
 	{std::type_index(typeid(game::ticTacToeLogic)),{"tictactoe",0}},
 	{std::type_index(typeid(game::checkersLogic)),{"checkers",1}}
 };
+*/
 
 const std::vector<std::string> gameNames = {
 	"tictactoe",

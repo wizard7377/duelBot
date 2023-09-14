@@ -4,9 +4,16 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <utility>
 #include <concepts>
 #include "utl.hpp"
 //#include "gameInteraction.hpp"
+
+/* So this is
+ * A pair of a vector of moves and corresponding int positions and a int pos
+*/
+using posVec = std::vector<int>;
+using moveInfo = std::pair<std::map<std::string,posVec>,posVec>;
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string colNames[] = {"1","2","3","4","5","6","7","8"};
 
@@ -38,14 +45,14 @@ class baseGameLogic {
 		 * @param playerTurn Whose turn it is
 		 * @return Has the game ended?
 		 */
-		virtual bool makeMove(int inputOne,int inputTwo, bool playerTurn) { return false; } 
+		virtual bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) { return false; } 
 		/*! This function allows you to make a move in a one input game
 		 * @brief Make one input move
 		 * @param inputOne One input
 		 * @param playerTurn Whose turn it is
 		 * @return Has the game ended?
 		 */
-		virtual bool makeMove(int inputOne,bool playerTurn) { return false; }
+		virtual bool makeMove(posVec inputOne,bool playerTurn) { return false; }
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
 		/*! List of all possible moves, this the case of a single input game, 
@@ -74,6 +81,8 @@ class baseGameLogic {
 		std::vector<std::vector<utl::point>> capMovesVec; /*!< List of all possible moves with greater than 2 inputs */
 		std::vector<std::string> capMovesNames; /*!< List of the repersentations of all moves with greater than 2 inputs*/
 		virtual int gameInt() { return -1; };
+
+		std::map<std::string,moveInfo> moves;
 
 		
 		//gameInt::baseGameInt& parent; //!< IMPORTANT: the object that created this
@@ -110,8 +119,8 @@ class ticTacToeLogic : public baseGameLogic {
 		ticTacToeLogic();
 		//ticTacToeLogic(gameInt::baseGameInt<ticTacToeLogic>& parent);
 		bool isDuoMove() override { return false; }
-		bool makeMove(int inputOne,bool playerTurn) override;
-		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
+		bool makeMove(posVec inputOne,bool playerTurn) override;
+		bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) override { return false ; };
 		int gameInt() override { return 0; }
 		
 
@@ -131,12 +140,14 @@ class ticTacToeLogic : public baseGameLogic {
 		
 };
 
+//TODO temp remove this
+#if 0
 class checkersLogic : public baseGameLogic {
 	public:
 		checkersLogic();
 		//checkersLogic(gameInt::baseGameInt<checkersLogic>& parent);
-		bool makeMove(int inputOne,bool playerTurn) override { return false; };
-		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override;
+		bool makeMove(posVec inputOne,bool playerTurn) override { return false; };
+		bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) override;
 		
 
 		bool getWinner() override;
@@ -164,8 +175,8 @@ class connectLogic : public baseGameLogic {
 		connectLogic();
 		//connectLogic(gameInt::baseGameInt<connectLogic>& parent);
 		bool isDuoMove() override { return false; }
-		bool makeMove(int inputOne,bool playerTurn) override;
-		bool makeMove(int inputOne,int inputTwo, bool playerTurn) override { return false ; };
+		bool makeMove(posVec inputOne,bool playerTurn) override;
+		bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) override { return false ; };
 		int gameInt() override { return 3; }
 		
 
@@ -197,7 +208,7 @@ class connectLogic : public baseGameLogic {
 		int lastY; //!< Last move Y
 		
 };
-
+#endif
 //TODO Change all cases to this
 //! Checks if the type is a game
 template <typename T> 

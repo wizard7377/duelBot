@@ -1,4 +1,5 @@
 #include "gameInteraction.hpp"
+#include "gameLogic.hpp"
 #include <string>
 #include <functional>
 #include <iostream>
@@ -7,12 +8,12 @@
 #include <chrono>
 #include <thread>
 #include <random>
-
+//TODO UNDO you know what to do
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
-template class gameInt::baseGameInt<game::connectLogic>;
-template class gameInt::baseGameInt<game::checkersLogic>;
-template class gameInt::baseGameInt<game::chessLogic>;
+//template class gameInt::baseGameInt<game::connectLogic>;
+//template class gameInt::baseGameInt<game::checkersLogic>;
+//template class gameInt::baseGameInt<game::chessLogic>;
 
 using namespace std::literals::chrono_literals;
 
@@ -24,6 +25,9 @@ gameTimeType::gameTimeType(int seconds, int minutes, int hours) {
 	this->hours = hours;
 
 }
+
+template <>
+bool baseGameInt<game::ticTacToeLogic>::isDuoMove() { return false; }
 
 template <typename T>
 baseGameInt<T>::baseGameInt(const gameTime control[3], std::function<void(bool,int)> onEnd) {
@@ -73,10 +77,7 @@ gameTime baseGameInt<T>::timeMove(bool userTime) {
 	}
 }
 
-template <typename T>
-std::vector<std::vector<std::string>> baseGameInt<T>::getAllMoves() {
-	return this->gameLogic->moveNames;
-}
+
 template <typename T> 
 std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 	//std::cout << "test" << std::endl;
@@ -119,12 +120,12 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 	}
 	bool isCase = false;
 
-	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),playerTurn)); } 
+	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),playerTurn)); } 
 	else {
 		if (this->gameLogic->isCapture) {
-			isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo,true),playerTurn)); 
+			isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
 		} else {
-			isCase = (this->gameLogic->makeMove(this->moveToInt(inputOne),this->moveToInt(inputTwo),playerTurn)); 
+			isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
 		}
 	}
 
@@ -149,7 +150,7 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 	this->userMove = !(this->userMove);
 	return 1;
 }
-
+/*
 template <typename T> 
 std::string baseGameInt<T>::intToMove(int userMove) {
 	return (this->gameLogic->convertIntToString(userMove));
@@ -166,9 +167,44 @@ int baseGameInt<T>::moveToInt(std::string userMove, bool typeReq) {
 		return (this->gameLogic->convertStringToInt(userMove));
 	}	
 }
+*/
 
-
-
+template <typename T>
+moveList baseGameInt<T>::getToMoves(std::string fromMove) {
+	moveList rList;
+	for (const auto& [key, value] : this->gameLogic->moves[fromMove].first) {
+		rList.push_back(key);
+	}
+	return rList;
+}
+template <typename T>
+moveList baseGameInt<T>::getFromMoves() {
+	moveList rList;
+	for (const auto& [key, value] : this->gameLogic->moves) {
+		rList.push_back(key);
+	}
+	return rList;
+}
+template <typename T>
+posVec baseGameInt<T>::fromMoveVec(std::string fromMove) {
+	return this->gameLogic->moves[fromMove].second;
+}
+template <typename T>
+posVec baseGameInt<T>::toMoveVec(std::string fromMove, std::string toMove) {
+	return this->gameLogic->moves[fromMove].first[toMove];
+}
+template <typename T>
+moveList baseGameInt<T>::getToMoves() {
+	//Probaly a smarter way to do this but idk
+	moveList rList;
+	for (const auto& [key, value] : this->gameLogic->moves) {
+		for (const auto& [keyB, valueB] : value.first) {
+			rList.push_back(keyB);
+		}
+		return rList;
+	}
+	return {};
+}
 }
 
 

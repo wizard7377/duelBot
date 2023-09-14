@@ -1,3 +1,4 @@
+#if 0
 #include <vector>
 #include <iostream>
 #include <string>
@@ -86,7 +87,7 @@ namespace game {
 				this->sAt((int)((curVals->at(i).x+curVals->at(i+1).x)/2),(int)((curVals->at(i).y+curVals->at(i+1).y)/2),0);
 			}
 			this->sAt(curVals->front().x,curVals->front().y,0);
-
+			
 		} else {
 			utl::point pOne = utl::point(inputOne,8,false);
 			utl::point pTwo = utl::point(inputTwo,8,false);
@@ -250,3 +251,4 @@ void checkersLogic::changeMoves(bool playerTurn) {
 
 }
 }
+#endif

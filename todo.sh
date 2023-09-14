@@ -8,3 +8,6 @@ rg -tcpp "FIXME"
 echo "bug's:"
 echo
 rg -tcpp "BUG"
+echo "things you need to undo"
+echo
+rg -tcpp "BUG"

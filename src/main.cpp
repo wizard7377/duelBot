@@ -124,9 +124,9 @@ int main(int argc, char *argv[]) {
         if (run_once<struct register_bot_commands>()) {
 			bot.global_bulk_command_create({botCmds::infoDef(),botCmds::challengeDef(),botCmds::getRateDef(),botCmds::changeSetDef(),botCmds::joinQueueDef()});
 			
-			bot.set_presence(dpp::presence(dpp::presence_status::ps_online, dpp::activity_type::at_game, "with " + std::to_string(dpp::get_guild_cache()->count()) + " (public) guilds!"));
+			bot.set_presence(dpp::presence(dpp::presence_status::ps_online, dpp::activity_type::at_game, "with " + std::to_string(dpp::get_guild_cache()->count()) + " guilds!"));
 			bot.start_timer([&bot](const dpp::timer& timer) {
-                bot.set_presence(dpp::presence(dpp::presence_status::ps_online, dpp::activity_type::at_game, "with " + std::to_string(dpp::get_guild_cache()->count()) + " (public) guilds!"));
+                bot.set_presence(dpp::presence(dpp::presence_status::ps_online, dpp::activity_type::at_game, "with " + std::to_string(dpp::get_guild_cache()->count()) + " guilds!"));
             }, 300);
 		}
     });

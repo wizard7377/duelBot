@@ -7,11 +7,13 @@
 #include "gameInteraction.hpp"
 #include "rateQueue.hpp"
 #include "colorUtil.hpp"
-
+//TODO UNDO
 template class gameFront::baseGameHandle<game::ticTacToeLogic>;
+/*
 template class gameFront::baseGameHandle<game::checkersLogic>;
 template class gameFront::baseGameHandle<game::chessLogic>;
 template class gameFront::baseGameHandle<game::connectLogic>;
+*/
 //template class gameFront::baseGameHandle<game::baseGameLogic>;
 
 using namespace dpp;

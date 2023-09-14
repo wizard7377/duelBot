@@ -42,6 +42,7 @@ std::string inString = std::get<std::string>(event.components[index].components[
 	return inString;
 	
 }
+//TODO Undo 
 std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler)>> typeCmds = {
 	{
 	"tictactoe",
@@ -54,7 +55,7 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 		return new gameFront::baseGameHandle<game::ticTacToeLogic>(funcs);
 		
 	})
-	},
+	}/*,
 	{
 	"connectfour",
 	([](cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler) {
@@ -78,7 +79,7 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 		return new gameFront::baseGameHandle<game::checkersLogic>(funcs);
 		
 	})
-	}
+	}*/
 
 };
 

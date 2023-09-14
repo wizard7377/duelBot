@@ -47,18 +47,7 @@ namespace game {
 		std::vector<std::vector<std::string>> nameArray;
 		this->boardItems = new std::vector<std::vector<int>>{{0,0,0},{0,0,0},{0,0,0}};
 
-		//THE PREVIOUS DECLARATION IS CORRECT, THE NEXT IS ONLY FOR TESTING
-
-		//this->boardItems = new std::vector<std::vector<int>>{{0,1,2},{2,0,1},{2,1,0}};
-
-		for (int i = 0; i < 3; i++) {
-			this->moveNamesCon.push_back({});
-			for (int ii = 0; ii < 3; ii++) {
-				nameArray.push_back({tttRowNames[i]+"-"+tttColNames[ii]});
-				//this->moveNamesCon[i].push_back(tttRowNames[i]+"-"+tttColNames[ii]);
-				this->moveNamesCon[i].push_back(tttRowNames[i]+"-"+tttColNames[ii]);
-			}
-		}
+	
 		
 		
 		this->moveNames = {};
@@ -70,36 +59,26 @@ namespace game {
 
 		
 	}
+
 	void ticTacToeLogic::changeMoves(bool playerTurn) {
-		
-		this->moveNames = {};
-		for (int i = 0; i < 3; i++) {
-			for (int ii = 0; ii < 3; ii++) {
-				//if (this->boardItems->at(i)[ii] == 0) {
-				if (this->boardItems->at(i)[ii] == 0) {
-					this->moveNames.push_back({this->moveNamesCon[2-i][ii]});
-				
-				} else {
-					this->moveNames.push_back({});
-				}
-				
-
-
+		//this is probaly unneccasary (but it still performs 100x better than python!)
+		this->moves.clear();
+		for (int i = 0; i < 3; i++) {	
+			for (int ii = 0; ii < 3; ii++) {	
+				if ((*this->boardItems)[2-i][ii] == 0) this->moves.emplace((tttRowNames[i] + "-" + tttColNames[ii]),moveInfo(std::map<std::string,posVec>(),{i,ii}));
 			}
 		}
-		
+
 		
 		
 	}
 
-	bool ticTacToeLogic::makeMove(int inputOne,bool playerTurn) {
+	bool ticTacToeLogic::makeMove(posVec inputOne,bool playerTurn) {
 		
 
 		//(*(this->boardItems))[(inputOne%3)][int(std::floor(inputOne/3))] = getIntFromBool();
-		int cordOne = (inputOne%3);
-		int cordTwo = int(std::floor(inputOne/3));
-		(*(this->boardItems))[2-cordTwo][cordOne] = (int)(this->userTurn) + 1;
-		this->allowedMoves[inputOne] = false;
+		(*(this->boardItems))[2-inputOne[0]][inputOne[1]] = (int)(this->userTurn) + 1;
+		//this->allowedMoves[inputOne[]] = false;
 
 		this->userTurn = (!(this->userTurn));
 		this->changeMoves(this->userTurn);
@@ -127,14 +106,6 @@ namespace game {
 
 
 }
-
-
-
-
-
-
-
-
 
 
 
