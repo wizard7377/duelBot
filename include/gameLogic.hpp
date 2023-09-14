@@ -140,8 +140,7 @@ class ticTacToeLogic : public baseGameLogic {
 		
 };
 
-//TODO temp remove this
-#if 0
+
 class checkersLogic : public baseGameLogic {
 	public:
 		checkersLogic();
@@ -149,7 +148,7 @@ class checkersLogic : public baseGameLogic {
 		bool makeMove(posVec inputOne,bool playerTurn) override { return false; };
 		bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) override;
 		
-
+		bool isDuoMove() override { return true; }
 		bool getWinner() override;
 		//std::vector<std::vector<int>> boardItems;
 		/*
@@ -166,10 +165,11 @@ class checkersLogic : public baseGameLogic {
 		bool checkForEnd();
 		int pAt(int x, int y); //!< Needed to turn natrual notation (x,y) into actual notation (y,x)
 		void sAt(int x, int y, int piece); //!< Needed to turn natrual notation (x,y) into actual notation (y,x)
-		
+		std::string getPS(int x, int y);
 		
 };
-
+//TODO temp remove this
+#if 0
 class connectLogic : public baseGameLogic {
 	public:
 		connectLogic();

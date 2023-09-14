@@ -106,16 +106,18 @@ eventhandle::eventhandle(cluster * bot) {
 		,
 		([&] (gameInt::baseGameInt<game::ticTacToeLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::ticTacToeLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
 	};
+	
+	
+	std::function<gameFront::baseSimThread<game::checkersLogic>*(gameInt::baseGameInt<game::checkersLogic>*,snowPair, snowPair)> checksFuncs[2] = {
+		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
+		,
+		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
+	};
 	/*
 	std::function<gameFront::baseSimThread<game::connectLogic>*(gameInt::baseGameInt<game::connectLogic>*,snowPair, snowPair)> conFuncs[2] = {
 		([&] (gameInt::baseGameInt<game::connectLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::connectLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
 		,
 		([&] (gameInt::baseGameInt<game::connectLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::connectLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
-	};
-	std::function<gameFront::baseSimThread<game::checkersLogic>*(gameInt::baseGameInt<game::checkersLogic>*,snowPair, snowPair)> checksFuncs[2] = {
-		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
-		,
-		([&] (gameInt::baseGameInt<game::checkersLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::checkersLogic>(bot,playId.second,playId.first,threadId.second,this,inState); })
 	};
 	std::function<gameFront::baseSimThread<game::chessLogic>*(gameInt::baseGameInt<game::chessLogic>*,snowPair, snowPair)> chessFuncs[2] = {
 		([&] (gameInt::baseGameInt<game::chessLogic>* inState,snowPair playId, snowPair threadId) { return new gameFront::baseSimThread<game::chessLogic>(bot,playId.first,playId.second,threadId.first,this,inState); })
@@ -134,17 +136,17 @@ eventhandle::eventhandle(cluster * bot) {
 	std::vector<gameTime> curTimes {5min, 5s, 0s};
 	
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimes, tttFuncs, this),this->testCon));
-	//this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimes, checksFuncs, this),this->testCon));
+	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimes, checksFuncs, this),this->testCon));
 	//this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimes, chessFuncs, this),this->testCon));
 	//this->curQueues[3].push_back(new rQ::frontRQ(makeQ<game::connectLogic>(bot, curTimes, conFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesTwo {5min, 0s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesTwo, tttFuncs, this),this->testCon));
-	//this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimesTwo, checksFuncs, this),this->testCon));
+	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimesTwo, checksFuncs, this),this->testCon));
 	//this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimesTwo, chessFuncs, this),this->testCon));
 	//this->curQueues[3].push_back(new rQ::frontRQ(makeQ<game::connectLogic>(bot, curTimes, conFuncs, this),this->testCon));
 	std::vector<gameTime> curTimesThree {1min, 0s, 0s};
 	this->curQueues[0].push_back(new rQ::frontRQ(makeQ<game::ticTacToeLogic>(bot, curTimesThree, tttFuncs, this),this->testCon));
-	//this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimesThree, checksFuncs, this),this->testCon));
+	this->curQueues[1].push_back(new rQ::frontRQ(makeQ<game::checkersLogic>(bot, curTimesThree, checksFuncs, this),this->testCon));
 	//this->curQueues[2].push_back(new rQ::frontRQ(makeQ<game::chessLogic>(bot, curTimesThree, chessFuncs, this),this->testCon));
 	//this->curQueues[3].push_back(new rQ::frontRQ(makeQ<game::connectLogic>(bot, curTimes, conFuncs, this),this->testCon));
 	

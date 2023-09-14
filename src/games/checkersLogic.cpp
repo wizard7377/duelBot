@@ -1,4 +1,3 @@
-#if 0
 #include <vector>
 #include <iostream>
 #include <string>
@@ -55,15 +54,7 @@ namespace game {
 		
 
 		
-		this->moveNames = std::vector<std::vector<std::string>>();
 		
-		for (int i = 0; i < 8; i++) {
-			this->moveNamesCon.push_back({});
-			for (int ii = 0; ii < 8; ii++) {
-				this->moveNames.push_back({});
-				this->moveNamesCon[i].push_back(checkRowNames[i]+checkColNames[ii]);
-			}
-		}
 			/*
 			for (int ii = 0; ii < 8; ii++) {
 				this->moveNames[i].push_back(checkRowNames[i]+checkColNames[ii]);
@@ -76,25 +67,25 @@ namespace game {
 
 	
 	}
-	bool checkersLogic::makeMove(int inputOne,int inputTwo,bool playerTurn) {
+	bool checkersLogic::makeMove(posVec inputOne,posVec inputTwo,bool playerTurn) {
+
+		
 		
 		if (this->isCapture) { 
-			std::vector<utl::point> * curVals = &(this->capMovesVec.at(inputTwo));
-			
-			this->sAt(curVals->back().x,curVals->back().y,pAt(curVals->front().x,curVals->front().y));
-			for (int i = 0; i < curVals->size() - 1; i++) {
-				this->sAt((curVals->at(i).x),(curVals->at(i).y),0);
-				this->sAt((int)((curVals->at(i).x+curVals->at(i+1).x)/2),(int)((curVals->at(i).y+curVals->at(i+1).y)/2),0);
+			std::vector<utl::point> curVals;
+			for (int i = 0; i < (int)(inputTwo.size() / 2); i++) {
+				curVals.push_back({inputTwo[i],inputTwo[i+1]});
 			}
-			this->sAt(curVals->front().x,curVals->front().y,0);
+			this->sAt(curVals.back().x,curVals.back().y,pAt(curVals.front().x,curVals.front().y));
+			for (int i = 0; i < curVals.size() - 1; i++) {
+				this->sAt((curVals.at(i).x),(curVals.at(i).y),0);
+				this->sAt((int)((curVals.at(i).x+curVals.at(i+1).x)/2),(int)((curVals.at(i).y+curVals.at(i+1).y)/2),0);
+			}
+			this->sAt(curVals.front().x,curVals.front().y,0);
 			
 		} else {
-			utl::point pOne = utl::point(inputOne,8,false);
-			utl::point pTwo = utl::point(inputTwo,8,false);
-			//std::cout << "inputs are: " << inputOne << ", " << inputTwo << std::endl;
-			//std::cout << std::endl << "Imp val one: " << getValAt<int>(inputOne,this->boardItems) << std::endl << getValAt<int>(inputTwo,this->boardItems) << std::endl;
-			getValAt<int>(inputTwo,this->boardItems) = getValAt<int>(inputOne,this->boardItems);
-			getValAt<int>(inputOne,this->boardItems) = 0;
+			(*(this->boardItems))[inputTwo[1]][inputTwo[0]] = (*(this->boardItems))[inputOne[1]][inputOne[0]];
+			(*(this->boardItems))[inputOne[1]][inputOne[0]] = 0;
 		}
 		for (auto a : *(this->boardItems)) {
 			for (auto b : a) {
@@ -102,7 +93,8 @@ namespace game {
 			}
 			//std::cout << std::endl;
 		}
-		this->changeMoves(playerTurn);
+		this->userTurn = (!(this->userTurn));
+		this->changeMoves(this->userTurn);
 		return false;
 	}
 	bool checkersLogic::getWinner() { return true; }
@@ -132,11 +124,10 @@ void checkersLogic::sAt(int x, int y, int piece) {
 }
 
 
+std::string checkersLogic::getPS(int x, int y) { return (checkRowNames[x] + checkColNames[y]); }
+
 void checkersLogic::changeMoves(bool playerTurn) {
-	//this->moveNames = {};
-	for (auto &a : this->moveNames) {
-		a = {};
-	}
+	this->moves.clear();
 	this->isCapture = false;
 	
 	int *pNames;
@@ -189,28 +180,28 @@ void checkersLogic::changeMoves(bool playerTurn) {
 		for (auto a : relP) {
 			//std::string stringNow = checkRowNames[a.x] + checkColNames[a.y];
 			std::string stringNow = "";
+			posVec curPos;
 			std::vector<utl::point> curPoints;
-			std::function<void(utl::point,std::string,std::vector<utl::point>)> spFunc = ([=,&a,&relP,&spFunc,this](utl::point inP,std::string curString,std::vector<utl::point> inPs) {
+			std::function<void(utl::point,std::string,std::vector<utl::point>,posVec)> spFunc = ([=,&a,&relP,&spFunc,this](utl::point inP,std::string curString,std::vector<utl::point> inPs,posVec curPos) {
 				//std::cout << curString << " with one " << inP.tString() << std::endl;
 				//std::cout << curString << " with two " << inP.tString() << std::endl;
-
+				
 				inPs.push_back(inP);
+				if (this->moves.count(this->getPS(a.x,a.y)) == 0) this->moves.insert({this->getPS(a.x,a.y),{{},{a.x,a.y}}});
 				if ((a.x != inP.x) and (a.y != inP.y)) {
-					curString = curString + "->" +  checkRowNames[inP.x] + checkColNames[inP.y];
-					this->moveNames[a.x*8+a.y].push_back(curString);
-					this->capMovesNames.push_back(curString);
-					this->capMovesVec.push_back(inPs);
-					this->capMoves.emplace(curString,inPs); 
+					curString = curString + "->" + this->getPS(inP.x,inP.y);
+					curPos.push_back(a.x); curPos.push_back(a.y);
+					this->moves[this->getPS(a.x,a.y)].first.insert({curString,curPos});
 				}
 				if ((this->pAt(inP.x+1,inP.y+spaces[0]) == eNames[0]) and (this->pAt(inP.x+2,inP.y+spaces[1]) == 0)) {
-					spFunc(utl::point(inP.x+2,inP.y+spaces[1]),curString,inPs);
+					spFunc(utl::point(inP.x+2,inP.y+spaces[1]),curString,inPs,curPos);
 				}
 				if ((this->pAt(inP.x-1,inP.y+spaces[0]) == eNames[0]) and (this->pAt(inP.x-2,inP.y+spaces[1]) == 0)) {
-					spFunc(utl::point(inP.x-2,inP.y+spaces[1]),curString,inPs);
+					spFunc(utl::point(inP.x-2,inP.y+spaces[1]),curString,inPs,curPos);
 				}
 			});
 			//std::cout << a.tString() << std::endl;
-			spFunc(a,stringNow,curPoints);
+			spFunc(a,stringNow,curPoints,curPos);
 			
 			
 		}
@@ -227,28 +218,20 @@ void checkersLogic::changeMoves(bool playerTurn) {
 				if (this->pAt(i,ii) == pNames[0]) {
 					//std::cout << "val is " << (i-1) << " ";
 					if (this->pAt(i-1,ii+spaces[0]) == 0) {
-						
-						this->moveNames[i*8+ii].push_back(checkRowNames[i-1]+checkColNames[ii+spaces[0]]);
+						if (this->moves.count(this->getPS(i,ii)) == 0) 
+							this->moves[this->getPS(i,ii)] = {{},{i,ii}};
+						this->moves[this->getPS(i,ii)].first.insert({checkRowNames[i-1]+checkColNames[ii+spaces[0]],{i-1,ii+spaces[0]}});
 					}
 					if (this->pAt(i+1,ii+spaces[0]) == 0) {
-						this->moveNames[i*8+ii].push_back(checkRowNames[i+1]+checkColNames[ii+spaces[0]]);
+						if (this->moves.count(this->getPS(i,ii)) == 0) 
+							this->moves[this->getPS(i,ii)] = {{},{i,ii}};
+						this->moves[this->getPS(i,ii)].first.insert({checkRowNames[i+1]+checkColNames[ii+spaces[0]],{i+1,ii+spaces[0]}});
 					}
 				}
 			}
 		}
 	}
 	
-
-				
-
-
-			
-		
-	
-	
-
-
+}
 
 }
-}
-#endif

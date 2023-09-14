@@ -12,7 +12,7 @@
 template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
 //template class gameInt::baseGameInt<game::connectLogic>;
-//template class gameInt::baseGameInt<game::checkersLogic>;
+template class gameInt::baseGameInt<game::checkersLogic>;
 //template class gameInt::baseGameInt<game::chessLogic>;
 
 using namespace std::literals::chrono_literals;
@@ -28,7 +28,8 @@ gameTimeType::gameTimeType(int seconds, int minutes, int hours) {
 
 template <>
 bool baseGameInt<game::ticTacToeLogic>::isDuoMove() { return false; }
-
+template <>
+bool baseGameInt<game::checkersLogic>::isDuoMove() { return true; }
 template <typename T>
 baseGameInt<T>::baseGameInt(const gameTime control[3], std::function<void(bool,int)> onEnd) {
 	this->hasTimeLeft = new std::atomic<bool>(true);
@@ -119,7 +120,6 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 		(this->timeLeft[1]) = (curTime);
 	}
 	bool isCase = false;
-
 	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),playerTurn)); } 
 	else {
 		if (this->gameLogic->isCapture) {

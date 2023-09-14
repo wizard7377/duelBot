@@ -28,9 +28,11 @@ using sec = std::chrono::seconds;
 //TODO Make end screens also work
 //TODO undo
 template class gameFront::baseSimThread<game::ticTacToeLogic>;
-/*
-template class gameFront::baseSimThread<game::connectLogic>;
+
+//template class gameFront::baseSimThread<game::connectLogic>;
+
 template class gameFront::baseSimThread<game::checkersLogic>;
+/*
 template class gameFront::baseSimThread<game::chessLogic>;
 template class gameFront::baseSimThread<game::baseGameLogic>;
 */
@@ -38,9 +40,11 @@ template <typename T>
 int gameTypeInt() { return -1; }
 template <>
 int gameTypeInt<game::ticTacToeLogic>() { return 0; }
-/*
+
 template <>
 int gameTypeInt<game::checkersLogic>() { return 1; }
+//TODO undo
+/*
 template <>
 int gameTypeInt<game::chessLogic>() { return 2; }
 template <>

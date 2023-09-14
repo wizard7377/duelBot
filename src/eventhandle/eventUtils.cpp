@@ -55,19 +55,8 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 		return new gameFront::baseGameHandle<game::ticTacToeLogic>(funcs);
 		
 	})
-	}/*,
-	{
-	"connectfour",
-	([](cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler) {
-		std::function<gameFront::inType*(gameInt::baseGameInt<game::connectLogic>*)> funcs[2] = {
-			([&] (gameInt::baseGameInt<game::connectLogic>* inState) { return new gameFront::baseSimThread<game::connectLogic>(&bot,userId.id,challengeId,res.first,handler,inState); })
-			,
-			([&] (gameInt::baseGameInt<game::connectLogic>* inState) { return new gameFront::baseSimThread<game::connectLogic>(&bot,challengeId,userId.id,res.second,handler,inState); })
-		};
-		return new gameFront::baseGameHandle<game::connectLogic>(funcs);
-		
-	})
 	},
+	
 	{
 	"checkers",
 	([](cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler) {
@@ -79,7 +68,20 @@ std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,use
 		return new gameFront::baseGameHandle<game::checkersLogic>(funcs);
 		
 	})
+	}/*
+	{
+	"connectfour",
+	([](cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler) {
+		std::function<gameFront::inType*(gameInt::baseGameInt<game::connectLogic>*)> funcs[2] = {
+			([&] (gameInt::baseGameInt<game::connectLogic>* inState) { return new gameFront::baseSimThread<game::connectLogic>(&bot,userId.id,challengeId,res.first,handler,inState); })
+			,
+			([&] (gameInt::baseGameInt<game::connectLogic>* inState) { return new gameFront::baseSimThread<game::connectLogic>(&bot,challengeId,userId.id,res.second,handler,inState); })
+		};
+		return new gameFront::baseGameHandle<game::connectLogic>(funcs);
+		
+	})
 	}*/
+	
 
 };
 
