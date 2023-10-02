@@ -122,6 +122,7 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 	bool isCase = false;
 	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),playerTurn)); } 
 	else {
+		//BUG When ur wondering why this dosent work this is why 
 		if (this->gameLogic->isCapture) {
 			isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
 		} else {
@@ -190,7 +191,7 @@ posVec baseGameInt<T>::fromMoveVec(std::string fromMove) {
 	return this->gameLogic->moves[fromMove].second;
 }
 template <typename T>
-posVec baseGameInt<T>::toMoveVec(std::string fromMove, std::string toMove) {
+std::vector<posVec> baseGameInt<T>::toMoveVec(std::string fromMove, std::string toMove) {
 	return this->gameLogic->moves[fromMove].first[toMove];
 }
 template <typename T>

@@ -13,7 +13,7 @@ std::string genName() {
     return std::to_string(currentSelect);
 }
 namespace utl {
-
+//TODO bigSelect is broken
 bigSelect::bigSelect(std::vector<std::string> startVals,std::string pOne) {
 	component * curCom;
 

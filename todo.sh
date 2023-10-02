@@ -10,4 +10,7 @@ echo
 rg -tcpp "BUG"
 echo "things you need to undo"
 echo
-rg -tcpp "BUG"
+rg -tcpp "UNDO"
+echo "things you need to note"
+echo
+rg -tcpp "NOTE"

@@ -11,6 +11,7 @@
 #include <atomic>
 using gameTime = std::chrono::duration<double,std::milli>;
 using moveList = std::vector<std::string>;
+//TODO make specific for each type of game so moves suck less
 namespace gameInt {
 
 class gameTimeType {
@@ -61,7 +62,7 @@ class baseGameInt : public wrapState {
 		 * @param fromMove First move string
 		 * @return Move vector
 		*/
-		posVec toMoveVec(std::string fromMove, std::string toMove);
+		std::vector<posVec> toMoveVec(std::string fromMove, std::string toMove);
 		/**!
 		 * Gets default to moves
 		 * @brief Gets all default second moves

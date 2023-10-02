@@ -201,7 +201,7 @@ eventhandle::eventhandle(cluster * bot) {
 			spdlog::error("An error has occured at line {}:{}",__LINE__,__FILE__);
 			scopeInt = 0; //Not selected, default to first
 		}
-		std::cout << std::format("scopeInt is: {}\n",scopeInt); //TEMP
+		//std::cout << std::format("scopeInt is: {}\n",scopeInt); //TEMP
 		(new std::thread([=,this] {
 			if (this->curQueues[gameInt][scopeInt]->addPlayerInt(snowPair(event.command.usr.id,((bot->thread_create_sync(std::format("Queue thread of: {}",event.command.usr.username),event.command.channel_id,1440,CHANNEL_PRIVATE_THREAD,true,1))).id))) {
 				event.edit_response("Queue joined succesfully, please standby");

@@ -4,14 +4,10 @@
 #include <functional>
 #include <cmath>
 #include <format>
+#include <utility>
 #include "gameLogic.hpp"
-#include "utl.hpp"
 
-//TODO Make this actually work
-template <typename T>
-T & getValAt(int index, std::vector<std::vector<T>> * inVec) {
-	return ((*inVec)[(int)(index % (*inVec)[0].size())][(int)(std::floor(index/(*inVec).size()))]);
-}
+
 enum checks {
 	EMPTY = 0,
 	WHITEPAWN = 1,
@@ -20,217 +16,179 @@ enum checks {
 	BLACKKING = 4,
 };
 
+enum moveType {
+	CANT_MOVE,
+	CAN_MOVE,
+	CAN_CAP,
+};
 const std::string checkRowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string checkColNames[] = {"1","2","3","4","5","6","7","8"};
 
 namespace game {
-	checkersLogic::checkersLogic() {
+checkersLogic::checkersLogic() {
 
-		
-		this->boardItems = new std::vector<std::vector<int>>{
-			{0,1,0,1,0,1,0,1},
-			{1,0,1,0,1,0,1,0},
-			{0,1,0,1,0,1,0,1},
-			{0,0,0,0,0,0,0,0},
-			{0,0,0,0,0,0,0,0},
-			{3,0,3,0,3,0,3,0},
-			{0,3,0,3,0,3,0,3},
-			{3,0,3,0,3,0,3,0}
-		};
-		
-		
-		/*
-		this->boardItems = new std::vector<std::vector<int>>{
-			{0,0,0,0,0,0,0,0},
-			{0,0,1,0,0,0,1,0},
-			{0,0,0,0,0,0,0,0},
-			{0,0,1,0,1,0,1,0},
-			{0,3,0,3,0,3,0,0},
-			{0,0,0,0,0,0,0,0},
-			{0,3,0,3,0,0,0,0},
-			{0,0,0,0,0,0,0,0}
-		};
-		*/
-		
+	this->boardItems = new std::vector<std::vector<int>>{
+		{0,1,0,1,0,1,0,1},
+		{1,0,1,0,1,0,1,0},
+		{0,1,0,1,0,1,0,1},
+		{0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0},
+		{3,0,3,0,3,0,3,0},
+		{0,3,0,3,0,3,0,3},
+		{3,0,3,0,3,0,3,0}
+	};
 
-		
-		
-			/*
-			for (int ii = 0; ii < 8; ii++) {
-				this->moveNames[i].push_back(checkRowNames[i]+checkColNames[ii]);
-			
-			}
-			*/
-		
-		this->changeMoves(true);
+	/*
+	this->boardItems = new std::vector<std::vector<int>>{
+		{0,0,0,0,0,0,0,0},
+		{0,0,1,0,0,0,1,0},
+		{0,0,0,0,0,0,0,0},
+		{0,0,1,0,1,0,1,0},
+		{0,3,0,3,0,3,0,0},
+		{0,0,0,0,0,0,0,0},
+		{0,3,0,3,0,0,0,0},
+		{0,0,0,0,0,0,0,0}
+	};
+	*/
+	this->userTurn = !(this->userTurn);
+	this->changeMoves(this->userTurn);
 
-
-	
-	}
-	bool checkersLogic::makeMove(posVec inputOne,posVec inputTwo,bool playerTurn) {
-
-		
-		
-		if (this->isCapture) { 
-			std::vector<utl::point> curVals;
-			for (int i = 0; i < (int)(inputTwo.size() / 2); i++) {
-				curVals.push_back({inputTwo[i],inputTwo[i+1]});
-			}
-			this->sAt(curVals.back().x,curVals.back().y,pAt(curVals.front().x,curVals.front().y));
-			for (int i = 0; i < curVals.size() - 1; i++) {
-				this->sAt((curVals.at(i).x),(curVals.at(i).y),0);
-				this->sAt((int)((curVals.at(i).x+curVals.at(i+1).x)/2),(int)((curVals.at(i).y+curVals.at(i+1).y)/2),0);
-			}
-			this->sAt(curVals.front().x,curVals.front().y,0);
-			
-		} else {
-			(*(this->boardItems))[inputTwo[1]][inputTwo[0]] = (*(this->boardItems))[inputOne[1]][inputOne[0]];
-			(*(this->boardItems))[inputOne[1]][inputOne[0]] = 0;
-		}
-		for (auto a : *(this->boardItems)) {
-			for (auto b : a) {
-				//std::cout << b;
-			}
-			//std::cout << std::endl;
-		}
-		this->userTurn = (!(this->userTurn));
-		this->changeMoves(this->userTurn);
-		return false;
-	}
-	bool checkersLogic::getWinner() { return true; }
-
-
-int rUp(int inputOne,int cel = 8) {
-	if (inputOne > 0) {
-		if (inputOne < cel) {
-			return inputOne;
-		} else {
-			return cel;
-		}
-	} else {
-		return 0;
-	}
 }
 
-int checkersLogic::pAt(int x, int y) {
-	if ((x >= 0) and (x < 8) and (y >= 0) and (y < 8)) {
-		return (this->boardItems->at(y).at(x));
-	} else {
-		return -1;
-	}
+bool checkersLogic::getWinner() {
+	return true;
 }
-void checkersLogic::sAt(int x, int y, int piece) {
-	this->boardItems->at(y).at(x) = piece;
+bool checkersLogic::makeMove(posVec inputOne, std::vector<posVec> inputTwo, bool playerTurn) {
+
+	return false;
 }
 
-
-std::string checkersLogic::getPS(int x, int y) { return (checkRowNames[x] + checkColNames[y]); }
 
 void checkersLogic::changeMoves(bool playerTurn) {
-	this->moves.clear();
-	this->isCapture = false;
-	
-	int *pNames;
-	int *eNames;
-	int *spaces;
 
-	if (playerTurn) {
-		pNames = new int[2] {1,2};
-		eNames = new int[2] {3,4};
-		spaces = new int[2] {1,2};
-	} else {
-		pNames = new int[2] {3,4};
-		eNames = new int[2] {1,2};
-		spaces = new int[2] {-1,-2};
-	}
-	//std::cout << spaces[0] << spaces[1] << std::endl;
+	std::pair<int,int> pieceNames = playerTurn ? std::pair<int,int>(1,2) : std::pair<int,int>(3,4); // What pieces are yours
+	std::pair<int,int> enemyNames = playerTurn ? std::pair<int,int>(3,4) : std::pair<int,int>(1,2); // What pieces are your enemies
+	std::pair<int,int> jumpValues = playerTurn ? std::pair<int,int>(1,2) : std::pair<int,int>(-1,-2); // What spaces you can jump
+	
+
+	auto canMove = [&](posVec inVec) -> moveType {
+		bool canMove = false;
+		bool canCap = false;
+		if ((this->getAt(inVec[1],inVec[0]) != pieceNames.first) and (this->getAt(inVec[1],inVec[0]) != pieceNames.second)) return CANT_MOVE;
+		
+		//Check if reg piece can move without capture
+		if ((this->getAt(inVec[1]+jumpValues.first,inVec[0]+1) == 0) or (this->getAt(inVec[1]+jumpValues.first,inVec[0]-1) == 0)) canMove = true;
+
+		//Check if king
+		if (this->getAt(inVec[1],inVec[0] == pieceNames.second)) {
+			
+			//Check behind
+			if ((this->getAt(inVec[1]-jumpValues.first,inVec[0]+1) == 0) or (this->getAt(inVec[1]-jumpValues.first,inVec[0]-1) == 0)) canMove = true;
+		}
+		
+		//Clean up this mess latter	
+		if ((this->getAt(inVec[1]+jumpValues.second,inVec[0]+2) == 0) and 
+			((this->getAt(inVec[1]+jumpValues.first,inVec[0]+1) ==  enemyNames.first) or 
+			 (this->getAt(inVec[1]+jumpValues.first,inVec[0]+1) == enemyNames.second)))	
+				{ canCap = true; }
+		if ((this->getAt(inVec[1]+jumpValues.second,inVec[0]-2) == 0) and 
+			((this->getAt(inVec[1]+jumpValues.first,inVec[0]-1) ==  enemyNames.first) or 
+			 (this->getAt(inVec[1]+jumpValues.first,inVec[0]-1) == enemyNames.second)))	
+				{ canCap = true; }
+		//Check if capture available
+		//Check king
+		if (this->getAt(inVec[1],inVec[0] == pieceNames.second)) {
+			//Check if capture available
+			if ((this->getAt(inVec[1]-jumpValues.second,inVec[0]+2) == 0) and 
+				((this->getAt(inVec[1]-jumpValues.first,inVec[0]+1) ==  enemyNames.first) or 
+				 (this->getAt(inVec[1]-jumpValues.first,inVec[0]+1) == enemyNames.second)))	
+					{ canCap = true; }
+			if ((this->getAt(inVec[1]-jumpValues.second,inVec[0]-2) == 0) and 
+				((this->getAt(inVec[1]-jumpValues.first,inVec[0]-1) ==  enemyNames.first) or 
+				 (this->getAt(inVec[1]-jumpValues.first,inVec[0]-1) == enemyNames.second)))	
+					{ canCap = true; }
+		}
+
+		if (canCap) return CAN_CAP;
+		else if (canMove) return CAN_MOVE;
+		else return CANT_MOVE;
+	};
+
+	//Get list of all possible captures from a given square
+	auto getCapAt = [&](posVec inVec, int dX, int dY) -> std::vector<posVec> {
+		std::vector<posVec> rVec = {};
+		//Clean up this mess latter	
+		//Basically just check for everything if it's the same
+		if ((this->getAt(inVec[1]+jumpValues.second,inVec[0]+2) == 0) and 
+			((this->getAt(inVec[1]+jumpValues.first,inVec[0]+1) ==  enemyNames.first) or 
+			 (this->getAt(inVec[1]+jumpValues.first,inVec[0]+1) == enemyNames.second)))	
+				{ if ((dX != 1) or (dY != jumpValues.first)) rVec.push_back({inVec[1] + jumpValues.second,inVec[0] + 2}); }
+		if ((this->getAt(inVec[1]+jumpValues.second,inVec[0]-2) == 0) and 
+			((this->getAt(inVec[1]+jumpValues.first,inVec[0]-1) ==  enemyNames.first) or 
+			 (this->getAt(inVec[1]+jumpValues.first,inVec[0]-1) == enemyNames.second)))	
+				{ if ((dX != -1) or (dY != jumpValues.first)) rVec.push_back({inVec[1] + jumpValues.second,inVec[0] - 2}); }
+
+		//Check if capture available
+		//Check king
+		if (this->getAt(inVec[1],inVec[0] == pieceNames.second)) {
+			if ((this->getAt(inVec[1]-jumpValues.second,inVec[0]+2) == 0) and 
+				((this->getAt(inVec[1]-jumpValues.first,inVec[0]+1) ==  enemyNames.first) or 
+				 (this->getAt(inVec[1]-jumpValues.first,inVec[0]+1) == enemyNames.second)))	
+					{ if ((dX != 1) or (dY != (-1) * jumpValues.first)) rVec.push_back({inVec[1] + jumpValues.second,inVec[0] + 2}); }
+			if ((this->getAt(inVec[1]-jumpValues.second,inVec[0]-2) == 0) and 
+				((this->getAt(inVec[1]-jumpValues.first,inVec[0]-1) ==  enemyNames.first) or 
+				 (this->getAt(inVec[1]-jumpValues.first,inVec[0]-1) == enemyNames.second)))	
+					{ if ((dX != -1) or (dY != (-1) * jumpValues.first)) rVec.push_back({inVec[1] + jumpValues.second,inVec[0] - 2}); }
+			//Check if capture available
+		}
+		return rVec;
+	};
+
+	
+		
+	/*
+	 * So how this is gonna work is gonna be pretty simple
+	 * We check every square for possible moves until either we run out
+	 * or we run into a capture
+	 * we store these moves in a vector
+	 * If we run into a capture, we clear the vector and continue with captures
+	 */
+
+	std::vector<std::pair<posVec,std::vector<posVec>>> pMoves;
+	bool canCap = false;	
 	for (int i = 0; i < 8; i++) {
 		for (int ii = 0; ii < 8; ii++) {
-			//kings
-			if 
-			((this->pAt(i,ii) == pNames[0]) and
-			(((this->pAt(i+1,ii+spaces[0]) == eNames[0]) and (this->pAt(i+2,ii+spaces[1]) == 0)) or 
-			((this->pAt(i-1,ii+spaces[0]) == eNames[0]) and (this->pAt(i-2,ii+spaces[1]) == 0)))) 
-			{
-				this->isCapture = true;
-				break;	
-			}
-		}
-	}
-	//std::cout << "isCapture is: " << this->isCapture << std::endl;
-	if (this->isCapture) {
-		std::vector<utl::point> relP;
-		for (int i = 0; i < 8; i++) {
-			for (int ii = 0; ii < 8; ii++) {
-				//kings
-				//std::cout << spaces[0] << spaces[1] << pNames[0] << pNames[1] << eNames[0] << eNames[1] << std::endl;
-				if 
-				((this->pAt(i,ii) == pNames[0]) and
-				(((this->pAt(i+1,ii+spaces[0]) == eNames[0]) and (this->pAt(i+2,ii+spaces[1]) == 0)) or 
-				((this->pAt(i-1,ii+spaces[0]) == eNames[0]) and (this->pAt(i-2,ii+spaces[1]) == 0)))) 
-				{
-					relP.push_back(utl::point(i,ii));
-				}
-			}
-		}
-		for (auto b : relP) {
-			//std::cout << b.tString() << ",";
-		}
-		//std::cout << std::endl;
-		for (auto a : relP) {
-			//std::string stringNow = checkRowNames[a.x] + checkColNames[a.y];
-			std::string stringNow = "";
-			posVec curPos;
-			std::vector<utl::point> curPoints;
-			std::function<void(utl::point,std::string,std::vector<utl::point>,posVec)> spFunc = ([=,&a,&relP,&spFunc,this](utl::point inP,std::string curString,std::vector<utl::point> inPs,posVec curPos) {
-				//std::cout << curString << " with one " << inP.tString() << std::endl;
-				//std::cout << curString << " with two " << inP.tString() << std::endl;
+			std::string startSquare = rowNames[ii] + colNames[i];
+			this->moves.insert({startSquare, {{}, {i,ii}}});
+			//Check if we can move
+			auto moveAble = canMove({i,ii});
+			//If we can capture
+			if (moveAble == CAN_CAP) {
+				//If this is just discovered, clear all moves
+				if (!(canCap)) pMoves.clear();
 				
-				inPs.push_back(inP);
-				if (this->moves.count(this->getPS(a.x,a.y)) == 0) this->moves.insert({this->getPS(a.x,a.y),{{},{a.x,a.y}}});
-				if ((a.x != inP.x) and (a.y != inP.y)) {
-					curString = curString + "->" + this->getPS(inP.x,inP.y);
-					curPos.push_back(a.x); curPos.push_back(a.y);
-					this->moves[this->getPS(a.x,a.y)].first.insert({curString,curPos});
+				canCap = true;
+				
+				//Need to do this logic
+			//If we can move and don't need to cdpture (yet)
+			} else if ((moveAble == CAN_MOVE) and (!(canCap))) {
+				if (this->getAt(ii + jumpValues.first, i + 1) == 0) 
+					this->moves[startSquare].first.insert({ rowNames[ii + jumpValues.first] + colNames[i + 1], {{ii + jumpValues.first, i + 1}}});
+				if (this->getAt(ii + jumpValues.first, i - 1) == 0) 
+					this->moves[startSquare].first.insert({ rowNames[ii + jumpValues.first] + colNames[i - 1], {{ii + jumpValues.first, i - 1}}});
+				if (this->getAt(ii,i) == pieceNames.second) {
+					if (this->getAt(ii - jumpValues.first, i + 1) == 0) 
+						this->moves[startSquare].first.insert({ rowNames[ii - jumpValues.first] + colNames[i + 1], {{ii - jumpValues.first, i + 1}}});
+					if (this->getAt(ii - jumpValues.first, i - 1) == 0) 
+						this->moves[startSquare].first.insert({ rowNames[ii - jumpValues.first] + colNames[i - 1], {{ii - jumpValues.first, i - 1}}});
+
+
 				}
-				if ((this->pAt(inP.x+1,inP.y+spaces[0]) == eNames[0]) and (this->pAt(inP.x+2,inP.y+spaces[1]) == 0)) {
-					spFunc(utl::point(inP.x+2,inP.y+spaces[1]),curString,inPs,curPos);
-				}
-				if ((this->pAt(inP.x-1,inP.y+spaces[0]) == eNames[0]) and (this->pAt(inP.x-2,inP.y+spaces[1]) == 0)) {
-					spFunc(utl::point(inP.x-2,inP.y+spaces[1]),curString,inPs,curPos);
-				}
-			});
-			//std::cout << a.tString() << std::endl;
-			spFunc(a,stringNow,curPoints,curPos);
-			
+			}
 			
 		}
-		
-		
-
-
-				
-
-	} else {
-		for (int i = 0; i < 8; i++) {
-			for (int ii = 0; ii < 8; ii++) {
-				
-				if (this->pAt(i,ii) == pNames[0]) {
-					//std::cout << "val is " << (i-1) << " ";
-					if (this->pAt(i-1,ii+spaces[0]) == 0) {
-						if (this->moves.count(this->getPS(i,ii)) == 0) 
-							this->moves[this->getPS(i,ii)] = {{},{i,ii}};
-						this->moves[this->getPS(i,ii)].first.insert({checkRowNames[i-1]+checkColNames[ii+spaces[0]],{i-1,ii+spaces[0]}});
-					}
-					if (this->pAt(i+1,ii+spaces[0]) == 0) {
-						if (this->moves.count(this->getPS(i,ii)) == 0) 
-							this->moves[this->getPS(i,ii)] = {{},{i,ii}};
-						this->moves[this->getPS(i,ii)].first.insert({checkRowNames[i+1]+checkColNames[ii+spaces[0]],{i+1,ii+spaces[0]}});
-					}
-				}
-			}
-		}
 	}
+
 	
 }
 

@@ -105,7 +105,7 @@ std::string basicDrawGame::getBoard(std::vector<std::vector<int>> newBoard) {
 
 
 basicDrawGame::basicDrawGame(std::string boardName,std::string conFile) {
-	std::cout << std::format("Board name is: {}\n",boardName);
+	//std::cout << std::format("Board name is: {}\n",boardName);
 	std::ifstream jFile(getFullPath({"config",conFile}));
 	
 	/*

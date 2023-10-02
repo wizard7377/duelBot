@@ -65,7 +65,7 @@ namespace game {
 		this->moves.clear();
 		for (int i = 0; i < 3; i++) {	
 			for (int ii = 0; ii < 3; ii++) {	
-				if ((*this->boardItems)[2-i][ii] == 0) this->moves.emplace((tttRowNames[i] + "-" + tttColNames[ii]),moveInfo(std::map<std::string,posVec>(),{i,ii}));
+				if ((*this->boardItems)[2-i][ii] == 0) this->moves.emplace((tttRowNames[i] + "-" + tttColNames[ii]),moveInfo(std::map<std::string,std::vector<posVec>>(),{i,ii}));
 			}
 		}
 

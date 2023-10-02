@@ -42,6 +42,7 @@ std::string inString = std::get<std::string>(event.components[index].components[
 	return inString;
 	
 }
+//NOTE
 //TODO Undo 
 std::map<std::string,std::function<gameFront::wrapThreadHandle*(cluster &bot,user userId,snowflake challengeId,snowPair res,evt::eventhandle * handler)>> typeCmds = {
 	{

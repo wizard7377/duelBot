@@ -27,6 +27,7 @@ using sec = std::chrono::seconds;
 //BUG Timing issues
 //TODO Make end screens also work
 //TODO undo
+//TODO (?) add bigSelect back in
 template class gameFront::baseSimThread<game::ticTacToeLogic>;
 
 //template class gameFront::baseSimThread<game::connectLogic>;
@@ -96,8 +97,8 @@ baseSimThread<T>::baseSimThread(cluster* botPar, snowflake userIdA, snowflake us
 	this->userIdTwo = userIdB;
 	this->gameThread = threadId;	
 	//this->gameCode = gameCon.at(std::type_index(typeid(T))).gameId;
-	std::cout << gameNames.at(gameTypeInt<T>()) << std::endl;
-	std::cout << gameTypeInt<T>() << std::endl;
+	//std::cout << gameNames.at(gameTypeInt<T>()) << std::endl;
+	//std::cout << gameTypeInt<T>() << std::endl;
 	this->gameDraw = new dg::basicDrawGame(gameNames.at(gameTypeInt<T>()));
 	this->handler = handlerPar;
 	this->gameInteraction = shareInt;
@@ -176,6 +177,7 @@ message * baseSimThread<T>::msgMake() {
 			startSel->pageStay()
 		)
 	);
+	/*
 	msg->add_component(
 	component().add_component(
 		component().set_label("<-").
@@ -198,6 +200,7 @@ message * baseSimThread<T>::msgMake() {
 		set_disabled(!startSel->canPage[1])
 	)
 	);
+	*/
 	if (this->gameInteraction->isDuoMove()) {
 		msg->add_component(
 			component().add_component(
@@ -205,6 +208,7 @@ message * baseSimThread<T>::msgMake() {
 			)
 		);
 	}
+	/*
 	msg->add_component(
 	component().add_component(
 		component().set_label("<-").
@@ -227,6 +231,7 @@ message * baseSimThread<T>::msgMake() {
 		set_disabled(!endSel->canPage[1])
 	)
 	);
+	*/
 	msg->add_component(
 	component().add_component(
 		component().set_label("Request draw").
@@ -265,11 +270,11 @@ message * baseSimThread<T>::msgMake() {
 	this->handler->addSelectCmd(msg->components[0].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {
 	
 		if (this->gameInteraction->isDuoMove()) {
-			this->handler->deleteSelectCmd(msg->components[2].components[0].custom_id);
+			this->handler->deleteSelectCmd(msg->components[1].components[0].custom_id);
 			delete endSel;
 			endSel = new (utl::bigSelect)(this->gameInteraction->getToMoves(event.values[0]));	
-			msg->components[2].components[0] = endSel->pageStay();
-			this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
+			msg->components[1].components[0] = endSel->pageStay();
+			this->handler->addSelectCmd(msg->components[1].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
 				msg->components[2].components[0].set_placeholder(event.values[0]);
 				event.reply();
 				this->curMove[1] = event.values[0];	
@@ -282,18 +287,19 @@ message * baseSimThread<T>::msgMake() {
 		this->bot->message_edit(*msg);
 	});
 	if (this->gameInteraction->isDuoMove()) {	
-		this->handler->addSelectCmd(msg->components[2].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
-			msg->components[2].components[0].set_placeholder(event.values[0]);
+		this->handler->addSelectCmd(msg->components[1].components[0].custom_id,[endSel,msg,this](const select_click_t & event) mutable {	
+			msg->components[1].components[0].set_placeholder(event.values[0]);
 			event.reply();
 			this->curMove[1] = event.values[0];	
 		});
 	}
 	
-		
+	//This one handles the "make move" button logic	
 	this->handler->addButtonCmd(itemIds[8], [itemIds,this](const auto& event) {
 		if ((this->curMove[0] == "") or ((this->curMove[1] == "") and (this->gameInteraction->isDuoMove()))) {
 			event.reply(message(":x: You haven't selected a move yet!").set_flags(m_ephemeral));
 		} else {
+
 			event.thinking();
 			this->gameInteraction->makeMove(this->isPlayerOne,curMove[0],curMove[1]);
 			//event.reply(this->makeGameEmbed());
@@ -324,6 +330,7 @@ message * baseSimThread<T>::msgMake() {
 		event.reply("You requested a draw");
 		this->drawCall();
 	});
+	/*
 	this->handler->addButtonCmd(itemIds[0],[startSel,msg,this](const button_click_t& event) {
 		msg->components[0].components[0] = startSel->pageUp();
 		this->bot->message_edit(*msg);
@@ -333,6 +340,8 @@ message * baseSimThread<T>::msgMake() {
 		msg->components[0].components[0] = startSel->pageDown();
 		this->bot->message_edit(*msg);
 	});
+	*/
+	/*
 	if (this->gameInteraction->isDuoMove()) {
 		this->handler->addButtonCmd(itemIds[3],[endSel,msg,this](const button_click_t& event) {
 			msg->components[2].components[0] = endSel->pageUp();
@@ -343,6 +352,7 @@ message * baseSimThread<T>::msgMake() {
 			this->bot->message_edit(*msg);
 		});
 	}
+	*/
 	this->lastMsg = msg;
 	return msg;
 

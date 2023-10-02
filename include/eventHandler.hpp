@@ -10,7 +10,7 @@
 #include "gameLogic.hpp"
 #include "rateQueue.hpp"
 #include "databaseLogic.hpp"
-
+//TODO make access to commands involve mutex
 using namespace dpp;
 using snowPair = std::pair<snowflake,snowflake>;
 

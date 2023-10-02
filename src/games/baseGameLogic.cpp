@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "gameLogic.hpp"
-
+#define BIG_VAL 1000000
 template <typename T>
 T getValAt(int index, std::vector<std::vector<T>> * inVec) {
 	return (*inVec)[(int)(std::floor(index/(*inVec).size()))][(int)(index % (*inVec)[0].size())];
@@ -36,5 +36,12 @@ int baseGameLogic::convertStringToInt(std::string userMove) {
 		return i;
 	}
 }
-
+int baseGameLogic::getAt(int x, int y) {
+	if ((x < 0) or (y < 0)) return BIG_VAL; 
+	if (this->boardItems->size() > x) {
+		if (this->boardItems->at(x).size() > y) return (*(this->boardItems))[x][y];
+		else return BIG_VAL;
+	}
+	else return BIG_VAL; 
+}
 }

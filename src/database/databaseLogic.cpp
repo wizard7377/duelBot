@@ -78,7 +78,7 @@ reSet dataHandle::makeGUserRaw(int gameId,uint64_t totalId) {
 		retAc = {std::to_string(mysql_insert_id(this->dataCon))};
 	} catch (...) {
 		retAc = {nullptr};
-		std::cout << colorForm("An error has occured\n",RED_TERM);
+		spdlog::error("An error has occured");
 
 	}
 	return retAc;
@@ -158,7 +158,7 @@ reSet dataHandle::getUser(uint64_t userId, uint64_t guildId) {
 				
 		
 		} catch (...) {
-			std::cout << "An error has occured \n";
+			spdlog::error("A error has occured"); 
 		}
 
 

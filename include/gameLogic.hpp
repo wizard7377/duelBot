@@ -13,7 +13,7 @@
  * A pair of a vector of moves and corresponding int positions and a int pos
 */
 using posVec = std::vector<int>;
-using moveInfo = std::pair<std::map<std::string,posVec>,posVec>;
+using moveInfo = std::pair<std::map<std::string,std::vector<posVec>>,posVec>;
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string colNames[] = {"1","2","3","4","5","6","7","8"};
 
@@ -45,7 +45,7 @@ class baseGameLogic {
 		 * @param playerTurn Whose turn it is
 		 * @return Has the game ended?
 		 */
-		virtual bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) { return false; } 
+		virtual bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) { return false; } 
 		/*! This function allows you to make a move in a one input game
 		 * @brief Make one input move
 		 * @param inputOne One input
@@ -81,13 +81,30 @@ class baseGameLogic {
 		std::vector<std::vector<utl::point>> capMovesVec; /*!< List of all possible moves with greater than 2 inputs */
 		std::vector<std::string> capMovesNames; /*!< List of the repersentations of all moves with greater than 2 inputs*/
 		virtual int gameInt() { return -1; };
-
-		std::map<std::string,moveInfo> moves;
+		/* 
+		std::map<
+			std::string,
+			std::pair<
+				std::map<
+					std::string,
+					std::vector<
+						std::vector<
+							int
+						>
+					>
+				>, 
+				std::vector<
+					int
+				>
+			>
+		>
+		*/
+		std::map<std::string,moveInfo> moves; 
 
 		
 		//gameInt::baseGameInt& parent; //!< IMPORTANT: the object that created this
 	protected:
-
+		int getAt(int x, int y);
 		virtual void changeMoves(bool playerTurn = false) {}; //!< Updates the list of moves
 		bool userTurn = true;
 
@@ -120,7 +137,7 @@ class ticTacToeLogic : public baseGameLogic {
 		//ticTacToeLogic(gameInt::baseGameInt<ticTacToeLogic>& parent);
 		bool isDuoMove() override { return false; }
 		bool makeMove(posVec inputOne,bool playerTurn) override;
-		bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) override { return false ; };
+		bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) override { return false ; };
 		int gameInt() override { return 0; }
 		
 
@@ -146,7 +163,7 @@ class checkersLogic : public baseGameLogic {
 		checkersLogic();
 		//checkersLogic(gameInt::baseGameInt<checkersLogic>& parent);
 		bool makeMove(posVec inputOne,bool playerTurn) override { return false; };
-		bool makeMove(posVec inputOne,posVec inputTwo, bool playerTurn) override;
+		bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) override;
 		
 		bool isDuoMove() override { return true; }
 		bool getWinner() override;
@@ -163,9 +180,8 @@ class checkersLogic : public baseGameLogic {
 	private:
 		void changeMoves(bool playerTurn) override;
 		bool checkForEnd();
-		int pAt(int x, int y); //!< Needed to turn natrual notation (x,y) into actual notation (y,x)
-		void sAt(int x, int y, int piece); //!< Needed to turn natrual notation (x,y) into actual notation (y,x)
 		std::string getPS(int x, int y);
+	
 		
 };
 //TODO temp remove this

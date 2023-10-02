@@ -53,11 +53,13 @@ baseThread<T>::baseThread(cluster* botPar, snowflake userIdA, snowflake userIdB,
 	this->curPlayer = this->pOneFirst;
 	//mas lazy
 	this->curPlayer = false;
+	/*
 	if (this->curPlayer) {
 		std::cout << "Black goes first\n";
 	} else {
 		std::cout << "White goes first\n";
 	}
+	*/
 	
 	
 	
