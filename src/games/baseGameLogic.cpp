@@ -16,10 +16,12 @@ namespace game {
 baseGameLogic::baseGameLogic() {
 }
 
+/*
 std::string baseGameLogic::convertIntToString(int logicMove) {
 	return (getValAt<std::string>(logicMove,(&this->moveNamesCon)));
 }
-
+*/
+/*
 int baseGameLogic::convertStringToInt(std::string userMove) {
 	//TODO Make this less worse
 	if (this->isOneD()) {
@@ -36,6 +38,7 @@ int baseGameLogic::convertStringToInt(std::string userMove) {
 		return i;
 	}
 }
+*/
 int baseGameLogic::getAt(int x, int y) {
 	if ((x < 0) or (y < 0)) return BIG_VAL; 
 	if (this->boardItems->size() > x) {

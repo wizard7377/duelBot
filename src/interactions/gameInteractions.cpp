@@ -9,7 +9,7 @@
 #include <thread>
 #include <random>
 //TODO UNDO you know what to do
-template class gameInt::baseGameInt<game::baseGameLogic>;
+//template class gameInt::baseGameInt<game::baseGameLogic>;
 template class gameInt::baseGameInt<game::ticTacToeLogic>;
 //template class gameInt::baseGameInt<game::connectLogic>;
 template class gameInt::baseGameInt<game::checkersLogic>;
@@ -98,12 +98,8 @@ std::vector<std::vector<int>> baseGameInt<T>::getBoard() {
 	
 	return *(this->gameLogic->boardItems);
 }
-
-
-
-
 template <typename T> 
-int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string inputTwo) {
+int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string inputTwo) requires game::isOneMove<T> {
 	
 	gameTime * curTime = new gameTime; 
 	*curTime = this->timeMove(this->userMove);
@@ -120,15 +116,8 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 		(this->timeLeft[1]) = (curTime);
 	}
 	bool isCase = false;
-	if (inputTwo == "") { isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),playerTurn)); } 
-	else {
-		//BUG When ur wondering why this dosent work this is why 
-		if (this->gameLogic->isCapture) {
-			isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
-		} else {
-			isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
-		}
-	}
+	isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),playerTurn));
+	
 
 	if (isCase) {
 		//TODO MAKE END WORK
@@ -151,6 +140,59 @@ int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string i
 	this->userMove = !(this->userMove);
 	return 1;
 }
+template <typename T>
+int baseGameInt<T>::makeMove(bool playerTurn,std::string inputOne, std::string inputTwo) requires game::usesTwoMoves<T> {
+	
+	gameTime * curTime = new gameTime; 
+	*curTime = this->timeMove(this->userMove);
+	this->timeThread = new std::thread([this,curTime] {
+		std::this_thread::sleep_for(*curTime + (*this->timeControl[1]) + (*this->timeControl[2]));
+		if (this->hasTimeLeft->load()) {
+			this->hasTimeLeft->store(false);
+			this->endCase(this->userMove,1);
+		}
+	});
+	if (this->userMove) {
+		(this->timeLeft[0]) = (curTime);
+	} else {
+		(this->timeLeft[1]) = (curTime);
+	}
+	bool isCase = false;
+	
+
+	//BUG When ur wondering why this dosent work this is why 
+	if (this->gameLogic->isCapture) {
+		isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
+	} else {
+		isCase = (this->gameLogic->makeMove(this->fromMoveVec(inputOne),this->toMoveVec(inputOne,inputTwo),playerTurn)); 
+	}
+	
+
+	if (isCase) {
+		//TODO MAKE END WORK
+		this->endCase(!this->gameLogic->getWinner(),0);
+	}
+	this->lastMove = std::chrono::steady_clock::now();
+	
+	/*	
+	if (this->timeMove()) {
+		this->endCase(this->userMove,1);
+	}
+
+	if (isCase) {
+		this->endCase(this->userMove,1);
+	} else {
+		this->userMove = !(this->userMove);
+	}
+	*/
+	//this->endCase(this->userMove,-1);
+	this->userMove = !(this->userMove);
+	return 1;
+}
+
+
+
+
 /*
 template <typename T> 
 std::string baseGameInt<T>::intToMove(int userMove) {
@@ -171,7 +213,8 @@ int baseGameInt<T>::moveToInt(std::string userMove, bool typeReq) {
 */
 
 template <typename T>
-moveList baseGameInt<T>::getToMoves(std::string fromMove) {
+moveList baseGameInt<T>::getToMoves(std::string fromMove) 
+requires game::usesTwoMoves<T> {
 	moveList rList;
 	for (const auto& [key, value] : this->gameLogic->moves[fromMove].first) {
 		rList.push_back(key);
@@ -186,16 +229,28 @@ moveList baseGameInt<T>::getFromMoves() {
 	}
 	return rList;
 }
+
+
 template <typename T>
-posVec baseGameInt<T>::fromMoveVec(std::string fromMove) {
+posVec baseGameInt<T>::fromMoveVec(std::string fromMove) 
+requires game::isOneMove<T> {
+	return this->gameLogic->moves[fromMove];
+}
+
+template <typename T>
+posVec baseGameInt<T>::fromMoveVec(std::string fromMove) 
+requires game::usesTwoMoves<T> {
 	return this->gameLogic->moves[fromMove].second;
 }
+
 template <typename T>
-std::vector<posVec> baseGameInt<T>::toMoveVec(std::string fromMove, std::string toMove) {
+std::vector<posVec> baseGameInt<T>::toMoveVec(std::string fromMove, std::string toMove) 
+requires game::usesTwoMoves<T> {
 	return this->gameLogic->moves[fromMove].first[toMove];
 }
 template <typename T>
-moveList baseGameInt<T>::getToMoves() {
+moveList baseGameInt<T>::getToMoves() 
+requires game::usesTwoMoves<T> {
 	//Probaly a smarter way to do this but idk
 	moveList rList;
 	for (const auto& [key, value] : this->gameLogic->moves) {

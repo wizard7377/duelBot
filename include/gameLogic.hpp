@@ -14,6 +14,7 @@
 */
 using posVec = std::vector<int>;
 using moveInfo = std::pair<std::map<std::string,std::vector<posVec>>,posVec>;
+
 const std::string rowNames[] = {"a","b","c","d","e","f","g","h"};
 const std::string colNames[] = {"1","2","3","4","5","6","7","8"};
 
@@ -38,71 +39,13 @@ class baseGameLogic {
 		virtual bool getWinner() { return false; } 
 		virtual bool makeMoveOld(int inputOne, int inputTwo) { return false; } //!< @deprecated
 		virtual bool makeMoveOld(int inputOne) { return false; } //!< @deprecated
-		/*! This function allows you to make a move in a two input game
-		 * @brief Make two input move
-		 * @param inputOne First input
-		 * @param inputTwo Second input
-		 * @param playerTurn Whose turn it is
-		 * @return Has the game ended?
-		 */
-		virtual bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) { return false; } 
-		/*! This function allows you to make a move in a one input game
-		 * @brief Make one input move
-		 * @param inputOne One input
-		 * @param playerTurn Whose turn it is
-		 * @return Has the game ended?
-		 */
-		virtual bool makeMove(posVec inputOne,bool playerTurn) { return false; }
+		
+		
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
-		/*! List of all possible moves, this the case of a single input game, 
-		 * any vector that has a size of zero is invalid and greater than valid. 
-		 * In a two player game, each inner vector repersents a possible first move, 
-		 * and the elements repersent all possible second moves 
-		 */
-		/**
-		 * @brief List of out moves
-		 * A std::vector of the names of all possible moves.
-		 * For a game with one input, each inner vector is a vector with a length of 1 and the name of the move
-		 * For a game with two inputs, inner vector contains a LIST of moves associated with the given index
-		*/
-		std::vector<std::vector<std::string>> moveNames; 
-		/**
-		 * @brief (2P) List of in moves
-		 * Contains a list of all in moves for every given space on the board
-		 */
-		std::vector<std::vector<std::string>> moveNamesCon; 
-		std::vector<std::vector<std::string>> extraMoveNames;
-		/*! Used only in games where it is possible to have more than two inputs per move, 
-		 * map from second input to the list of moves 
-		 */ 
-		std::map<std::string,std::vector<utl::point>> capMoves; 
 		
-		std::vector<std::vector<utl::point>> capMovesVec; /*!< List of all possible moves with greater than 2 inputs */
-		std::vector<std::string> capMovesNames; /*!< List of the repersentations of all moves with greater than 2 inputs*/
 		virtual int gameInt() { return -1; };
-		/* 
-		std::map<
-			std::string,
-			std::pair<
-				std::map<
-					std::string,
-					std::vector<
-						std::vector<
-							int
-						>
-					>
-				>, 
-				std::vector<
-					int
-				>
-			>
-		>
-		*/
-		std::map<std::string,moveInfo> moves; 
-
 		
-		//gameInt::baseGameInt& parent; //!< IMPORTANT: the object that created this
 	protected:
 		int getAt(int x, int y);
 		virtual void changeMoves(bool playerTurn = false) {}; //!< Updates the list of moves
@@ -110,7 +53,47 @@ class baseGameLogic {
 
 };
 
-class chessLogic : public baseGameLogic {
+class oneMove : public baseGameLogic {
+	public:
+		std::map<std::string,posVec> moves;
+		/*! This function allows you to make a move in a one input game
+		 * @brief Make one input move
+		 * @param inputOne One input
+		 * @param playerTurn Whose turn it is
+		 * @return Has the game ended?
+		 */
+		virtual bool makeMove(posVec inputOne,bool playerTurn) { return false; } 
+
+};
+class twoMove : public baseGameLogic {
+	public:
+		std::map<std::string,moveInfo> moves;
+		/*! This function allows you to make a move in a two input game
+		 * @brief Make two input move
+		 * @param inputOne First input
+		 * @param inputTwo Second input
+		 * @param playerTurn Whose turn it is
+		 * @return Has the game ended?
+		 */
+		virtual bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) { return false; }  
+
+};
+
+
+
+template <typename T> 
+concept isOneMove = std::derived_from<T,oneMove>;
+
+template <typename T> 
+concept isTwoMove = std::derived_from<T,twoMove>;
+
+template <typename T> 
+concept usesTwoMoves = std::derived_from<T,twoMove>;
+
+template <typename T>
+concept usesMoves = std::derived_from<T,twoMove> || std::derived_from<T,oneMove>;
+
+class chessLogic : public twoMove {
 	public:
 		chessLogic();
 		//std::vector<std::vector<int>> * boardItems;
@@ -131,13 +114,12 @@ class chessLogic : public baseGameLogic {
 		void changeMoves(bool playerTurn) override {};
 };
 
-class ticTacToeLogic : public baseGameLogic {
+class ticTacToeLogic : public oneMove {
 	public:
 		ticTacToeLogic();
 		//ticTacToeLogic(gameInt::baseGameInt<ticTacToeLogic>& parent);
 		bool isDuoMove() override { return false; }
-		bool makeMove(posVec inputOne,bool playerTurn) override;
-		bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) override { return false ; };
+		bool makeMove(posVec inputOne, bool playerTurn) override;
 		int gameInt() override { return 0; }
 		
 
@@ -158,11 +140,10 @@ class ticTacToeLogic : public baseGameLogic {
 };
 
 
-class checkersLogic : public baseGameLogic {
+class checkersLogic : public twoMove {
 	public:
 		checkersLogic();
 		//checkersLogic(gameInt::baseGameInt<checkersLogic>& parent);
-		bool makeMove(posVec inputOne,bool playerTurn) override { return false; };
 		bool makeMove(posVec inputOne,std::vector<posVec> inputTwo, bool playerTurn) override;
 		
 		bool isDuoMove() override { return true; }

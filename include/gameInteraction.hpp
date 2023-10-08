@@ -41,7 +41,8 @@ class baseGameInt : public wrapState {
 		 * @param fromMove First move
 		 * @return Possible second moves
 		*/
-		moveList getToMoves(std::string fromMove);
+		moveList getToMoves(std::string fromMove) requires game::usesTwoMoves<T>;
+		moveList getToMoves(std::string fromMove) requires game::isOneMove<T> { return {}; };
 		/**!
 		 * Gets all possible moves in a two player game
 		 * @brief Gets all first moves
@@ -54,7 +55,8 @@ class baseGameInt : public wrapState {
 		 * @param fromMove Move string
 		 * @return Move vector
 		*/
-		posVec fromMoveVec(std::string fromMove);
+		posVec fromMoveVec(std::string fromMove) requires game::isOneMove<T>;
+		posVec fromMoveVec(std::string fromMove) requires game::usesTwoMoves<T>;
 		/**!
 		 * Changes a to move and its from move to its appropriate move vector
 		 * @brief To string to appropriate vector
@@ -62,14 +64,18 @@ class baseGameInt : public wrapState {
 		 * @param fromMove First move string
 		 * @return Move vector
 		*/
-		std::vector<posVec> toMoveVec(std::string fromMove, std::string toMove);
+		std::vector<posVec> toMoveVec(std::string fromMove, std::string toMove) requires game::isOneMove<T> { return {}; }
+		std::vector<posVec> toMoveVec(std::string fromMove, std::string toMove) requires game::usesTwoMoves<T>;
 		/**!
 		 * Gets default to moves
 		 * @brief Gets all default second moves
 		 * @return Possible second moves
 		*/
-		moveList getToMoves();
-		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "");
+		moveList getToMoves() requires game::usesTwoMoves<T>;
+		moveList getToMoves() requires game::isOneMove<T> { return {}; } //Just to simplfy frontEnd stuff
+		//W @Mishura4 For helping me figure this out
+		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "") requires game::isOneMove<T>;
+		int makeMove(bool playerTurn, std::string inputOne, std::string inputTwo = "") requires game::usesTwoMoves<T>;
 		/*! Checks if game is one input or two input
 		 * @brief Number of inputs
 		 * @return Is two player game?
@@ -100,6 +106,10 @@ class baseGameInt : public wrapState {
 		bool userMove = true; //!< Tracks players turns
 		//std::function<void(bool,int)> endCase;
 };
+
+
+
+
 
 }
 
