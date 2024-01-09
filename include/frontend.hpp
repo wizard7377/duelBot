@@ -60,6 +60,7 @@ class baseSimThread : public wrapThread, public inType {
 	    snowflake userIdOne;
 	    snowflake userIdTwo;
 	    snowflake gameThread;
+		snowflake guildId = 0; //TODO make this actually something
 		evt::eventhandle * handler;
 		dpp::thread gameThreadObj;
 	    int gameCode;

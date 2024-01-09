@@ -43,7 +43,10 @@ class baseGameLogic {
 		
 		std::string convertIntToString(int logicMove);
 		int convertStringToInt(std::string userMove);
-		
+		/*! A useful debugging function to figure out how points are internally displayed in (x,y) [x][y] format
+		 * @brief Prints board
+		 */
+		void printBoard();
 		virtual int gameInt() { return -1; };
 		
 	protected:

@@ -1,0 +1,10 @@
+(A) Wins and losses are being swapped @bugs +games 
+(A) Figure out how players are organized (possibly done) @info +games +front +glue
+(B) Refactor the code @code +all
+(C) Benchmarks @code +all
+(C) More games @add +games 
+(C) More settings @add +front 
+(C) Greater time percision @fix +front 
+(D) Annoucments @add +front
+(E) Guild tournaments @add +front 
+(E) Expansion on rank system @add +front

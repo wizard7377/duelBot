@@ -38,8 +38,8 @@ baseGameHandle<T>::baseGameHandle(std::function<inType*(gameInt::baseGameInt<T>*
 			numGames--;
 			spdlog::info("The current number of games is: {}\n",colorForm(std::to_string(numGames),RED_TERM));
 			bool isTie = (winCase < 0);
-			setRates(this->gameHandles[0]->handler->testCon,this->gameHandles[0]->userIdOne,this->gameHandles[0]->userIdTwo,0,winner,isTie); // weeeeeeeeeee very lazy
-			setRates(this->gameHandles[1]->handler->testCon,this->gameHandles[1]->userIdOne,this->gameHandles[1]->userIdTwo,0,!winner,isTie); // weeeeeeeeeee very lazy
+			setRates(this->gameHandles[0]->handler->testCon,this->gameHandles[0]->userIdOne,this->gameHandles[0]->userIdTwo,0,winner,this->gameHandles[0]->guildId,this->gameHandles[1]->guildId,isTie); // weeeeeeeeeee very lazy
+			//setRates(this->gameHandles[1]->handler->testCon,this->gameHandles[1]->userIdOne,this->gameHandles[1]->userIdTwo,0,!winner,isTie); // weeeeeeeeeee very lazy
 			this->gameHandles[0]->endCall(winner,winCase);
 			this->gameHandles[1]->endCall(!winner,winCase);
 			this->ended = true;

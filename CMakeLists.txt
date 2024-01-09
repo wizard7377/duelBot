@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(duelBot VERSION 0.1 DESCRIPTION "A discord bot")
 
 OPTION(TOK_BUILD "Token type" ON)
+OPTION(WARN_MSGS "Make warning messages?" OFF)
 IF (${TOK_BUILD})
     ADD_DEFINITIONS(-DTOKEN_TYPE="BUILD")
 ELSE()
@@ -12,6 +13,9 @@ if (NOT DEFINED MYSQL_CONN_DIR)
 endif()
 set(DUEL_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
+IF (${WARN_MSGS}) 
+    ADD_DEFINITIONS(-Wall -Wpedantic)
+ENDIF()
 include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 FetchContent_MakeAvailable(json)
@@ -22,7 +26,7 @@ include(ExternalProject)
 FetchContent_Declare(DPP
     PREFIX libs/DPP
     BINARY_DIR build
-    URL https://github.com/brainboxdotcc/DPP/archive/refs/tags/v10.0.25.tar.gz
+    URL https://github.com/brainboxdotcc/DPP/releases/download/v10.0.28/DPP-10.0.28.tar.gz
 )
 FetchContent_MakeAvailable(DPP)
 if (EXISTS ${MYSQL_CONN_DIR}/include)
